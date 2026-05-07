@@ -1,0 +1,35 @@
+# Confidential — interview material from the company we're applying to.
+# Includes original briefs, internal IP shared during the process, and any other
+# non-publishable artifacts. Never commit.
+_private/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Claude Code internal state
+.claude/
+
+# Cloudflare
+.wrangler/

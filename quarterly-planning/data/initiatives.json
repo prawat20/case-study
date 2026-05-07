@@ -1,0 +1,180 @@
+[
+  {
+    "id": "init_bulk_csv",
+    "title": "Bulk CSV import for enterprise",
+    "synthesis_oneliner": "Blocking 3 deals worth $480k ARR. Sales escalated this week.",
+    "rationale_narrative": "This unblocks 3 deals worth $480k ARR. Sales escalated it this week — second time this quarter. The pattern is clear: enterprise buyers expect bulk import on day one.",
+    "evidence": [
+      { "metric": "$480k", "label": "ARR exposure", "source": "Salesforce, 3 open opps", "quote": "Acme — 'Without bulk import we can't migrate from our current vendor.'" },
+      { "metric": "3", "label": "open deals", "source": "Salesforce" },
+      { "metric": "11", "label": "support tickets", "source": "Zendesk, last 30d" },
+      { "metric": "4", "label": "customer calls", "source": "Gong call logs" },
+      { "metric": "2x", "label": "this quarter", "source": "Sales escalation log" }
+    ],
+    "ai_recommendation": {
+      "sequence": "Q3 Sprint 1",
+      "effort_sprints": 3,
+      "eng_confidence": "medium",
+      "addresses": ["3 of top 5 enterprise blockers"],
+      "conflicts": []
+    },
+    "status": "needs_decision",
+    "stakeholder_signals": ["sales", "cs"],
+    "theme": "Enterprise readiness",
+    "arr_exposure_usd": 480000
+  },
+  {
+    "id": "init_saml_sso",
+    "title": "SSO via SAML",
+    "synthesis_oneliner": "Required for 2 enterprise renewals — $340k ARR at risk.",
+    "rationale_narrative": "Two enterprise renewals in Q4 are conditional on SAML SSO. This is table-stakes for enterprise; without it, we churn $340k ARR. The implementation is well-scoped.",
+    "evidence": [
+      { "metric": "$340k", "label": "renewal at risk", "source": "Salesforce, Q4 renewals" },
+      { "metric": "2", "label": "renewals gated", "source": "CS escalations" },
+      { "metric": "7", "label": "feature requests", "source": "Productboard" },
+      { "metric": "6", "label": "competitors have it", "source": "Competitive scan" }
+    ],
+    "ai_recommendation": {
+      "sequence": "Q3 Sprint 1",
+      "effort_sprints": 2,
+      "eng_confidence": "high",
+      "addresses": ["2 enterprise renewals", "Q4 expansion pipeline"],
+      "conflicts": []
+    },
+    "status": "needs_decision",
+    "stakeholder_signals": ["sales", "cs"],
+    "theme": "Enterprise readiness",
+    "arr_exposure_usd": 340000
+  },
+  {
+    "id": "init_webhook_retry",
+    "title": "Webhook delivery retries",
+    "synthesis_oneliner": "Top reliability complaint — 18 tickets, 3 customer escalations.",
+    "rationale_narrative": "Webhook delivery is the #1 reliability complaint this quarter. Customers report missed events with no retry. Eng has a clean fix scoped at 1 sprint with dead-letter queue.",
+    "evidence": [
+      { "metric": "18", "label": "tickets", "source": "Zendesk, last 60d" },
+      { "metric": "3", "label": "escalations", "source": "CS team" },
+      { "metric": "$92k", "label": "ARR mentioned", "source": "Tickets cross-ref Salesforce" },
+      { "metric": "1", "label": "sprint effort", "source": "Eng estimate" }
+    ],
+    "ai_recommendation": {
+      "sequence": "Q3 Sprint 2",
+      "effort_sprints": 1,
+      "eng_confidence": "high",
+      "addresses": ["#1 reliability complaint"],
+      "conflicts": []
+    },
+    "status": "needs_decision",
+    "stakeholder_signals": ["cs", "support"],
+    "theme": "Reliability",
+    "arr_exposure_usd": 92000
+  },
+  {
+    "id": "init_audit_log",
+    "title": "Audit log export for SOC2",
+    "synthesis_oneliner": "SOC2 Type II prep — required by Q4 audit window.",
+    "rationale_narrative": "Required for SOC2 Type II compliance. Audit window is October — we need export-ready audit logs by end of Q3 to be safe. No customer pull yet, but compliance is non-negotiable for enterprise expansion.",
+    "evidence": [
+      { "metric": "Oct '26", "label": "audit window", "source": "Compliance lead" },
+      { "metric": "$1.2M", "label": "pipeline gated", "source": "Sales: enterprise prospects requiring SOC2" },
+      { "metric": "0", "label": "customer requests", "source": "Productboard" }
+    ],
+    "ai_recommendation": {
+      "sequence": "Q3 Sprint 3",
+      "effort_sprints": 2,
+      "eng_confidence": "medium",
+      "addresses": ["SOC2 Type II prep", "$1.2M enterprise pipeline"],
+      "conflicts": ["Slight overlap with bulk import in Sprint 3 — manageable"]
+    },
+    "status": "needs_decision",
+    "stakeholder_signals": ["exec", "sales"],
+    "theme": "Compliance",
+    "arr_exposure_usd": 1200000
+  },
+  {
+    "id": "init_slack_threaded",
+    "title": "Slack integration v2 — threaded notifications",
+    "synthesis_oneliner": "High-volume request from CS — but low ARR exposure.",
+    "rationale_narrative": "CS has been pushing for threaded Slack notifications for two quarters. The volume of requests is high (24 in Productboard) but the ARR impact is unclear — most asks are from customers under $20k MRR.",
+    "evidence": [
+      { "metric": "24", "label": "requests", "source": "Productboard" },
+      { "metric": "$140k", "label": "ARR mentioned", "source": "Tickets" },
+      { "metric": "Sub-$20k", "label": "avg MRR", "source": "Salesforce" }
+    ],
+    "ai_recommendation": {
+      "sequence": "Q4 — defer",
+      "effort_sprints": 2,
+      "eng_confidence": "high",
+      "addresses": ["High-volume CS request"],
+      "conflicts": ["Lower ROI than enterprise items in same window"]
+    },
+    "status": "monitoring",
+    "stakeholder_signals": ["cs", "support"],
+    "theme": "Activation",
+    "arr_exposure_usd": 140000
+  },
+  {
+    "id": "init_perm_groups",
+    "title": "Permission groups (vs individual ACLs)",
+    "synthesis_oneliner": "Mid-size customer pain — 8 tickets from $50k+ MRR accounts.",
+    "rationale_narrative": "Mid-market customers (>$50k MRR) repeatedly hit the limit of individual ACLs. They need group permissions. Solid signal across 8 tickets and 3 customer interviews.",
+    "evidence": [
+      { "metric": "8", "label": "tickets", "source": "Zendesk, $50k+ accounts" },
+      { "metric": "3", "label": "customer interviews", "source": "Discovery sessions" },
+      { "metric": "$240k", "label": "ARR mentioned", "source": "Cross-ref" }
+    ],
+    "ai_recommendation": {
+      "sequence": "Q3 Sprint 4",
+      "effort_sprints": 2,
+      "eng_confidence": "medium",
+      "addresses": ["Mid-market scaling"],
+      "conflicts": []
+    },
+    "status": "sequenced",
+    "stakeholder_signals": ["cs", "sales"],
+    "theme": "Scaling",
+    "arr_exposure_usd": 240000
+  },
+  {
+    "id": "init_mobile_push",
+    "title": "Mobile push notifications",
+    "synthesis_oneliner": "Low signal — 4 requests, no revenue tie. Defer.",
+    "rationale_narrative": "Mobile push has been requested 4 times but with no revenue tie and no support volume. Recommend monitoring; not worth Q3 capacity.",
+    "evidence": [
+      { "metric": "4", "label": "requests", "source": "Productboard" },
+      { "metric": "0", "label": "revenue tie", "source": "Cross-ref" }
+    ],
+    "ai_recommendation": {
+      "sequence": "Monitor",
+      "effort_sprints": 1,
+      "eng_confidence": "high",
+      "addresses": [],
+      "conflicts": []
+    },
+    "status": "deferred",
+    "stakeholder_signals": [],
+    "theme": "Mobile",
+    "arr_exposure_usd": 0
+  },
+  {
+    "id": "init_custom_fields",
+    "title": "Custom field types in workflows",
+    "synthesis_oneliner": "Growing pull — 14 requests, themes consolidating.",
+    "rationale_narrative": "Custom field types (date, dropdown, multi-select) are a growing request across mid-market and enterprise. Themes are consolidating; worth scoping for Q4.",
+    "evidence": [
+      { "metric": "14", "label": "requests", "source": "Productboard, growing trend" },
+      { "metric": "$180k", "label": "ARR mentioned", "source": "Cross-ref" }
+    ],
+    "ai_recommendation": {
+      "sequence": "Q4 Sprint 1",
+      "effort_sprints": 3,
+      "eng_confidence": "medium",
+      "addresses": ["Mid-market workflow flexibility"],
+      "conflicts": []
+    },
+    "status": "monitoring",
+    "stakeholder_signals": ["cs"],
+    "theme": "Flexibility",
+    "arr_exposure_usd": 180000
+  }
+]

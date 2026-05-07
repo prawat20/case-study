@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  /* Surfaces */
+  --color-page: #0a0a0b;
+  --color-elevated: #111114;
+  --color-card-hover: #1a1a1f;
+
+  /* Text */
+  --color-primary: #fafafa;
+  --color-secondary: #a1a1aa;
+  --color-tertiary: #52525b;
+  --color-muted: #71717a;
+
+  /* Accent — calm violet, distinctive without being loud */
+  --color-accent: #7c5cff;
+  --color-accent-soft: rgba(124, 92, 255, 0.12);
+
+  /* Status */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  /* Borders */
+  --color-border: #1a1a1f;
+  --color-border-strong: #2a2a31;
+
+  /* Type */
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", monospace;
+}
+
+@theme inline {
+  --color-page: var(--color-page);
+  --color-elevated: var(--color-elevated);
+  --color-card-hover: var(--color-card-hover);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-tertiary: var(--color-tertiary);
+  --color-muted: var(--color-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-soft: var(--color-accent-soft);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+html,
+body {
+  background: var(--color-page);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01", "ss03";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-primary);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
