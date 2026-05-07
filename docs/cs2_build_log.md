@@ -7,9 +7,9 @@
 
 ## Current state
 
-**Status:** feature-complete, deployed. UX polish pass next.
+**Status:** POV-complete (every requirement in `cs2_product_pov.md` is implemented), deployed. UX polish pass next.
 **Live:** https://case-study-iud.pages.dev/
-**Source:** github.com/prawat20/case-study
+**Source:** github.com/prawat20/case-study (latest `3570b89`)
 
 ### Routes shipped
 
@@ -25,14 +25,20 @@
 ### Cross-cutting features
 
 - **Strategic banner on home** — North Star (Net New ARR $1.5M / $2.4M = 63%) + Quarter elapsed (Week 9 of 13 = 69%) → pace gap `-6pp behind`. Expandable to the 3 OKRs.
+- **SignalShifts banner on home** — *"engine noticed N priority signals overnight"*; expandable to per-item shift detail (volume up, named-account ask, etc) with the AI's reasoning per shift. Visualizes the Dynamic Priority Engine's continuous-synthesis output.
 - **AI recommends an explicit action per item** — `commit | defer | escalate` with prose reason. Demo split: 2 commit, 1 defer (Webhook → Q4), 1 escalate (SOC2 audit-window vs eng capacity).
 - **Action bar always shows all 3 actions.** AI's rec gets primary highlight + ↵ shortcut; the other two are secondary buttons.
 - **Override is a path, not a button.** Picking any action different from AI's rec triggers an inline prompt: *"Choosing [X] instead of AI's [Y]. Why?"*. Reason becomes the system-learning signal.
 - **Sprint View** on Initiative Detail — vertical Q3 timeline (4 sprints), capacity bars per sprint (over-capacity flagged amber), current item highlighted with "← lands here" tag.
+- **Framework chip** on Initiative Detail — each item carries `framework` (RICE / Strategic Bet / Value-Effort / ICE / WSJF) + AI rationale for the choice. Hover to see why AI picked it for this item type. Demo mix: Bulk CSV/SAML/Permission-Groups → RICE; SOC2 → Strategic Bet; Webhook/Slack-v2/Custom-Fields → Value-Effort; Mobile-Push → ICE.
+- **Predicted outcome** on Initiative Detail (inline below recommendation) and Audit Log (per entry) — what AI expects if the recommendation is followed.
 - **Trade-offs section** with concrete prose ripple effects.
 - **System learning cue** — when user has overridden once, subsequent Initiative Details show a sparkle callout referencing the prior override.
 - **Decision persistence** via `localStorage`. Committed items disappear from Priority Stream, surface in Quarter view as green dots, surface in Audit Log with system notes.
-- **Engage the Senses** — Web Audio synth chime on commit + tick on defer (no audio assets), Framer Motion for card slides, recommendation pulse, audience-toggle layoutId, evidence chip expansion.
+- **Decision-lands-in-corner animation** — on commit, mini card flies from the recommendation surface to the top-right with fade-out (~700ms).
+- **Drag-to-resequence on Quarter All view** — HTML5 drag, drop targets light up accent-soft on hover, AI ripple toast on drop ("Moved X. Pushes 1 dependent item by 2 weeks. Confirm or revert?").
+- **Ship + Snap on Quarter** — per-audience "Ship to [Audience]" button copies markdown to clipboard + fires snap chime; All view also has "Snap as Q3 plan" CTA that locks the plan with a three-note resolving chord.
+- **Engage the Senses** — three Web Audio chimes: commit (two-tone D5+A5), defer (single G4 tick), snap (three-note resolving chord C5+E5+G5). No audio assets. Framer Motion choreography across all surfaces.
 
 ---
 
@@ -50,7 +56,7 @@
 
 ---
 
-## Iteration log (5 rounds)
+## Iteration log (6 rounds)
 
 ### Round 1 — Initial scaffold (commit `6d6728d`)
 Set up Next.js 16 + Tailwind v4 + TypeScript static export. Folder structure (`app/`, `components/`, `data/`, `lib/`). Design tokens in `globals.css`. Mocked initiatives JSON (8 items). Priority Stream first-pass with header chrome, greeting, decision cards.
@@ -84,6 +90,34 @@ Four PM-review gaps closed:
 3. **Override as path, not button.** When PM picks any non-AI action, inline prompt for reason.
 4. **Sprint View added.** Vertical Q3 timeline showing existing items, capacity bars, current item highlighted.
 
+### Round 6 — POV coverage audit, all 8 gaps closed (`3570b89`)
+
+User asked for a coverage check against `cs2_product_pov.md`. Systematic claim-by-claim audit surfaced 8 explicit POV requirements not yet shipped. All closed in one pass:
+
+1. **Decision-lands animation** — POV requirement: *"the decision card slides into the quarterly timeline in the background, visible at the corner of the screen — the PM sees their decision land."* Implemented as a mini card that flies from center to top-right with fade-out on commit, ~700ms.
+
+2. **Drag-to-resequence on Quarter** — POV requirement: *"Drag to resequence."* HTML5 drag on Quarter All view; sprint sections light up accent-soft when hovered as drop targets.
+
+3. **Live impact during drag** — POV requirement: *"AI shows live impact on conflicting items."* On drop, AI ripple toast: *"Moved X from Sprint A → B. Pushes 1 dependent item by 2 weeks. Confirm or revert?"*
+
+4. **Ship audience view in one click** — POV requirement: *"PM ships any of those views in one click."* Per-audience "Ship to [Audience]" button replaces the old Copy-link footer. Copies markdown to clipboard + fires snap chime + confirmation toast.
+
+5. **Sound on quarterly snap** — POV requirement under Engage Senses: *"Sound on quarterly snap (when a plan crystallizes)."* New `playSnapChime()` — three-note resolving chord (C5+E5+G5). Fires on Ship and on the new "Snap as Q3 plan" CTA.
+
+6. **Framework switching per item type** — POV requirement (Pain mapping #11): *"Dynamic Priority Engine supports framework switching per item type."* Each `ai_recommendation` now carries `framework` + `framework_rationale`. Initiative Detail shows a hoverable framework chip explaining why AI picked it. Demo mix:
+   - Bulk CSV / SAML / Permission Groups → **RICE**
+   - SOC2 → **Strategic Bet**
+   - Webhook / Slack v2 / Custom Fields → **Value/Effort**
+   - Mobile Push → **ICE**
+
+7. **Engine flags re-prioritization warranted** — POV requirement: *"engine flags when significant re-prioritization is warranted; the PM reviews and approves."* New `SignalShifts` banner above Strategic Banner: *"engine noticed N priority signals overnight"* — expandable per-item detail with the AI's reasoning per shift.
+
+8. **Predicted outcome in Decision Audit Log** — POV requirement: *"every decision logged with the AI's rationale + the human's override + the predicted outcome."* `predicted_outcome` field per `ai_recommendation`. Surfaced inline on Initiative Detail (below recommendation card) and in Audit Log per entry.
+
+Plus: Audit log link added to Initiative Detail header (next to Back) — closes the POV's "compactly accessible from Initiative Detail" requirement that previously was only via header/Cmd+K.
+
+Build still clean: 15 static pages.
+
 ---
 
 ## Deviations from the wireframe spec
@@ -102,16 +136,17 @@ The wireframe is preserved as-is (the historical spec) rather than being rewritt
 
 ## Demo flow (numbered, sequential)
 
-1. Land on `/` — see Strategic Banner (North Star + OKRs), 4 cards each with action label + OKR chip.
-2. Click **Bulk CSV** → action bar primary CTA is "Commit ↵" (green). Press `↵` → chime + pulse + toast → back to home.
-3. Open **SOC2 audit log** → primary CTA is "Escalate ↵" (yellow). Press `↵` → escalate panel opens with definition, AI-suggested stakeholders (exec, eng), AI-drafted message ready to send.
-4. Open **Webhook Retries** → primary CTA is "Defer ↵" (muted). Press `C` (Commit instead) → inline override prompt: *"Choosing Commit instead of AI's Defer. Why?"* → type "we promised CS team Q3" → ↵.
-5. Land back on `/` — see "decided this session" link, decisions filtered out.
-6. Open the next undecided card → see **"Noting your last override"** sparkle cue.
-7. Visit `/audit/` → see all decisions with AI rec → your action → reasoning → system notes.
-8. Visit `/quarter/` → see committed items as green dots, deferred as muted, override notes labelled. Toggle audience: All → Exec → Eng → Sales → CS. Same data, different framing.
-9. Visit `/architecture/` → layered system diagram.
-10. `Cmd+K → "Reset demo"` → clears localStorage, fresh state.
+1. Land on `/` — see Strategic Banner (North Star + OKRs) + **SignalShifts banner** ("engine noticed 2 priority signals overnight"; click to expand). 4 cards each with action label + OKR chip.
+2. Click **Bulk CSV** → see **framework chip** ("RICE") near recommendation; hover for rationale. **Predicted outcome** below: *"~$480k ARR closes by end of Q3."* Action bar primary CTA is "Commit ↵" (green). **Audit log link** in top-right next to Back.
+3. Press `↵` → chime + recommendation pulse + **mini card flies to top-right corner with fade-out** + toast → back to home.
+4. Open **SOC2 audit log** → primary CTA is "Escalate ↵" (yellow), framework chip shows "Strategic Bet." Press `↵` → escalate panel opens with definition, AI-suggested stakeholders, AI-drafted message ready to send.
+5. Open **Webhook Retries** → primary CTA is "Defer ↵" (muted). Press `C` (Commit instead) → inline override prompt: *"Choosing Commit instead of AI's Defer. Why?"* → type reason → ↵.
+6. Land back on `/` — see "decided this session" link, decisions filtered out.
+7. Open the next undecided card → see **"Noting your last override"** sparkle cue.
+8. Visit `/audit/` → see all decisions with AI rec → your action → reasoning → **predicted outcome** → system notes.
+9. Visit `/quarter/` → see committed items as green dots, deferred as muted, override notes labelled. **Drag any item between sprints** in All view → drop target lights up → AI ripple toast on drop. Toggle audience: All → Exec → Eng → Sales → CS. **"Ship to [Audience]"** button copies markdown to clipboard + snap chime. **"Snap as Q3 plan"** CTA on All view locks the plan.
+10. Visit `/architecture/` → layered system diagram.
+11. `Cmd+K → "Reset demo"` → clears localStorage, fresh state.
 
 ---
 
@@ -126,6 +161,9 @@ The wireframe is preserved as-is (the historical spec) rather than being rewritt
 - Button hover/focus state refinement
 - Quarter sprint dates alignment with the "Week 9 of 13" framing
 - Audit Log "system note" tone calibration
+- Decision-lands animation timing (current 700ms — feels right, may want 600ms)
+- SignalShifts banner — should it be dismissible? Persist dismissal across reloads?
+- Drag affordance on Quarter — currently grab cursor; could add a small drag handle icon for clarity
 
 ### CS2 supporting writeup (brief deliverable)
 - **North Star metric.** Locked: median time from idea-surfaced → decision-logged. Plus 5 supporting metrics.

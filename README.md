@@ -41,17 +41,19 @@ Read [`docs/cs2_build_log.md`](docs/cs2_build_log.md) for the current build stat
 
 ## Demo flow (15 minutes, end-to-end)
 
-1. **Land on the home page** — Strategic Banner shows the Q3 North Star (Net New ARR) with two progress bars: ARR achieved + Quarter elapsed. Click to expand for the 3 OKRs.
+1. **Land on the home page** — Strategic Banner: Q3 North Star (Net New ARR) with two progress bars (ARR achieved + Quarter elapsed) and a pace-gap label. Below it, the **SignalShifts banner**: *"engine noticed 2 priority signals overnight"* — click to expand the per-item shift detail.
 2. **Four decisions ordered by urgency** — each with its AI-recommended action label (Commit / Defer / Escalate) and OKR alignment chip.
-3. **Click into Bulk CSV import** — full-screen Initiative Detail. Read the AI's narrated rationale at the top, scan the evidence chips (click to see source quotes), see the recommendation card lead with "Commit" + reason.
-4. **Press `↵`** — two-tone Web Audio chime, recommendation card pulses, toast confirms, auto-navigates back. Card is gone from the stream.
-5. **Open SOC2 audit log** — AI recommends "Escalate." Press `↵` and the panel opens with the definition of Escalate, AI-suggested stakeholders (exec, eng), and a pre-drafted message you can edit.
-6. **Open Webhook Retries** — AI recommends "Defer to Q4." Press `C` (Commit) instead — inline override prompt: *"Choosing Commit instead of AI's Defer. Why?"* — type a reason, hit `↵`. Decision logged as override.
+3. **Click into Bulk CSV import** — full-screen Initiative Detail. Read the AI's narrated rationale at the top. Scan evidence chips (click for source quotes). The recommendation card leads with "Commit", followed by reasoning, OKR contribution, **framework chip** ("RICE — hover for AI's rationale"), and **predicted outcome** inline. Audit log link top-right.
+4. **Press `↵`** — two-tone chime, recommendation card pulses, **mini card flies to top-right corner with fade-out**, toast confirms, auto-navigates back. Card is gone from the stream.
+5. **Open SOC2 audit log** — AI recommends "Escalate" (Strategic Bet framework). Press `↵` — escalate panel opens with the definition of Escalate, AI-suggested stakeholders (exec, eng), and a pre-drafted message you can edit.
+6. **Open Webhook Retries** — AI recommends "Defer to Q4" (Value/Effort framework). Press `C` instead — inline override prompt: *"Choosing Commit instead of AI's Defer. Why?"* — type a reason, hit `↵`.
 7. **Open the next item** — sparkle cue at top: *"Noting your last override: you flagged 'X' — applying that here."*
-8. **Visit `/audit/`** — every decision logged with AI rec → your action → your reason → mocked system note.
-9. **Visit `/quarter/`** — committed items as green dots, deferred as muted, your overrides labeled. Toggle the audience render: All / Exec / Eng / Sales / CS — same data, completely different framing per audience.
-10. **Visit `/architecture/`** — six-layer system diagram with feedback-loop annotation.
-11. **`Cmd+K` anywhere** — fuzzy command palette. Search initiatives, jump to audience renders, audit log, architecture. `Cmd+K → reset` clears the session.
+8. **Visit `/audit/`** — every decision shows AI rec → your action → reason → **predicted outcome** → mocked system note.
+9. **Visit `/quarter/`** — committed items as green dots, deferred as muted, overrides labelled. Toggle audience: All / Exec / Eng / Sales / CS — same data, completely different framing.
+10. **Drag an item** between sprints in the All view — drop target lights up, AI ripple toast on drop: *"Moved X. Pushes 1 dependent item by 2 weeks. Confirm or revert?"*
+11. **Click "Ship to [Audience]"** — three-note resolving chord, markdown copied to clipboard, confirmation toast. Or **"Snap as Q3 plan"** on All view to lock the plan.
+12. **Visit `/architecture/`** — six-layer system diagram with feedback-loop annotation.
+13. **`Cmd+K` anywhere** — fuzzy command palette. Search initiatives, jump to audience renders, audit log, architecture. `Cmd+K → reset` clears the session.
 
 ---
 
