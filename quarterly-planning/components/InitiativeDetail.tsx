@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Check,
-  Pencil,
   Clock,
   Send,
   X,
@@ -23,31 +22,22 @@ import type {
 import { addDecision, getDecisions } from "@/lib/decisions";
 import { playCommitChime, playDeferTick } from "@/lib/sound";
 import { getOKR } from "@/lib/strategic";
+import { SprintView } from "@/components/SprintView";
 
 const tintByKind: Record<EvidenceKind, { bg: string; text: string }> = {
-  revenue: {
-    bg: "var(--color-chip-revenue-bg)",
-    text: "var(--color-chip-revenue-text)",
-  },
-  deals: {
-    bg: "var(--color-chip-deals-bg)",
-    text: "var(--color-chip-deals-text)",
-  },
-  support: {
-    bg: "var(--color-chip-support-bg)",
-    text: "var(--color-chip-support-text)",
-  },
-  deadline: {
-    bg: "var(--color-chip-deadline-bg)",
-    text: "var(--color-chip-deadline-text)",
-  },
-  strategic: {
-    bg: "var(--color-chip-strategic-bg)",
-    text: "var(--color-chip-strategic-text)",
-  },
+  revenue: { bg: "var(--color-chip-revenue-bg)", text: "var(--color-chip-revenue-text)" },
+  deals: { bg: "var(--color-chip-deals-bg)", text: "var(--color-chip-deals-text)" },
+  support: { bg: "var(--color-chip-support-bg)", text: "var(--color-chip-support-text)" },
+  deadline: { bg: "var(--color-chip-deadline-bg)", text: "var(--color-chip-deadline-text)" },
+  strategic: { bg: "var(--color-chip-strategic-bg)", text: "var(--color-chip-strategic-text)" },
 };
 
-type Mode = "default" | "overriding" | "escalating" | "committing" | "deferred";
+type Mode =
+  | "default"
+  | "overriding" // user picked an action that differs from AI rec
+  | "escalating" // escalate path (with stakeholders + draft msg)
+  | "committing" // committed/done — animation playing, navigating away
+  | "deferred";
 
 const ACTION_LABEL: Record<RecommendedAction, string> = {
   commit: "Commit",
@@ -68,9 +58,22 @@ const STAKEHOLDER_LABELS: Record<string, string> = {
   eng: "Engineering",
 };
 
+function actionColor(action: RecommendedAction): string {
+  switch (action) {
+    case "commit":
+      return "var(--color-success)";
+    case "defer":
+      return "var(--color-muted)";
+    case "escalate":
+      return "var(--color-warning)";
+  }
+}
+
 export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("default");
+  // When user picks a non-AI action, we capture which action they're doing → triggers override prompt
+  const [overrideTo, setOverrideTo] = useState<RecommendedAction | null>(null);
   const [expandedChip, setExpandedChip] = useState<number | null>(null);
   const [overrideText, setOverrideText] = useState("");
   const [escalateTags, setEscalateTags] = useState<Set<string>>(
@@ -81,13 +84,14 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   );
   const [toast, setToast] = useState<string | null>(null);
   const [priorOverride, setPriorOverride] = useState<{
-    initiative_title: string;
     rationale: string;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // System-learning cue: if user overrode something earlier this session,
-  // surface that the AI is "noting" it.
+  const rec = initiative.ai_recommendation;
+  const recAction = rec.action;
+
+  // System learning cue
   useEffect(() => {
     const decisions = getDecisions();
     const lastOverride = [...decisions]
@@ -96,17 +100,11 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
         (d) => d.action === "overridden" && d.initiative_id !== initiative.id,
       );
     if (lastOverride && lastOverride.human_rationale) {
-      // Mocked title lookup — we don't store title in decision, so we'll use ID-as-label
-      setPriorOverride({
-        initiative_title: lastOverride.initiative_id
-          .replace("init_", "")
-          .replace(/_/g, " "),
-        rationale: lastOverride.human_rationale,
-      });
+      setPriorOverride({ rationale: lastOverride.human_rationale });
     }
   }, [initiative.id]);
 
-  // Auto-focus input when entering override mode
+  // Auto-focus the override input
   useEffect(() => {
     if (mode === "overriding") {
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -128,6 +126,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
         if (mode !== "default") {
           setMode("default");
           setOverrideText("");
+          setOverrideTo(null);
         } else {
           router.push("/");
         }
@@ -136,41 +135,40 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
 
       if (inForm) return;
 
-      const recAction = initiative.ai_recommendation.action;
-
       if (e.key === "Enter" && mode === "default") {
         e.preventDefault();
-        followRecommendation();
-      } else if ((e.key === "e" || e.key === "E") && mode === "default") {
+        chooseAction(recAction);
+      } else if ((e.key === "c" || e.key === "C") && mode === "default") {
         e.preventDefault();
-        setMode("overriding");
+        chooseAction("commit");
       } else if ((e.key === "d" || e.key === "D") && mode === "default") {
-        // D defers — only meaningful if AI didn't already recommend defer
-        if (recAction !== "defer") {
-          e.preventDefault();
-          defer();
-        }
+        e.preventDefault();
+        chooseAction("defer");
       } else if ((e.key === "s" || e.key === "S") && mode === "default") {
-        if (recAction !== "escalate") {
-          e.preventDefault();
-          setMode("escalating");
-        }
+        e.preventDefault();
+        chooseAction("escalate");
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode]);
+  }, [mode, recAction]);
 
-  function followRecommendation() {
-    const recAction = initiative.ai_recommendation.action;
-    if (recAction === "commit") {
-      commit();
-    } else if (recAction === "defer") {
-      defer();
-    } else if (recAction === "escalate") {
+  function chooseAction(action: RecommendedAction) {
+    if (action === "escalate") {
+      // Escalate has its own UI regardless of whether it matches AI rec
       setMode("escalating");
+      return;
     }
+    if (action === recAction) {
+      // Match AI rec — direct action, no reason needed
+      if (action === "commit") commit();
+      else if (action === "defer") defer();
+      return;
+    }
+    // Mismatch — capture as override with reason
+    setOverrideTo(action);
+    setMode("overriding");
   }
 
   function commit() {
@@ -179,29 +177,30 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     addDecision({
       initiative_id: initiative.id,
       action: "committed",
-      ai_suggestion: `${ACTION_LABEL[initiative.ai_recommendation.action]} · ${initiative.ai_recommendation.sequence}`,
-      sequence: initiative.ai_recommendation.sequence,
+      ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
+      sequence: rec.sequence,
       decided_at: new Date().toISOString(),
     });
-    setToast(
-      `Committed. Sequenced in ${initiative.ai_recommendation.sequence}.`,
-    );
+    setToast(`Committed. Sequenced in ${rec.sequence}.`);
     setTimeout(() => router.push("/"), 1100);
   }
 
   function commitOverride() {
-    if (!overrideText.trim()) return;
+    if (!overrideText.trim() || !overrideTo) return;
     setMode("committing");
-    playCommitChime();
+    if (overrideTo === "defer") playDeferTick();
+    else playCommitChime();
     addDecision({
       initiative_id: initiative.id,
       action: "overridden",
-      ai_suggestion: `${ACTION_LABEL[initiative.ai_recommendation.action]} · ${initiative.ai_recommendation.sequence}`,
-      human_rationale: overrideText.trim(),
-      sequence: "Overridden",
+      ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
+      human_rationale: `${ACTION_LABEL[overrideTo]} — ${overrideText.trim()}`,
+      sequence: overrideTo === "commit" ? rec.sequence : "Overridden",
       decided_at: new Date().toISOString(),
     });
-    setToast("Overridden. Decision logged with your rationale.");
+    setToast(
+      `Overridden — chose ${ACTION_LABEL[overrideTo]} instead of ${ACTION_LABEL[recAction]}.`,
+    );
     setTimeout(() => router.push("/"), 1100);
   }
 
@@ -211,7 +210,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     addDecision({
       initiative_id: initiative.id,
       action: "deferred",
-      ai_suggestion: `${ACTION_LABEL[initiative.ai_recommendation.action]} · ${initiative.ai_recommendation.sequence}`,
+      ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
       decided_at: new Date().toISOString(),
     });
     setToast("Deferred. Will resurface on context shift.");
@@ -222,19 +221,20 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     if (escalateTags.size === 0) return;
     setMode("committing");
     playCommitChime();
+    const matchedRec = recAction === "escalate";
     addDecision({
       initiative_id: initiative.id,
-      action: "escalated",
-      ai_suggestion: `${ACTION_LABEL[initiative.ai_recommendation.action]} · ${initiative.ai_recommendation.sequence}`,
-      human_rationale: `Escalated to: ${[...escalateTags].join(", ")}`,
+      action: matchedRec ? "escalated" : "overridden",
+      ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
+      human_rationale: matchedRec
+        ? `Escalated to: ${[...escalateTags].join(", ")}`
+        : `Escalate (overrode ${ACTION_LABEL[recAction]}) — sent to ${[...escalateTags].join(", ")}`,
       decided_at: new Date().toISOString(),
     });
     setToast(`Escalated to ${[...escalateTags].join(", ")}. Awaiting input.`);
     setTimeout(() => router.push("/"), 1100);
   }
 
-  const rec = initiative.ai_recommendation;
-  const recAction = rec.action;
   const okrLabels = rec.okr_alignment
     .map((id) => getOKR(id)?.label)
     .filter(Boolean) as string[];
@@ -259,7 +259,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           </span>
         </div>
 
-        {/* OKR alignment chip */}
+        {/* OKR alignment */}
         {okrLabels.length > 0 && (
           <div className="mt-3 flex items-center gap-2 text-xs text-secondary">
             <span className="text-tertiary">Aligned with:</span>
@@ -308,7 +308,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           {initiative.rationale_narrative}
         </p>
 
-        {/* Evidence section */}
+        {/* Evidence */}
         <section className="mt-16">
           <p className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
             Evidence
@@ -327,14 +327,14 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           </div>
         </section>
 
-        {/* Recommendation */}
+        {/* Recommendation / Override / Escalate */}
         <section className="mt-12">
           <p className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
             Recommendation
           </p>
 
           <AnimatePresence mode="wait">
-            {mode === "default" || mode === "committing" ? (
+            {(mode === "default" || mode === "committing") && (
               <motion.div
                 key="rec-card"
                 initial={{ opacity: 0, y: 4 }}
@@ -348,7 +348,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                 className="mt-4 rounded-xl border-l-2 border border-[var(--color-border)] bg-elevated p-6"
                 style={{ borderLeftColor: actionColor(recAction) }}
               >
-                <div className="flex items-baseline gap-3">
+                <div className="flex items-baseline gap-3 flex-wrap">
                   <span
                     className="text-[11px] uppercase tracking-[0.12em] font-semibold"
                     style={{ color: actionColor(recAction) }}
@@ -359,7 +359,8 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                     · {rec.sequence}
                   </span>
                   <span className="text-[11px] text-tertiary">
-                    · {rec.effort_sprints} sprint{rec.effort_sprints > 1 ? "s" : ""}
+                    · {rec.effort_sprints} sprint
+                    {rec.effort_sprints > 1 ? "s" : ""}
                   </span>
                   <span className="text-[11px] text-tertiary">
                     · {rec.eng_confidence} confidence
@@ -375,7 +376,9 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                   </p>
                 )}
               </motion.div>
-            ) : mode === "overriding" ? (
+            )}
+
+            {mode === "overriding" && overrideTo && (
               <motion.div
                 key="override"
                 initial={{ opacity: 0, y: 4 }}
@@ -384,7 +387,23 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                 transition={{ duration: 0.18 }}
                 className="mt-4 rounded-xl border border-[var(--color-border-strong)] bg-elevated p-6"
               >
-                <label className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-tertiary">Choosing</span>
+                  <span
+                    className="font-medium"
+                    style={{ color: actionColor(overrideTo) }}
+                  >
+                    {ACTION_LABEL[overrideTo]}
+                  </span>
+                  <span className="text-tertiary">instead of AI&rsquo;s</span>
+                  <span
+                    className="font-medium"
+                    style={{ color: actionColor(recAction) }}
+                  >
+                    {ACTION_LABEL[recAction]}
+                  </span>
+                </div>
+                <label className="mt-4 block text-[11px] uppercase tracking-[0.12em] text-tertiary">
                   Why a different call?
                 </label>
                 <input
@@ -415,7 +434,9 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                   </span>
                 </div>
               </motion.div>
-            ) : mode === "escalating" ? (
+            )}
+
+            {mode === "escalating" && (
               <motion.div
                 key="escalate"
                 initial={{ opacity: 0, y: 4 }}
@@ -513,11 +534,11 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                     : "stakeholders"}
                 </button>
               </motion.div>
-            ) : null}
+            )}
           </AnimatePresence>
         </section>
 
-        {/* Tradeoffs */}
+        {/* Trade-offs */}
         {(mode === "default" || mode === "committing") &&
           rec.tradeoffs.length > 0 && (
             <section className="mt-10">
@@ -541,7 +562,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
             </section>
           )}
 
-        {/* Conflicts (if any) */}
+        {/* Conflicts */}
         {(mode === "default" || mode === "committing") &&
           rec.conflicts.length > 0 && (
             <section className="mt-8">
@@ -561,46 +582,49 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
             </section>
           )}
 
-        {/* Action bar */}
+        {/* Sprint context view */}
+        {(mode === "default" || mode === "committing") && (
+          <SprintView currentInitiative={initiative} />
+        )}
+
+        {/* Action bar — always 3 actions */}
         <div className="mt-12 flex items-center gap-2 border-t border-[var(--color-border)] pt-6">
           {mode === "default" ? (
             <>
               <ActionButton
-                onClick={followRecommendation}
-                primary
-                kbd="↵"
+                onClick={() => chooseAction("commit")}
+                primary={recAction === "commit"}
+                kbd={recAction === "commit" ? "↵" : "C"}
                 icon={<Check size={14} />}
-                label={ACTION_LABEL[recAction]}
-                tone={actionColor(recAction)}
+                label="Commit"
+                tone={actionColor("commit")}
               />
               <ActionButton
-                onClick={() => setMode("overriding")}
-                kbd="E"
-                icon={<Pencil size={14} />}
-                label="Override"
+                onClick={() => chooseAction("defer")}
+                primary={recAction === "defer"}
+                kbd={recAction === "defer" ? "↵" : "D"}
+                icon={<Clock size={14} />}
+                label="Defer"
+                tone={actionColor("defer")}
               />
-              {recAction !== "defer" && (
-                <ActionButton
-                  onClick={defer}
-                  kbd="D"
-                  icon={<Clock size={14} />}
-                  label="Defer"
-                />
-              )}
-              {recAction !== "escalate" && (
-                <ActionButton
-                  onClick={() => setMode("escalating")}
-                  kbd="S"
-                  icon={<Send size={14} />}
-                  label="Escalate"
-                />
-              )}
+              <ActionButton
+                onClick={() => chooseAction("escalate")}
+                primary={recAction === "escalate"}
+                kbd={recAction === "escalate" ? "↵" : "S"}
+                icon={<Send size={14} />}
+                label="Escalate"
+                tone={actionColor("escalate")}
+              />
+              <span className="ml-auto text-[11px] text-tertiary">
+                ↵ follows AI · or pick any other
+              </span>
             </>
           ) : (
             <button
               onClick={() => {
                 setMode("default");
                 setOverrideText("");
+                setOverrideTo(null);
               }}
               className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-secondary transition hover:text-primary"
             >
@@ -630,17 +654,6 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
       </AnimatePresence>
     </div>
   );
-}
-
-function actionColor(action: RecommendedAction): string {
-  switch (action) {
-    case "commit":
-      return "var(--color-success)";
-    case "defer":
-      return "var(--color-muted)";
-    case "escalate":
-      return "var(--color-warning)";
-  }
 }
 
 function ChipWithSource({

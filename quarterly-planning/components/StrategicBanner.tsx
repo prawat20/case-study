@@ -7,19 +7,27 @@ import {
   NORTH_STAR,
   QUARTERLY_OKRS,
   formatMetric,
+  computeNorthStar,
 } from "@/lib/strategic";
 
 export function StrategicBanner() {
   const [expanded, setExpanded] = useState(false);
-  const pct = Math.round(
-    (NORTH_STAR.current_value / NORTH_STAR.target_value) * 100,
-  );
+  const { achieved_pct, elapsed_pct, pace_gap_pp, trend } =
+    computeNorthStar(NORTH_STAR);
+
   const trendColor =
-    NORTH_STAR.trend === "ahead"
+    trend === "ahead"
       ? "var(--color-success)"
-      : NORTH_STAR.trend === "behind"
+      : trend === "behind"
         ? "var(--color-warning)"
         : "var(--color-secondary)";
+
+  const trendLabel =
+    trend === "ahead"
+      ? `+${pace_gap_pp}pp ahead of pace`
+      : trend === "behind"
+        ? `${pace_gap_pp}pp behind pace`
+        : "on pace";
 
   return (
     <div className="rounded-xl border border-[var(--color-border)] bg-elevated">
@@ -39,30 +47,27 @@ export function StrategicBanner() {
             <span className="text-[11px] text-tertiary">
               {NORTH_STAR.metric}
             </span>
-          </div>
-          <div className="mt-1 flex items-baseline gap-3">
-            <span className="text-base font-medium text-primary tabular-nums">
-              {formatMetric(NORTH_STAR.current_value, NORTH_STAR.format)}
-            </span>
-            <span className="text-xs text-tertiary">of</span>
-            <span className="text-sm text-secondary tabular-nums">
-              {formatMetric(NORTH_STAR.target_value, NORTH_STAR.format)}
-            </span>
             <span
-              className="text-xs tabular-nums"
+              className="ml-auto text-[11px] tabular-nums font-medium"
               style={{ color: trendColor }}
             >
-              {pct}% · {NORTH_STAR.trend.replace("_", " ")}
+              {trendLabel}
             </span>
           </div>
-          {/* Progress bar */}
-          <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[var(--color-page)]">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="h-full rounded-full"
-              style={{ background: trendColor }}
+
+          {/* Two-line progress: ARR achieved vs Quarter elapsed */}
+          <div className="mt-3 space-y-2">
+            <ProgressRow
+              label="ARR achieved"
+              valueLabel={`${formatMetric(NORTH_STAR.current_value, NORTH_STAR.format)} of ${formatMetric(NORTH_STAR.target_value, NORTH_STAR.format)}`}
+              pct={achieved_pct}
+              color="var(--color-chip-revenue-text)"
+            />
+            <ProgressRow
+              label="Quarter elapsed"
+              valueLabel={`Week ${NORTH_STAR.weeks_elapsed} of ${NORTH_STAR.weeks_total}`}
+              pct={elapsed_pct}
+              color="var(--color-tertiary)"
             />
           </div>
         </div>
@@ -107,6 +112,39 @@ export function StrategicBanner() {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function ProgressRow({
+  label,
+  valueLabel,
+  pct,
+  color,
+}: {
+  label: string;
+  valueLabel: string;
+  pct: number;
+  color: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-baseline justify-between text-[11px]">
+        <span className="text-tertiary">{label}</span>
+        <span className="text-secondary tabular-nums">
+          {valueLabel}{" "}
+          <span className="text-tertiary">· {pct}%</span>
+        </span>
+      </div>
+      <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-[var(--color-page)]">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="h-full rounded-full"
+          style={{ background: color }}
+        />
+      </div>
     </div>
   );
 }

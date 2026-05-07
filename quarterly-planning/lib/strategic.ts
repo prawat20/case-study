@@ -8,6 +8,15 @@ export interface NorthStar {
   target_value: number;
   format: "usd" | "count" | "percent";
   period: string;
+  // Time progress through the period — used to compute pace
+  weeks_elapsed: number;
+  weeks_total: number;
+}
+
+export interface NorthStarComputed {
+  achieved_pct: number; // 0-100
+  elapsed_pct: number; // 0-100
+  pace_gap_pp: number; // positive = ahead, negative = behind
   trend: "ahead" | "on_track" | "behind";
 }
 
@@ -20,12 +29,22 @@ export interface OKR {
 
 export const NORTH_STAR: NorthStar = {
   metric: "Net New ARR",
-  current_value: 1_800_000,
+  current_value: 1_500_000,
   target_value: 2_400_000,
   format: "usd",
   period: "Q3 2026",
-  trend: "behind",
+  weeks_elapsed: 9,
+  weeks_total: 13,
 };
+
+export function computeNorthStar(ns: NorthStar): NorthStarComputed {
+  const achieved_pct = Math.round((ns.current_value / ns.target_value) * 100);
+  const elapsed_pct = Math.round((ns.weeks_elapsed / ns.weeks_total) * 100);
+  const pace_gap_pp = achieved_pct - elapsed_pct;
+  const trend: NorthStarComputed["trend"] =
+    pace_gap_pp >= 3 ? "ahead" : pace_gap_pp <= -3 ? "behind" : "on_track";
+  return { achieved_pct, elapsed_pct, pace_gap_pp, trend };
+}
 
 export const QUARTERLY_OKRS: OKR[] = [
   {
