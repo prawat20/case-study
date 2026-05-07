@@ -56,7 +56,7 @@
 
 ---
 
-## Iteration log (6 rounds)
+## Iteration log (7 rounds)
 
 ### Round 1 — Initial scaffold (commit `6d6728d`)
 Set up Next.js 16 + Tailwind v4 + TypeScript static export. Folder structure (`app/`, `components/`, `data/`, `lib/`). Design tokens in `globals.css`. Mocked initiatives JSON (8 items). Priority Stream first-pass with header chrome, greeting, decision cards.
@@ -117,6 +117,17 @@ User asked for a coverage check against `cs2_product_pov.md`. Systematic claim-b
 Plus: Audit log link added to Initiative Detail header (next to Back) — closes the POV's "compactly accessible from Initiative Detail" requirement that previously was only via header/Cmd+K.
 
 Build still clean: 15 static pages.
+
+### Round 7 — Brief coverage audit (`154b33a` + `2f7c594`)
+
+User asked for a coverage check against the actual case-study brief (in `_private/`), not the POV. Two gaps surfaced + closed:
+
+1. **Build: framework of user's choice.** Brief literally says *"using a prioritization framework of the user's choice."* The build had AI picking the framework with no override path. Closed: framework chip on Initiative Detail is now a clickable picker. PM can switch any item to RICE / ICE / Value-Effort / Strategic Bet / WSJF. Override persists in localStorage (`qp_framework_overrides_v1`); cleared by Cmd+K reset. Visual: chip turns accent-violet when overridden; subscript switches from "AI picked this" to "Your override".
+
+2. **Writeup: 3 brief deliverables.** Brief explicitly asks for North Star metric, 5 events to instrument, and PM interview question bank. None of these existed as a document yet (the NSM was sketched in the POV; events and interview bank were nowhere). Created `docs/cs2_supporting_writeup.md`:
+   - **NSM:** median time from idea-surfaced → decision-logged. With justification, 4 alternatives I rejected, operational definition, and 6 supporting metrics (acceptance rate, alignment latency, churn rate, audit fidelity, plan diff drift).
+   - **5 events:** `decision_logged` / `signal_shift_surfaced` / `audience_render_viewed` / `framework_overridden` / `plan_shipped`. Each with full property schema and a rationale tied to the *product decision the event drives*. Plus a "what I deliberately didn't instrument and why" cut list.
+   - **PM interview bank:** 21 questions across 5 sections (current workflow / pain points / tools / reaction to thesis / reaction to specific features). Plus a 3-dimension validation rubric (pain acute, wedge resonates, tool reaction).
 
 ---
 
