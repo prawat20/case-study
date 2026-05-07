@@ -21,7 +21,13 @@ import type {
   EvidenceKind,
   RecommendedAction,
 } from "@/lib/types";
-import { addDecision, getDecisions } from "@/lib/decisions";
+import {
+  addDecision,
+  getDecisions,
+  getFrameworkOverrides,
+  setFrameworkOverride,
+  FRAMEWORK_OVERRIDES_EVENT,
+} from "@/lib/decisions";
 import { playCommitChime, playDeferTick } from "@/lib/sound";
 import { getOKR } from "@/lib/strategic";
 import { SprintView } from "@/components/SprintView";
@@ -89,8 +95,38 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     rationale: string;
   } | null>(null);
   const [showFrameworkInfo, setShowFrameworkInfo] = useState(false);
+  const [showFrameworkPicker, setShowFrameworkPicker] = useState(false);
+  const [activeFramework, setActiveFramework] = useState<string>(
+    initiative.ai_recommendation.framework,
+  );
   const [flyToCorner, setFlyToCorner] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // Hydrate user-overridden framework from localStorage
+  useEffect(() => {
+    function load() {
+      const overrides = getFrameworkOverrides();
+      if (overrides[initiative.id]) {
+        setActiveFramework(overrides[initiative.id]);
+      } else {
+        setActiveFramework(initiative.ai_recommendation.framework);
+      }
+    }
+    load();
+    window.addEventListener(FRAMEWORK_OVERRIDES_EVENT, load);
+    return () =>
+      window.removeEventListener(FRAMEWORK_OVERRIDES_EVENT, load);
+  }, [initiative.id, initiative.ai_recommendation.framework]);
+
+  function pickFramework(fw: string) {
+    setActiveFramework(fw);
+    setShowFrameworkPicker(false);
+    if (fw !== initiative.ai_recommendation.framework) {
+      setFrameworkOverride(initiative.id, fw);
+      setToast(`Framework switched to ${fw}. AI will re-score on next sync.`);
+      setTimeout(() => setToast(null), 2200);
+    }
+  }
 
   const rec = initiative.ai_recommendation;
   const recAction = rec.action;
@@ -393,42 +429,98 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                   </p>
                 )}
 
-                {/* Framework chip + predicted outcome */}
-                <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-4">
-                  <button
-                    onMouseEnter={() => setShowFrameworkInfo(true)}
-                    onMouseLeave={() => setShowFrameworkInfo(false)}
-                    onClick={() => setShowFrameworkInfo(!showFrameworkInfo)}
-                    className="relative inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium transition"
-                    style={{
-                      background: "var(--color-page)",
-                      color: "var(--color-secondary)",
-                      border: "1px solid var(--color-border-strong)",
-                    }}
-                  >
-                    <span className="text-tertiary">Framework:</span>
-                    <span>{rec.framework}</span>
-                    <Info size={10} className="text-tertiary" />
-                  </button>
-                  <span className="text-[11px] text-tertiary">
-                    · AI picked this per item type
-                  </span>
-                </div>
-                <AnimatePresence>
-                  {showFrameworkInfo && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className="overflow-hidden"
+                {/* Framework chip + picker + predicted outcome */}
+                <div className="mt-5 border-t border-[var(--color-border)] pt-4">
+                  <div className="relative flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={() => setShowFrameworkPicker(!showFrameworkPicker)}
+                      onMouseEnter={() => setShowFrameworkInfo(true)}
+                      onMouseLeave={() => setShowFrameworkInfo(false)}
+                      className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium transition"
+                      style={{
+                        background:
+                          activeFramework !== rec.framework
+                            ? "var(--color-accent-soft)"
+                            : "var(--color-page)",
+                        color:
+                          activeFramework !== rec.framework
+                            ? "var(--color-accent)"
+                            : "var(--color-secondary)",
+                        border: "1px solid var(--color-border-strong)",
+                      }}
                     >
-                      <p className="mt-2 text-xs italic text-tertiary leading-relaxed">
-                        {rec.framework_rationale}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <span className="text-tertiary">Framework:</span>
+                      <span>{activeFramework}</span>
+                      <Info size={10} className="text-tertiary" />
+                    </button>
+                    <span className="text-[11px] text-tertiary">
+                      ·{" "}
+                      {activeFramework === rec.framework
+                        ? "AI picked this — click to switch"
+                        : "Your override"}
+                    </span>
+
+                    <AnimatePresence>
+                      {showFrameworkPicker && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.14 }}
+                          className="absolute left-0 top-7 z-10 min-w-[200px] rounded-lg border border-[var(--color-border-strong)] bg-elevated p-1 shadow-xl"
+                        >
+                          {[
+                            "RICE",
+                            "ICE",
+                            "Value/Effort",
+                            "Strategic Bet",
+                            "WSJF",
+                          ].map((fw) => {
+                            const isCurrent = fw === activeFramework;
+                            const isAIRec = fw === rec.framework;
+                            return (
+                              <button
+                                key={fw}
+                                onClick={() => pickFramework(fw)}
+                                className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-xs transition hover:bg-card-hover"
+                                style={{
+                                  color: isCurrent
+                                    ? "var(--color-primary)"
+                                    : "var(--color-secondary)",
+                                  background: isCurrent
+                                    ? "var(--color-card-hover)"
+                                    : "transparent",
+                                }}
+                              >
+                                <span>{fw}</span>
+                                <span className="ml-2 text-[10px] text-tertiary">
+                                  {isAIRec && "AI default"}
+                                  {isCurrent && !isAIRec && "selected"}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  <AnimatePresence>
+                    {showFrameworkInfo && !showFrameworkPicker && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="mt-2 text-xs italic text-tertiary leading-relaxed">
+                          {rec.framework_rationale}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
                 <div className="mt-4 flex items-start gap-2 rounded-md bg-page px-3 py-2 text-xs">
                   <Sparkles

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import initiativesJson from "@/data/initiatives.json";
 import type { Initiative } from "@/lib/types";
-import { clearDecisions } from "@/lib/decisions";
+import { clearDecisions, clearFrameworkOverrides } from "@/lib/decisions";
 
 const initiatives = initiativesJson as Initiative[];
 
@@ -151,6 +151,7 @@ export function CommandPalette({
                     value="reset demo"
                     onSelect={() => {
                       clearDecisions();
+                      clearFrameworkOverrides();
                       onClose();
                       router.push("/");
                     }}

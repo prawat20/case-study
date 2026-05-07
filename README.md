@@ -33,8 +33,9 @@ Case Study/
 > Quarterly planning is not a roadmap-management problem. It is a **context-synthesis and decision-orchestration** problem. AI-native software should compress synthesis to zero so the PM gets their thinking time back.
 
 Read [`docs/cs2_product_pov.md`](docs/cs2_product_pov.md) for the full POV.
+Read [`docs/cs2_supporting_writeup.md`](docs/cs2_supporting_writeup.md) for the brief's 3 deliverables (North Star, 5 events, interview questions).
 Read [`docs/research_pm_pain_points.md`](docs/research_pm_pain_points.md) for validated PM pain research.
-Read [`docs/cs2_wireframes.md`](docs/cs2_wireframes.md) for the build spec.
+Read [`docs/cs2_wireframes.md`](docs/cs2_wireframes.md) for the original build spec.
 Read [`docs/cs2_build_log.md`](docs/cs2_build_log.md) for the current build state and demo flow.
 
 ---
