@@ -13,13 +13,14 @@
 
 ```
 Case Study/
-├── README.md                    ← you are here
-├── docs/                        Public work artifacts
-│   ├── cs2_product_pov.md       Product point of view (locked)
-│   ├── cs2_wireframes.md        Screen-by-screen build spec
-│   ├── cs2_build_log.md         Running log — current state, deviations from spec
-│   └── research_pm_pain_points.md   Validated PM pain research
-└── quarterly-planning/          The Next.js app
+├── README.md                       ← you are here
+├── docs/                           Public work artifacts
+│   ├── cs2_product_pov.md          Product point of view (locked)
+│   ├── cs2_supporting_writeup.md   The 3 brief deliverables: NSM + 5 events + interview Qs
+│   ├── cs2_wireframes.md           Screen-by-screen build spec (historical)
+│   ├── cs2_build_log.md            Running log — current state, iteration history
+│   └── research_pm_pain_points.md  Validated PM pain research
+└── quarterly-planning/             The Next.js app
     ├── app/                     Routes
     ├── components/              UI components
     ├── data/                    Mocked initiatives
