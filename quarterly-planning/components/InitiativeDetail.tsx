@@ -4,10 +4,25 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, Pencil, Clock, Send, X } from "lucide-react";
-import type { Initiative, Evidence, EvidenceKind } from "@/lib/types";
-import { addDecision } from "@/lib/decisions";
+import {
+  ArrowLeft,
+  Check,
+  Pencil,
+  Clock,
+  Send,
+  X,
+  Sparkles,
+  AlertTriangle,
+} from "lucide-react";
+import type {
+  Initiative,
+  Evidence,
+  EvidenceKind,
+  RecommendedAction,
+} from "@/lib/types";
+import { addDecision, getDecisions } from "@/lib/decisions";
 import { playCommitChime, playDeferTick } from "@/lib/sound";
+import { getOKR } from "@/lib/strategic";
 
 const tintByKind: Record<EvidenceKind, { bg: string; text: string }> = {
   revenue: {
@@ -34,16 +49,62 @@ const tintByKind: Record<EvidenceKind, { bg: string; text: string }> = {
 
 type Mode = "default" | "overriding" | "escalating" | "committing" | "deferred";
 
-const STAKEHOLDERS = ["sales", "cs", "exec", "eng"] as const;
+const ACTION_LABEL: Record<RecommendedAction, string> = {
+  commit: "Commit",
+  defer: "Defer",
+  escalate: "Escalate",
+};
+
+const ACTION_VERB: Record<RecommendedAction, string> = {
+  commit: "I recommend committing this.",
+  defer: "I recommend deferring this.",
+  escalate: "I recommend escalating this.",
+};
+
+const STAKEHOLDER_LABELS: Record<string, string> = {
+  sales: "Sales",
+  cs: "Customer Success",
+  exec: "Exec",
+  eng: "Engineering",
+};
 
 export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("default");
   const [expandedChip, setExpandedChip] = useState<number | null>(null);
   const [overrideText, setOverrideText] = useState("");
-  const [escalateTags, setEscalateTags] = useState<Set<string>>(new Set());
+  const [escalateTags, setEscalateTags] = useState<Set<string>>(
+    new Set(initiative.ai_recommendation.suggested_escalation?.stakeholders ?? []),
+  );
+  const [escalateMessage, setEscalateMessage] = useState(
+    initiative.ai_recommendation.suggested_escalation?.draft_message ?? "",
+  );
   const [toast, setToast] = useState<string | null>(null);
+  const [priorOverride, setPriorOverride] = useState<{
+    initiative_title: string;
+    rationale: string;
+  } | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // System-learning cue: if user overrode something earlier this session,
+  // surface that the AI is "noting" it.
+  useEffect(() => {
+    const decisions = getDecisions();
+    const lastOverride = [...decisions]
+      .reverse()
+      .find(
+        (d) => d.action === "overridden" && d.initiative_id !== initiative.id,
+      );
+    if (lastOverride && lastOverride.human_rationale) {
+      // Mocked title lookup — we don't store title in decision, so we'll use ID-as-label
+      setPriorOverride({
+        initiative_title: lastOverride.initiative_id
+          .replace("init_", "")
+          .replace(/_/g, " "),
+        rationale: lastOverride.human_rationale,
+      });
+    }
+  }, [initiative.id]);
 
   // Auto-focus input when entering override mode
   useEffect(() => {
@@ -55,7 +116,6 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   // Keyboard shortcuts
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      // Ignore when typing in an input
       const target = e.target as HTMLElement | null;
       const inForm =
         target &&
@@ -64,12 +124,10 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
       if (mode === "committing" || mode === "deferred") return;
 
       if (e.key === "Escape") {
-        // Don't navigate back if the command palette is open above us
         if (document.querySelector("[cmdk-root]")) return;
         if (mode !== "default") {
           setMode("default");
           setOverrideText("");
-          setEscalateTags(new Set());
         } else {
           router.push("/");
         }
@@ -78,18 +136,25 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
 
       if (inForm) return;
 
+      const recAction = initiative.ai_recommendation.action;
+
       if (e.key === "Enter" && mode === "default") {
         e.preventDefault();
-        commitDefault();
+        followRecommendation();
       } else if ((e.key === "e" || e.key === "E") && mode === "default") {
         e.preventDefault();
         setMode("overriding");
       } else if ((e.key === "d" || e.key === "D") && mode === "default") {
-        e.preventDefault();
-        defer();
+        // D defers — only meaningful if AI didn't already recommend defer
+        if (recAction !== "defer") {
+          e.preventDefault();
+          defer();
+        }
       } else if ((e.key === "s" || e.key === "S") && mode === "default") {
-        e.preventDefault();
-        setMode("escalating");
+        if (recAction !== "escalate") {
+          e.preventDefault();
+          setMode("escalating");
+        }
       }
     }
     window.addEventListener("keydown", onKey);
@@ -97,13 +162,24 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
-  function commitDefault() {
+  function followRecommendation() {
+    const recAction = initiative.ai_recommendation.action;
+    if (recAction === "commit") {
+      commit();
+    } else if (recAction === "defer") {
+      defer();
+    } else if (recAction === "escalate") {
+      setMode("escalating");
+    }
+  }
+
+  function commit() {
     setMode("committing");
     playCommitChime();
     addDecision({
       initiative_id: initiative.id,
       action: "committed",
-      ai_suggestion: initiative.ai_recommendation.sequence,
+      ai_suggestion: `${ACTION_LABEL[initiative.ai_recommendation.action]} · ${initiative.ai_recommendation.sequence}`,
       sequence: initiative.ai_recommendation.sequence,
       decided_at: new Date().toISOString(),
     });
@@ -120,7 +196,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     addDecision({
       initiative_id: initiative.id,
       action: "overridden",
-      ai_suggestion: initiative.ai_recommendation.sequence,
+      ai_suggestion: `${ACTION_LABEL[initiative.ai_recommendation.action]} · ${initiative.ai_recommendation.sequence}`,
       human_rationale: overrideText.trim(),
       sequence: "Overridden",
       decided_at: new Date().toISOString(),
@@ -135,7 +211,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     addDecision({
       initiative_id: initiative.id,
       action: "deferred",
-      ai_suggestion: initiative.ai_recommendation.sequence,
+      ai_suggestion: `${ACTION_LABEL[initiative.ai_recommendation.action]} · ${initiative.ai_recommendation.sequence}`,
       decided_at: new Date().toISOString(),
     });
     setToast("Deferred. Will resurface on context shift.");
@@ -149,13 +225,19 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     addDecision({
       initiative_id: initiative.id,
       action: "escalated",
-      ai_suggestion: initiative.ai_recommendation.sequence,
+      ai_suggestion: `${ACTION_LABEL[initiative.ai_recommendation.action]} · ${initiative.ai_recommendation.sequence}`,
       human_rationale: `Escalated to: ${[...escalateTags].join(", ")}`,
       decided_at: new Date().toISOString(),
     });
     setToast(`Escalated to ${[...escalateTags].join(", ")}. Awaiting input.`);
     setTimeout(() => router.push("/"), 1100);
   }
+
+  const rec = initiative.ai_recommendation;
+  const recAction = rec.action;
+  const okrLabels = rec.okr_alignment
+    .map((id) => getOKR(id)?.label)
+    .filter(Boolean) as string[];
 
   return (
     <div className="min-h-screen bg-page text-primary">
@@ -177,7 +259,48 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           </span>
         </div>
 
-        {/* Hero rationale — the unique-design moment */}
+        {/* OKR alignment chip */}
+        {okrLabels.length > 0 && (
+          <div className="mt-3 flex items-center gap-2 text-xs text-secondary">
+            <span className="text-tertiary">Aligned with:</span>
+            {okrLabels.map((label, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5"
+                style={{
+                  background: "var(--color-accent-soft)",
+                  color: "var(--color-accent)",
+                }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* System-learning cue */}
+        {priorOverride && mode === "default" && (
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6 flex items-start gap-3 rounded-lg border border-[var(--color-border)] bg-elevated px-4 py-3"
+          >
+            <Sparkles
+              size={14}
+              className="mt-0.5 shrink-0"
+              style={{ color: "var(--color-accent)" }}
+            />
+            <div className="text-xs leading-relaxed text-secondary">
+              <span className="text-tertiary">Noting your last override:</span>{" "}
+              you flagged &ldquo;{priorOverride.rationale}&rdquo; as a reason —
+              I&rsquo;ve weighted that consideration in the recommendation
+              below.
+            </div>
+          </motion.div>
+        )}
+
+        {/* Hero rationale */}
         <p
           className="mt-12 text-[28px] leading-[1.35] tracking-tight text-primary"
           style={{ fontWeight: 400 }}
@@ -204,11 +327,12 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           </div>
         </section>
 
-        {/* Recommendation card */}
+        {/* Recommendation */}
         <section className="mt-12">
           <p className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
-            Recommended
+            Recommendation
           </p>
+
           <AnimatePresence mode="wait">
             {mode === "default" || mode === "committing" ? (
               <motion.div
@@ -222,31 +346,34 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.18 }}
                 className="mt-4 rounded-xl border-l-2 border border-[var(--color-border)] bg-elevated p-6"
-                style={{ borderLeftColor: "var(--color-accent)" }}
+                style={{ borderLeftColor: actionColor(recAction) }}
               >
-                <p className="text-base text-primary leading-relaxed">
-                  Sequence in <strong>{initiative.ai_recommendation.sequence}</strong>.
-                  Estimated effort:{" "}
-                  <span className="text-secondary">
-                    {initiative.ai_recommendation.effort_sprints} sprints
-                    (eng confidence{" "}
-                    {initiative.ai_recommendation.eng_confidence}).
+                <div className="flex items-baseline gap-3">
+                  <span
+                    className="text-[11px] uppercase tracking-[0.12em] font-semibold"
+                    style={{ color: actionColor(recAction) }}
+                  >
+                    {ACTION_LABEL[recAction]}
                   </span>
-                  {initiative.ai_recommendation.addresses.length > 0 && (
-                    <>
-                      {" "}
-                      <span className="text-secondary">
-                        Addresses{" "}
-                        {initiative.ai_recommendation.addresses.join(", ")}.
-                      </span>
-                    </>
-                  )}{" "}
-                  <span className="text-secondary">
-                    {initiative.ai_recommendation.conflicts.length > 0
-                      ? `Conflicts: ${initiative.ai_recommendation.conflicts.join("; ")}.`
-                      : "No conflicts detected."}
+                  <span className="text-[11px] text-tertiary">
+                    · {rec.sequence}
                   </span>
+                  <span className="text-[11px] text-tertiary">
+                    · {rec.effort_sprints} sprint{rec.effort_sprints > 1 ? "s" : ""}
+                  </span>
+                  <span className="text-[11px] text-tertiary">
+                    · {rec.eng_confidence} confidence
+                  </span>
+                </div>
+                <p className="mt-3 text-base text-primary leading-relaxed">
+                  {ACTION_VERB[recAction]}{" "}
+                  <span className="text-secondary">{rec.action_reason}</span>
                 </p>
+                {rec.okr_contribution && (
+                  <p className="mt-2 text-sm text-tertiary leading-relaxed">
+                    {rec.okr_contribution}
+                  </p>
+                )}
               </motion.div>
             ) : mode === "overriding" ? (
               <motion.div
@@ -278,7 +405,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                     <kbd className="rounded border border-[var(--color-border-strong)] bg-page px-1.5 py-0.5 font-mono text-[10px]">
                       ↵
                     </kbd>{" "}
-                    save
+                    save · the system learns from your reason
                   </span>
                   <span>
                     <kbd className="rounded border border-[var(--color-border-strong)] bg-page px-1.5 py-0.5 font-mono text-[10px]">
@@ -297,45 +424,87 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                 transition={{ duration: 0.18 }}
                 className="mt-4 rounded-xl border border-[var(--color-border-strong)] bg-elevated p-6"
               >
-                <label className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
-                  Tag stakeholders
-                </label>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {STAKEHOLDERS.map((tag) => {
-                    const active = escalateTags.has(tag);
-                    return (
-                      <button
-                        key={tag}
-                        onClick={() => {
-                          const next = new Set(escalateTags);
-                          if (active) next.delete(tag);
-                          else next.add(tag);
-                          setEscalateTags(next);
-                        }}
-                        className="rounded-md px-3 py-1.5 text-xs font-medium uppercase tracking-wide transition"
-                        style={{
-                          background: active
-                            ? "var(--color-accent-soft)"
-                            : "var(--color-page)",
-                          color: active
-                            ? "var(--color-accent)"
-                            : "var(--color-secondary)",
-                          border: "1px solid var(--color-border-strong)",
-                        }}
-                      >
-                        {tag}
-                      </button>
-                    );
-                  })}
+                <div className="flex items-start gap-2 rounded-md bg-page px-3 py-2 text-xs text-secondary">
+                  <AlertTriangle
+                    size={12}
+                    className="mt-0.5 shrink-0"
+                    style={{ color: "var(--color-warning)" }}
+                  />
+                  <span>
+                    <strong className="text-primary">Escalate</strong> means
+                    this decision needs stakeholder alignment or exec input
+                    before you can confidently commit. Use for strategic
+                    ambiguity, capacity-vs-scope tension, or cross-team
+                    dependencies.
+                  </span>
                 </div>
+
+                <div className="mt-4">
+                  <label className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
+                    Stakeholders
+                  </label>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {(["sales", "cs", "exec", "eng"] as const).map((tag) => {
+                      const active = escalateTags.has(tag);
+                      const aiSuggested =
+                        rec.suggested_escalation?.stakeholders.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          onClick={() => {
+                            const next = new Set(escalateTags);
+                            if (active) next.delete(tag);
+                            else next.add(tag);
+                            setEscalateTags(next);
+                          }}
+                          className="relative rounded-md px-3 py-1.5 text-xs font-medium transition"
+                          style={{
+                            background: active
+                              ? "var(--color-accent-soft)"
+                              : "var(--color-page)",
+                            color: active
+                              ? "var(--color-accent)"
+                              : "var(--color-secondary)",
+                            border: "1px solid var(--color-border-strong)",
+                          }}
+                        >
+                          {STAKEHOLDER_LABELS[tag]}
+                          {aiSuggested && !active && (
+                            <span
+                              className="ml-1.5 text-[9px]"
+                              style={{ color: "var(--color-tertiary)" }}
+                            >
+                              · AI suggests
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
+                    Draft message
+                    {rec.suggested_escalation && (
+                      <span className="ml-2 normal-case text-tertiary">
+                        · AI-drafted, edit as needed
+                      </span>
+                    )}
+                  </label>
+                  <textarea
+                    value={escalateMessage}
+                    onChange={(e) => setEscalateMessage(e.target.value)}
+                    rows={4}
+                    className="mt-2 w-full resize-none rounded-md border border-[var(--color-border)] bg-page px-3 py-2 text-sm text-primary outline-none focus:border-[var(--color-accent)]"
+                  />
+                </div>
+
                 <button
                   onClick={escalate}
                   disabled={escalateTags.size === 0}
                   className="mt-4 inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition disabled:opacity-40"
-                  style={{
-                    background: "var(--color-accent)",
-                    color: "#fff",
-                  }}
+                  style={{ background: "var(--color-accent)", color: "#fff" }}
                 >
                   <Send size={14} />
                   Send to{" "}
@@ -348,16 +517,61 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           </AnimatePresence>
         </section>
 
+        {/* Tradeoffs */}
+        {(mode === "default" || mode === "committing") &&
+          rec.tradeoffs.length > 0 && (
+            <section className="mt-10">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
+                Trade-offs · what shifts in the roadmap
+              </p>
+              <ul className="mt-4 space-y-2">
+                {rec.tradeoffs.map((t, idx) => (
+                  <li
+                    key={idx}
+                    className="flex gap-3 text-sm text-secondary leading-relaxed"
+                  >
+                    <span
+                      className="mt-1.5 inline-block h-1 w-1 rounded-full shrink-0"
+                      style={{ background: "var(--color-tertiary)" }}
+                    />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+        {/* Conflicts (if any) */}
+        {(mode === "default" || mode === "committing") &&
+          rec.conflicts.length > 0 && (
+            <section className="mt-8">
+              <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--color-warning)]">
+                Conflicts
+              </p>
+              <ul className="mt-3 space-y-1.5">
+                {rec.conflicts.map((c, idx) => (
+                  <li
+                    key={idx}
+                    className="text-sm text-secondary leading-relaxed"
+                  >
+                    {c}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
         {/* Action bar */}
         <div className="mt-12 flex items-center gap-2 border-t border-[var(--color-border)] pt-6">
           {mode === "default" ? (
             <>
               <ActionButton
-                onClick={commitDefault}
+                onClick={followRecommendation}
                 primary
                 kbd="↵"
                 icon={<Check size={14} />}
-                label="Commit"
+                label={ACTION_LABEL[recAction]}
+                tone={actionColor(recAction)}
               />
               <ActionButton
                 onClick={() => setMode("overriding")}
@@ -365,25 +579,28 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                 icon={<Pencil size={14} />}
                 label="Override"
               />
-              <ActionButton
-                onClick={defer}
-                kbd="D"
-                icon={<Clock size={14} />}
-                label="Defer"
-              />
-              <ActionButton
-                onClick={() => setMode("escalating")}
-                kbd="S"
-                icon={<Send size={14} />}
-                label="Escalate"
-              />
+              {recAction !== "defer" && (
+                <ActionButton
+                  onClick={defer}
+                  kbd="D"
+                  icon={<Clock size={14} />}
+                  label="Defer"
+                />
+              )}
+              {recAction !== "escalate" && (
+                <ActionButton
+                  onClick={() => setMode("escalating")}
+                  kbd="S"
+                  icon={<Send size={14} />}
+                  label="Escalate"
+                />
+              )}
             </>
           ) : (
             <button
               onClick={() => {
                 setMode("default");
                 setOverrideText("");
-                setEscalateTags(new Set());
               }}
               className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-secondary transition hover:text-primary"
             >
@@ -413,6 +630,17 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
       </AnimatePresence>
     </div>
   );
+}
+
+function actionColor(action: RecommendedAction): string {
+  switch (action) {
+    case "commit":
+      return "var(--color-success)";
+    case "defer":
+      return "var(--color-muted)";
+    case "escalate":
+      return "var(--color-warning)";
+  }
 }
 
 function ChipWithSource({
@@ -464,12 +692,14 @@ function ActionButton({
   kbd,
   icon,
   label,
+  tone,
 }: {
   onClick: () => void;
   primary?: boolean;
   kbd: string;
   icon: React.ReactNode;
   label: string;
+  tone?: string;
 }) {
   return (
     <button
@@ -477,7 +707,10 @@ function ActionButton({
       className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition"
       style={
         primary
-          ? { background: "var(--color-accent)", color: "#fff" }
+          ? {
+              background: tone ?? "var(--color-accent)",
+              color: "#0a0a0b",
+            }
           : {
               background: "var(--color-elevated)",
               color: "var(--color-secondary)",
@@ -490,8 +723,8 @@ function ActionButton({
       <kbd
         className="ml-1 rounded px-1.5 py-0.5 font-mono text-[10px]"
         style={{
-          background: primary ? "rgba(255,255,255,0.18)" : "var(--color-page)",
-          color: primary ? "#fff" : "var(--color-tertiary)",
+          background: primary ? "rgba(0,0,0,0.18)" : "var(--color-page)",
+          color: primary ? "#0a0a0b" : "var(--color-tertiary)",
         }}
       >
         {kbd}

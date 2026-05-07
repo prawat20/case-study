@@ -3,12 +3,31 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import initiativesJson from "@/data/initiatives.json";
-import type { Initiative } from "@/lib/types";
+import type { Initiative, RecommendedAction } from "@/lib/types";
 import { EvidenceChip } from "@/components/EvidenceChip";
 import { useDecisions } from "@/lib/use-decisions";
 import { Header } from "@/components/Header";
+import { StrategicBanner } from "@/components/StrategicBanner";
+import { getOKR } from "@/lib/strategic";
 
 const allInitiatives = initiativesJson as Initiative[];
+
+const ACTION_LABEL: Record<RecommendedAction, string> = {
+  commit: "Commit",
+  defer: "Defer",
+  escalate: "Escalate",
+};
+
+function actionColor(action: RecommendedAction): string {
+  switch (action) {
+    case "commit":
+      return "var(--color-success)";
+    case "defer":
+      return "var(--color-muted)";
+    case "escalate":
+      return "var(--color-warning)";
+  }
+}
 
 export default function Home() {
   const { decisions, hydrated } = useDecisions();
@@ -33,7 +52,7 @@ export default function Home() {
     <div className="min-h-screen bg-page text-primary">
       <Header />
 
-      <main className="mx-auto max-w-[720px] px-8 py-16">
+      <main className="mx-auto max-w-[720px] px-8 py-12">
         <h1 className="text-2xl font-semibold tracking-tight">
           Good morning, Pravesh.
         </h1>
@@ -51,50 +70,79 @@ export default function Home() {
               {decidedToday > 0 && (
                 <>
                   {" "}
-                  <span className="text-tertiary">
-                    · {decidedToday} decided this session
-                  </span>
+                  <Link
+                    href="/audit/"
+                    className="text-tertiary transition hover:text-primary"
+                  >
+                    · {decidedToday} decided this session →
+                  </Link>
                 </>
               )}
             </>
           )}
         </p>
 
-        <div className="mt-12 space-y-3">
-          {needsDecision.map((i, idx) => (
-            <motion.div
-              key={i.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: idx * 0.04 }}
-            >
-              <Link
-                href={`/initiative/${i.id}/`}
-                className="group block cursor-pointer rounded-xl border border-[var(--color-border)] bg-elevated p-5 transition hover:bg-card-hover hover:border-[var(--color-border-strong)]"
+        <div className="mt-8">
+          <StrategicBanner />
+        </div>
+
+        <div className="mt-10 space-y-3">
+          {needsDecision.map((i, idx) => {
+            const action = i.ai_recommendation.action;
+            const okrLabels = i.ai_recommendation.okr_alignment
+              .map((id) => getOKR(id)?.label)
+              .filter(Boolean) as string[];
+            return (
+              <motion.div
+                key={i.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: idx * 0.04 }}
               >
-                <div className="flex items-start gap-3">
-                  <span
-                    className="mt-2 inline-block h-2 w-2 rounded-full shrink-0"
-                    style={{ background: signalDotColor(i) }}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h2 className="text-base font-medium">{i.title}</h2>
-                    <p className="mt-1 text-sm text-secondary">
-                      {i.synthesis_oneliner}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {i.evidence.slice(0, 3).map((ev, eidx) => (
-                        <EvidenceChip key={eidx} evidence={ev} />
-                      ))}
+                <Link
+                  href={`/initiative/${i.id}/`}
+                  className="group block cursor-pointer rounded-xl border border-[var(--color-border)] bg-elevated p-5 transition hover:bg-card-hover hover:border-[var(--color-border-strong)]"
+                >
+                  <div className="flex items-start gap-3">
+                    <span
+                      className="mt-2 inline-block h-2 w-2 rounded-full shrink-0"
+                      style={{ background: actionColor(action) }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <h2 className="text-base font-medium">{i.title}</h2>
+                        <span
+                          className="shrink-0 text-[11px] uppercase tracking-[0.1em] font-semibold"
+                          style={{ color: actionColor(action) }}
+                        >
+                          {ACTION_LABEL[action]}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm text-secondary">
+                        {i.synthesis_oneliner}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {i.evidence.slice(0, 3).map((ev, eidx) => (
+                          <EvidenceChip key={eidx} evidence={ev} />
+                        ))}
+                      </div>
+                      {okrLabels.length > 0 && (
+                        <div className="mt-3 flex items-center gap-1.5 text-[11px] text-tertiary">
+                          <span>Aligned with</span>
+                          {okrLabels.map((l, lidx) => (
+                            <span key={lidx} style={{ color: "var(--color-accent)" }}>
+                              {l}
+                              {lidx < okrLabels.length - 1 ? "," : ""}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <span className="text-xs text-accent opacity-0 transition group-hover:opacity-100 shrink-0 mt-1">
-                    Decide ↵
-                  </span>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
 
         {allDone && (
@@ -112,10 +160,17 @@ export default function Home() {
               {decidedToday} decision{decidedToday === 1 ? "" : "s"} logged
               this session.{" "}
               <Link
+                href="/audit/"
+                className="text-accent transition hover:underline"
+              >
+                Audit log →
+              </Link>{" "}
+              ·{" "}
+              <Link
                 href="/quarter/"
                 className="text-accent transition hover:underline"
               >
-                See them in the quarterly plan →
+                Quarter plan →
               </Link>
             </p>
           </motion.div>
@@ -127,19 +182,4 @@ export default function Home() {
       </main>
     </div>
   );
-}
-
-function signalDotColor(i: Initiative): string {
-  switch (i.signal_type) {
-    case "deal_blocker":
-      return "var(--color-warning)";
-    case "deadline":
-      return "var(--color-danger)";
-    case "compliance":
-      return "var(--color-accent)";
-    case "support_pain":
-      return "var(--color-warning)";
-    default:
-      return "var(--color-muted)";
-  }
 }

@@ -29,12 +29,23 @@ export interface Evidence {
   kind?: EvidenceKind;
 }
 
+export type RecommendedAction = "commit" | "defer" | "escalate";
+
 export interface AIRecommendation {
+  action: RecommendedAction;
+  action_reason: string;
   sequence: string;
   effort_sprints: number;
   eng_confidence: "low" | "medium" | "high";
   addresses: string[];
   conflicts: string[];
+  tradeoffs: string[];
+  okr_alignment: string[];
+  okr_contribution?: string;
+  suggested_escalation?: {
+    stakeholders: string[];
+    draft_message: string;
+  };
 }
 
 export interface Initiative {

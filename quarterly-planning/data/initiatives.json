@@ -12,17 +12,26 @@
       { "metric": "2x", "label": "this quarter", "source": "Sales escalation log", "kind": "deals" }
     ],
     "ai_recommendation": {
+      "action": "commit",
+      "action_reason": "Direct line to Enterprise Readiness OKR. Unblocks $480k ARR in active deals. No conflicts; eng capacity available for Sprint 1.",
       "sequence": "Q3 Sprint 1",
       "effort_sprints": 3,
       "eng_confidence": "medium",
       "addresses": ["3 of top 5 enterprise blockers"],
-      "conflicts": []
+      "conflicts": [],
+      "tradeoffs": [
+        "Sequencing in Sprint 1 alongside SAML SSO uses 5 of 6 available eng-sprint slots.",
+        "Permission Groups stays in Sprint 4 — no items pushed.",
+        "Webhook Retries deferral (separate AI call) frees Sprint 2 buffer."
+      ],
+      "okr_alignment": ["enterprise_readiness"],
+      "okr_contribution": "Contributes ~$480k toward $1.5M Enterprise OKR target."
     },
     "status": "needs_decision",
     "signal_type": "deal_blocker",
     "priority_rank": 1,
     "stakeholder_signals": ["sales", "cs"],
-    "theme": "Enterprise readiness",
+    "theme": "Enterprise Readiness",
     "arr_exposure_usd": 480000
   },
   {
@@ -37,17 +46,25 @@
       { "metric": "6", "label": "competitors have it", "source": "Competitive scan", "kind": "strategic" }
     ],
     "ai_recommendation": {
+      "action": "commit",
+      "action_reason": "Direct line to Enterprise Readiness OKR. $340k Q4 renewals are time-bound. Implementation is clean (2 sprints, high eng confidence). No conflicts.",
       "sequence": "Q3 Sprint 1",
       "effort_sprints": 2,
       "eng_confidence": "high",
       "addresses": ["2 enterprise renewals", "Q4 expansion pipeline"],
-      "conflicts": []
+      "conflicts": [],
+      "tradeoffs": [
+        "Pairs naturally with Bulk CSV in Sprint 1 — same eng team, same enterprise theme.",
+        "Frees Sprint 2 entirely if Bulk CSV finishes on time — buffer for SOC2 prep."
+      ],
+      "okr_alignment": ["enterprise_readiness"],
+      "okr_contribution": "Contributes ~$340k toward $1.5M Enterprise OKR target."
     },
     "status": "needs_decision",
     "signal_type": "deal_blocker",
     "priority_rank": 2,
     "stakeholder_signals": ["sales", "cs"],
-    "theme": "Enterprise readiness",
+    "theme": "Enterprise Readiness",
     "arr_exposure_usd": 340000
   },
   {
@@ -61,17 +78,30 @@
       { "metric": "0", "label": "customer requests", "source": "Productboard", "kind": "strategic" }
     ],
     "ai_recommendation": {
+      "action": "escalate",
+      "action_reason": "Hard October deadline meets eng-capacity uncertainty. $1.2M pipeline is gated. Need exec input on whether to compress timeline (parallelize) or hire compliance contractor. Above PM pay grade.",
       "sequence": "Q3 Sprint 3",
       "effort_sprints": 2,
       "eng_confidence": "medium",
       "addresses": ["SOC2 Type II prep", "$1.2M enterprise pipeline"],
-      "conflicts": ["Slight overlap with bulk import in Sprint 3 — manageable"]
+      "conflicts": ["Slight overlap with Bulk CSV in Sprint 3 — manageable but tight"],
+      "tradeoffs": [
+        "Sprint 3 sequencing leaves 4 weeks buffer before October audit — minimum safe margin.",
+        "Compressing to Sprint 2 requires either delaying Webhook fix OR hiring compliance contractor (~$30k).",
+        "Missing the window means $1.2M pipeline stalls until next audit cycle (~6 months)."
+      ],
+      "okr_alignment": ["compliance", "enterprise_readiness"],
+      "okr_contribution": "Sole driver of Compliance OKR. Indirect $1.2M unlock for Enterprise OKR.",
+      "suggested_escalation": {
+        "stakeholders": ["exec", "eng"],
+        "draft_message": "Quick call: SOC2 audit-log work needs sequencing decision. Hard October window, $1.2M pipeline gated. Two paths: (1) Sprint 3 with current eng team, ~4-week buffer to audit, OR (2) compress to Sprint 2 by deferring webhook retries OR hiring a compliance contractor (~$30k). Preference?"
+      }
     },
     "status": "needs_decision",
     "signal_type": "compliance",
     "priority_rank": 3,
     "stakeholder_signals": ["exec", "sales"],
-    "theme": "Compliance",
+    "theme": "Compliance Posture",
     "arr_exposure_usd": 1200000
   },
   {
@@ -86,11 +116,20 @@
       { "metric": "1", "label": "sprint effort", "source": "Eng estimate", "kind": "strategic" }
     ],
     "ai_recommendation": {
-      "sequence": "Q3 Sprint 2",
+      "action": "defer",
+      "action_reason": "Real pain but capped impact. $92k ARR mentioned vs $2M+ in Q3 priorities (Enterprise + SOC2). Recommend Q4 — keeps Reliability OKR alive without crowding out higher-ROI work.",
+      "sequence": "Q4 Sprint 1",
       "effort_sprints": 1,
       "eng_confidence": "high",
       "addresses": ["#1 reliability complaint"],
-      "conflicts": []
+      "conflicts": [],
+      "tradeoffs": [
+        "Deferring Q3 → Q4 frees 1 sprint-effort in Sprint 2, providing buffer for Bulk CSV slippage.",
+        "CS team will push back — they've been promising customers a Q3 fix.",
+        "If support volume keeps climbing, we may need to revisit mid-Q3."
+      ],
+      "okr_alignment": ["reliability"],
+      "okr_contribution": "Reliability OKR partial credit — but the ticket-volume KR depends on this."
     },
     "status": "needs_decision",
     "signal_type": "support_pain",
@@ -110,11 +149,15 @@
       { "metric": "Sub-$20k", "label": "avg MRR", "source": "Salesforce", "kind": "strategic" }
     ],
     "ai_recommendation": {
+      "action": "defer",
+      "action_reason": "High volume but low-ARR audience. Better fit for Q4 Activation push.",
       "sequence": "Q4 — defer",
       "effort_sprints": 2,
       "eng_confidence": "high",
       "addresses": ["High-volume CS request"],
-      "conflicts": ["Lower ROI than enterprise items in same window"]
+      "conflicts": ["Lower ROI than enterprise items in same window"],
+      "tradeoffs": ["Q4 pairs well with Custom Fields rollout for SMB activation push."],
+      "okr_alignment": []
     },
     "status": "monitoring",
     "signal_type": "support_pain",
@@ -133,16 +176,21 @@
       { "metric": "$240k", "label": "ARR mentioned", "source": "Cross-ref", "kind": "revenue" }
     ],
     "ai_recommendation": {
+      "action": "commit",
+      "action_reason": "Mid-market scaling — confirmed pull from $50k+ accounts. Already sequenced.",
       "sequence": "Q3 Sprint 4",
       "effort_sprints": 2,
       "eng_confidence": "medium",
       "addresses": ["Mid-market scaling"],
-      "conflicts": []
+      "conflicts": [],
+      "tradeoffs": ["Sprint 4 is light — no displacement risk."],
+      "okr_alignment": ["enterprise_readiness"],
+      "okr_contribution": "Indirect — supports mid-market expansion adjacent to Enterprise OKR."
     },
     "status": "sequenced",
     "signal_type": "deal_blocker",
     "stakeholder_signals": ["cs", "sales"],
-    "theme": "Scaling",
+    "theme": "Enterprise Readiness",
     "arr_exposure_usd": 240000
   },
   {
@@ -155,11 +203,15 @@
       { "metric": "0", "label": "revenue tie", "source": "Cross-ref", "kind": "revenue" }
     ],
     "ai_recommendation": {
+      "action": "defer",
+      "action_reason": "No revenue tie, low volume. Backlog.",
       "sequence": "Monitor",
       "effort_sprints": 1,
       "eng_confidence": "high",
       "addresses": [],
-      "conflicts": []
+      "conflicts": [],
+      "tradeoffs": [],
+      "okr_alignment": []
     },
     "status": "deferred",
     "signal_type": "strategic",
@@ -177,11 +229,15 @@
       { "metric": "$180k", "label": "ARR mentioned", "source": "Cross-ref", "kind": "revenue" }
     ],
     "ai_recommendation": {
+      "action": "commit",
+      "action_reason": "Growing signal, fits Q4 Activation. Pre-scoping for Q4 Sprint 1.",
       "sequence": "Q4 Sprint 1",
       "effort_sprints": 3,
       "eng_confidence": "medium",
       "addresses": ["Mid-market workflow flexibility"],
-      "conflicts": []
+      "conflicts": [],
+      "tradeoffs": ["Pairs with Slack v2 for Q4 Activation push."],
+      "okr_alignment": []
     },
     "status": "monitoring",
     "signal_type": "strategic",

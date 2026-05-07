@@ -44,6 +44,12 @@ export function Header() {
           Quarter
         </Link>
         <Link
+          href="/audit/"
+          className="transition hover:text-primary"
+        >
+          Audit
+        </Link>
+        <Link
           href="/architecture/"
           className="transition hover:text-primary"
         >

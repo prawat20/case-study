@@ -10,6 +10,7 @@ import {
   GitBranch,
   RefreshCw,
   TriangleAlert,
+  History,
 } from "lucide-react";
 import initiativesJson from "@/data/initiatives.json";
 import type { Initiative } from "@/lib/types";
@@ -130,6 +131,14 @@ export function CommandPalette({
                 </Command.Group>
 
                 <Command.Group heading="System" className="cmd-group">
+                  <Command.Item
+                    value="show audit log"
+                    onSelect={() => go("/audit/")}
+                    className="cmd-item"
+                  >
+                    <History size={14} className="text-tertiary" />
+                    <span>Audit log — see system learning</span>
+                  </Command.Item>
                   <Command.Item
                     value="show architecture"
                     onSelect={() => go("/architecture/")}
