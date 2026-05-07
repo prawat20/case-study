@@ -8,6 +8,7 @@ import { EvidenceChip } from "@/components/EvidenceChip";
 import { useDecisions } from "@/lib/use-decisions";
 import { Header } from "@/components/Header";
 import { StrategicBanner } from "@/components/StrategicBanner";
+import { SignalShifts } from "@/components/SignalShifts";
 import { getOKR } from "@/lib/strategic";
 
 const allInitiatives = initiativesJson as Initiative[];
@@ -82,8 +83,9 @@ export default function Home() {
           )}
         </p>
 
-        <div className="mt-8">
+        <div className="mt-8 space-y-3">
           <StrategicBanner />
+          <SignalShifts />
         </div>
 
         <div className="mt-10 space-y-3">

@@ -12,6 +12,8 @@ import {
   X,
   Sparkles,
   AlertTriangle,
+  History,
+  Info,
 } from "lucide-react";
 import type {
   Initiative,
@@ -86,6 +88,8 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   const [priorOverride, setPriorOverride] = useState<{
     rationale: string;
   } | null>(null);
+  const [showFrameworkInfo, setShowFrameworkInfo] = useState(false);
+  const [flyToCorner, setFlyToCorner] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const rec = initiative.ai_recommendation;
@@ -174,6 +178,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   function commit() {
     setMode("committing");
     playCommitChime();
+    setFlyToCorner(true);
     addDecision({
       initiative_id: initiative.id,
       action: "committed",
@@ -189,7 +194,10 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     if (!overrideText.trim() || !overrideTo) return;
     setMode("committing");
     if (overrideTo === "defer") playDeferTick();
-    else playCommitChime();
+    else {
+      playCommitChime();
+      setFlyToCorner(true);
+    }
     addDecision({
       initiative_id: initiative.id,
       action: "overridden",
@@ -242,13 +250,22 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   return (
     <div className="min-h-screen bg-page text-primary">
       <div className="mx-auto max-w-[720px] px-8 py-10">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-secondary transition hover:text-primary"
-        >
-          <ArrowLeft size={14} />
-          <span>Back</span>
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-secondary transition hover:text-primary"
+          >
+            <ArrowLeft size={14} />
+            <span>Back</span>
+          </Link>
+          <Link
+            href="/audit/"
+            className="inline-flex items-center gap-1.5 text-xs text-tertiary transition hover:text-primary"
+          >
+            <History size={12} />
+            <span>Audit log</span>
+          </Link>
+        </div>
 
         <div className="mt-10 flex items-baseline justify-between gap-6">
           <h1 className="text-xl font-medium tracking-tight">
@@ -375,6 +392,57 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                     {rec.okr_contribution}
                   </p>
                 )}
+
+                {/* Framework chip + predicted outcome */}
+                <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-4">
+                  <button
+                    onMouseEnter={() => setShowFrameworkInfo(true)}
+                    onMouseLeave={() => setShowFrameworkInfo(false)}
+                    onClick={() => setShowFrameworkInfo(!showFrameworkInfo)}
+                    className="relative inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium transition"
+                    style={{
+                      background: "var(--color-page)",
+                      color: "var(--color-secondary)",
+                      border: "1px solid var(--color-border-strong)",
+                    }}
+                  >
+                    <span className="text-tertiary">Framework:</span>
+                    <span>{rec.framework}</span>
+                    <Info size={10} className="text-tertiary" />
+                  </button>
+                  <span className="text-[11px] text-tertiary">
+                    · AI picked this per item type
+                  </span>
+                </div>
+                <AnimatePresence>
+                  {showFrameworkInfo && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.15 }}
+                      className="overflow-hidden"
+                    >
+                      <p className="mt-2 text-xs italic text-tertiary leading-relaxed">
+                        {rec.framework_rationale}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="mt-4 flex items-start gap-2 rounded-md bg-page px-3 py-2 text-xs">
+                  <Sparkles
+                    size={11}
+                    className="mt-0.5 shrink-0"
+                    style={{ color: "var(--color-accent)" }}
+                  />
+                  <span className="leading-relaxed text-secondary">
+                    <span className="text-tertiary">
+                      Predicted outcome:
+                    </span>{" "}
+                    {rec.predicted_outcome}
+                  </span>
+                </div>
               </motion.div>
             )}
 
@@ -649,6 +717,45 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
             className="fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg border border-[var(--color-border-strong)] bg-elevated px-4 py-2.5 text-sm text-primary shadow-lg"
           >
             {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Decision-lands-in-timeline mini card animation */}
+      <AnimatePresence>
+        {flyToCorner && (
+          <motion.div
+            initial={{
+              opacity: 1,
+              top: "50%",
+              left: "50%",
+              x: "-50%",
+              y: "-50%",
+              scale: 1,
+            }}
+            animate={{
+              opacity: 0,
+              top: "8%",
+              right: "5%",
+              left: "auto",
+              x: 0,
+              y: 0,
+              scale: 0.45,
+            }}
+            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="pointer-events-none fixed z-50 rounded-lg border bg-elevated px-3 py-2 shadow-2xl"
+            style={{
+              borderColor: "var(--color-accent)",
+              boxShadow:
+                "0 20px 40px -12px var(--color-accent-soft), 0 0 0 1px var(--color-accent-soft)",
+            }}
+          >
+            <div className="text-xs font-medium text-primary">
+              {initiative.title}
+            </div>
+            <div className="mt-0.5 text-[10px] text-tertiary">
+              → {rec.sequence}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

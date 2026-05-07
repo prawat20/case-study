@@ -25,7 +25,10 @@
         "Webhook Retries deferral (separate AI call) frees Sprint 2 buffer."
       ],
       "okr_alignment": ["enterprise_readiness"],
-      "okr_contribution": "Contributes ~$480k toward $1.5M Enterprise OKR target."
+      "okr_contribution": "Contributes ~$480k toward $1.5M Enterprise OKR target.",
+      "framework": "RICE",
+      "framework_rationale": "Revenue-anchored deal blocker — RICE balances reach (3 active deals), impact ($480k unblocked), confidence (sales-validated 2x), and effort (3 sprints).",
+      "predicted_outcome": "If sequenced Q3 Sprint 1: ~$480k ARR closes by end of Q3, onboarding-objection rate drops ~60% on enterprise demos."
     },
     "status": "needs_decision",
     "signal_type": "deal_blocker",
@@ -58,7 +61,10 @@
         "Frees Sprint 2 entirely if Bulk CSV finishes on time — buffer for SOC2 prep."
       ],
       "okr_alignment": ["enterprise_readiness"],
-      "okr_contribution": "Contributes ~$340k toward $1.5M Enterprise OKR target."
+      "okr_contribution": "Contributes ~$340k toward $1.5M Enterprise OKR target.",
+      "framework": "RICE",
+      "framework_rationale": "Renewal-anchored, well-scoped — RICE math is clean: reach (2 accounts), impact ($340k retained), confidence (high; CS validated), effort (2 sprints).",
+      "predicted_outcome": "If shipped by end of Q3: 2 enterprise renewals retained ($340k ARR), enterprise sales cycle shortens ~1-2 weeks."
     },
     "status": "needs_decision",
     "signal_type": "deal_blocker",
@@ -92,6 +98,9 @@
       ],
       "okr_alignment": ["compliance", "enterprise_readiness"],
       "okr_contribution": "Sole driver of Compliance OKR. Indirect $1.2M unlock for Enterprise OKR.",
+      "framework": "Strategic Bet",
+      "framework_rationale": "Compliance is non-negotiable; RICE math doesn't help when the answer is 'we need this to exist as a company.' Treating as a strategic bet — the question is timing + resourcing, not whether.",
+      "predicted_outcome": "If shipped before Oct audit: $1.2M enterprise pipeline unblocks Q4. Miss the window: pipeline stalls ~6 months until next audit cycle.",
       "suggested_escalation": {
         "stakeholders": ["exec", "eng"],
         "draft_message": "Quick call: SOC2 audit-log work needs sequencing decision. Hard October window, $1.2M pipeline gated. Two paths: (1) Sprint 3 with current eng team, ~4-week buffer to audit, OR (2) compress to Sprint 2 by deferring webhook retries OR hiring a compliance contractor (~$30k). Preference?"
@@ -129,7 +138,10 @@
         "If support volume keeps climbing, we may need to revisit mid-Q3."
       ],
       "okr_alignment": ["reliability"],
-      "okr_contribution": "Reliability OKR partial credit — but the ticket-volume KR depends on this."
+      "okr_contribution": "Reliability OKR partial credit — but the ticket-volume KR depends on this.",
+      "framework": "Value/Effort",
+      "framework_rationale": "Small effort (1 sprint, high eng confidence) but moderate value ($92k ARR exposure). Value/Effort 2×2 lands it in 'do later' relative to Q3's $2M+ enterprise priorities.",
+      "predicted_outcome": "If deferred to Q4: 18 open tickets accumulate ~+30% in Q3 (CS friction). $92k ARR remains exposed. If volume spikes mid-Q3, AI will resurface for review."
     },
     "status": "needs_decision",
     "signal_type": "support_pain",
@@ -157,7 +169,10 @@
       "addresses": ["High-volume CS request"],
       "conflicts": ["Lower ROI than enterprise items in same window"],
       "tradeoffs": ["Q4 pairs well with Custom Fields rollout for SMB activation push."],
-      "okr_alignment": []
+      "okr_alignment": [],
+      "framework": "Value/Effort",
+      "framework_rationale": "High volume of requests (24) but low MRR exposure — Value/Effort places this in the 'fast-follow / Q4 batch' quadrant, not Q3 priority.",
+      "predicted_outcome": "If deferred to Q4: pairs with Custom Fields for SMB activation push. ~150 daily-active accounts lifted."
     },
     "status": "monitoring",
     "signal_type": "support_pain",
@@ -185,7 +200,10 @@
       "conflicts": [],
       "tradeoffs": ["Sprint 4 is light — no displacement risk."],
       "okr_alignment": ["enterprise_readiness"],
-      "okr_contribution": "Indirect — supports mid-market expansion adjacent to Enterprise OKR."
+      "okr_contribution": "Indirect — supports mid-market expansion adjacent to Enterprise OKR.",
+      "framework": "RICE",
+      "framework_rationale": "Mid-market signal with clear ARR exposure ($240k) and confirmed pull (3 interviews) — RICE math fits.",
+      "predicted_outcome": "If shipped Sprint 4: 8 mid-market support tickets close, ACL-admin burden drops ~40% on $50k+ accounts."
     },
     "status": "sequenced",
     "signal_type": "deal_blocker",
@@ -211,7 +229,10 @@
       "addresses": [],
       "conflicts": [],
       "tradeoffs": [],
-      "okr_alignment": []
+      "okr_alignment": [],
+      "framework": "ICE",
+      "framework_rationale": "Low-signal monitoring item — ICE keeps it lightweight (no need for full RICE math).",
+      "predicted_outcome": "Low confidence in any near-term impact. AI will resurface only if request volume crosses 10+."
     },
     "status": "deferred",
     "signal_type": "strategic",
@@ -237,7 +258,10 @@
       "addresses": ["Mid-market workflow flexibility"],
       "conflicts": [],
       "tradeoffs": ["Pairs with Slack v2 for Q4 Activation push."],
-      "okr_alignment": []
+      "okr_alignment": [],
+      "framework": "Value/Effort",
+      "framework_rationale": "Growing pull but moderate effort (3 sprints) — Value/Effort places this in 'plan for next cycle.'",
+      "predicted_outcome": "If shipped Q4 Sprint 1: closes a competitive feature gap; affects ~200 mid-market accounts."
     },
     "status": "monitoring",
     "signal_type": "strategic",

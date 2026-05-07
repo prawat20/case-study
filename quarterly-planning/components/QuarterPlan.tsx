@@ -4,11 +4,12 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Check, Clock, AlertTriangle } from "lucide-react";
+import { Check, Clock, AlertTriangle, Send, Lock } from "lucide-react";
 import initiativesJson from "@/data/initiatives.json";
 import type { Initiative } from "@/lib/types";
 import { useDecisions } from "@/lib/use-decisions";
 import type { Decision } from "@/lib/decisions";
+import { playSnapChime } from "@/lib/sound";
 
 const initiatives = initiativesJson as Initiative[];
 
@@ -121,6 +122,9 @@ function QuarterPlanInner() {
     (searchParams.get("audience") as Audience) || "all";
   const [audience, setAudience] = useState<Audience>(initialAudience);
   const { decisions, hydrated } = useDecisions();
+  const [shipToast, setShipToast] = useState<string | null>(null);
+  const [snapped, setSnapped] = useState(false);
+  const [resequenceToast, setResequenceToast] = useState<string | null>(null);
 
   // Keep URL in sync
   useEffect(() => {
@@ -131,6 +135,32 @@ function QuarterPlanInner() {
   const resolved: ResolvedItem[] = initiatives.map((i) =>
     resolveItem(i, decisions),
   );
+
+  function handleShip() {
+    const audienceLabel = AUDIENCES.find((a) => a.key === audience)?.label;
+    playSnapChime();
+    setShipToast(`Q3 plan sent to ${audienceLabel}. Markdown copied to clipboard.`);
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard
+        .writeText(buildMarkdown(audience, resolved))
+        .catch(() => {});
+    }
+    setTimeout(() => setShipToast(null), 2400);
+  }
+
+  function handleSnap() {
+    playSnapChime();
+    setSnapped(true);
+    setShipToast("Q3 plan snapped. Locked as the source of truth for the team.");
+    setTimeout(() => setShipToast(null), 2400);
+  }
+
+  function handleResequence(initiativeTitle: string, fromSprint: string, toSprint: string) {
+    setResequenceToast(
+      `Moved ${initiativeTitle} from ${fromSprint} → ${toSprint}. AI: pushes 1 dependent item by 2 weeks. Confirm or revert?`,
+    );
+    setTimeout(() => setResequenceToast(null), 3500);
+  }
 
   return (
     <main className="mx-auto max-w-[720px] px-8 py-12">
@@ -183,7 +213,11 @@ function QuarterPlanInner() {
           className="mt-12"
         >
           {audience === "all" && (
-            <AllView resolved={resolved} hydrated={hydrated} />
+            <AllView
+              resolved={resolved}
+              hydrated={hydrated}
+              onResequence={handleResequence}
+            />
           )}
           {audience === "exec" && <ExecView resolved={resolved} />}
           {audience === "eng" && <EngView resolved={resolved} />}
@@ -192,18 +226,99 @@ function QuarterPlanInner() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="mt-16 flex items-center justify-end gap-3 text-xs text-tertiary">
-        <button
-          onClick={() => navigator.clipboard?.writeText(window.location.href)}
-          className="transition hover:text-primary"
-        >
-          Copy link
-        </button>
-        <span>·</span>
-        <span>Render saves automatically</span>
+      <div className="mt-12 flex items-center justify-between gap-3 border-t border-[var(--color-border)] pt-6">
+        <div className="text-xs text-tertiary">
+          {snapped ? (
+            <span className="inline-flex items-center gap-1.5 text-[var(--color-success)]">
+              <Lock size={11} /> Snapped as Q3 source of truth
+            </span>
+          ) : (
+            <span>Render auto-saves · drag items in All view to resequence</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleShip}
+            className="inline-flex items-center gap-2 rounded-md border border-[var(--color-border-strong)] bg-elevated px-3 py-1.5 text-xs font-medium text-secondary transition hover:text-primary hover:bg-card-hover"
+          >
+            <Send size={12} />
+            Ship to {AUDIENCES.find((a) => a.key === audience)?.label}
+          </button>
+          {audience === "all" && !snapped && (
+            <button
+              onClick={handleSnap}
+              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium transition"
+              style={{ background: "var(--color-accent)", color: "#0a0a0b" }}
+            >
+              <Lock size={12} />
+              Snap as Q3 plan
+            </button>
+          )}
+        </div>
       </div>
+
+      <AnimatePresence>
+        {shipToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg border border-[var(--color-border-strong)] bg-elevated px-4 py-2.5 text-sm text-primary shadow-lg z-40"
+          >
+            {shipToast}
+          </motion.div>
+        )}
+        {resequenceToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 12 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 rounded-lg border border-[var(--color-warning)] bg-elevated px-4 py-2.5 text-sm text-primary shadow-lg z-40 max-w-[480px]"
+          >
+            {resequenceToast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
+}
+
+function buildMarkdown(audience: Audience, resolved: ResolvedItem[]): string {
+  const audienceLabel = AUDIENCES.find((a) => a.key === audience)?.label ?? "All";
+  const active = resolved.filter(
+    (r) => r.status === "sequenced" || r.status === "ai-suggested",
+  );
+  let md = `# Q3 2026 — ${audienceLabel} View\n\n`;
+  if (audience === "exec") {
+    const themes = Array.from(new Set(active.map((r) => r.initiative.theme)));
+    md += "## Strategic themes\n\n";
+    themes.forEach((t, idx) => {
+      const items = active.filter((r) => r.initiative.theme === t);
+      const arr = items.reduce(
+        (s, r) => s + (r.initiative.arr_exposure_usd ?? 0),
+        0,
+      );
+      md += `${idx + 1}. **${t}** — $${(arr / 1000).toFixed(0)}k ARR\n`;
+      md += `   ${items.map((r) => r.initiative.title).join(", ")}\n\n`;
+    });
+  } else {
+    SPRINTS.forEach((s) => {
+      const items = active.filter((r) => r.sequence === s.key);
+      if (items.length === 0) return;
+      md += `## ${s.key} — ${s.date}\n\n`;
+      items.forEach((r) => {
+        md += `- **${r.initiative.title}**`;
+        if (audience !== "sales") {
+          md += ` (${r.initiative.ai_recommendation.effort_sprints} sprint${r.initiative.ai_recommendation.effort_sprints > 1 ? "s" : ""})`;
+        }
+        md += "\n";
+      });
+      md += "\n";
+    });
+  }
+  return md;
 }
 
 function audienceCaption(a: Audience): string {
@@ -224,30 +339,96 @@ function audienceCaption(a: Audience): string {
 function AllView({
   resolved,
   hydrated,
+  onResequence,
 }: {
   resolved: ResolvedItem[];
   hydrated: boolean;
+  onResequence: (title: string, from: string, to: string) => void;
 }) {
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverSprint, setDragOverSprint] = useState<string | null>(null);
+
   const inSprint = (sprint: string) =>
     resolved.filter((r) => r.sequence === sprint && r.status !== "deferred");
+
+  function handleDrop(toSprint: string) {
+    if (!draggingId) return;
+    const dragged = resolved.find((r) => r.initiative.id === draggingId);
+    if (!dragged) return;
+    if (dragged.sequence === toSprint) {
+      setDraggingId(null);
+      setDragOverSprint(null);
+      return;
+    }
+    onResequence(dragged.initiative.title, dragged.sequence, toSprint);
+    setDraggingId(null);
+    setDragOverSprint(null);
+  }
 
   return (
     <div className="space-y-10">
       {SPRINTS.map((s) => {
         const items = inSprint(s.key);
-        if (items.length === 0) return null;
+        const isDragOver = dragOverSprint === s.key;
         return (
-          <div key={s.key}>
+          <div
+            key={s.key}
+            onDragOver={(e) => {
+              if (!draggingId) return;
+              e.preventDefault();
+              setDragOverSprint(s.key);
+            }}
+            onDragLeave={() => setDragOverSprint(null)}
+            onDrop={() => handleDrop(s.key)}
+            className="rounded-lg transition"
+            style={{
+              background: isDragOver
+                ? "var(--color-accent-soft)"
+                : "transparent",
+              padding: isDragOver ? "12px" : "0",
+            }}
+          >
             <div className="flex items-baseline gap-3">
               <span className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
                 {s.key.replace("Q3 ", "")}
               </span>
               <span className="text-[11px] text-tertiary">— {s.date}</span>
+              {isDragOver && (
+                <span
+                  className="text-[10px] font-semibold"
+                  style={{ color: "var(--color-accent)" }}
+                >
+                  ← drop to move here
+                </span>
+              )}
             </div>
             <div className="mt-3 space-y-2">
-              {items.map((r) => (
-                <ItemRow key={r.initiative.id} item={r} hydrated={hydrated} />
-              ))}
+              {items.length > 0 ? (
+                items.map((r) => (
+                  <div
+                    key={r.initiative.id}
+                    draggable
+                    onDragStart={(e) => {
+                      setDraggingId(r.initiative.id);
+                      e.dataTransfer.effectAllowed = "move";
+                    }}
+                    onDragEnd={() => {
+                      setDraggingId(null);
+                      setDragOverSprint(null);
+                    }}
+                    style={{
+                      opacity: draggingId === r.initiative.id ? 0.4 : 1,
+                      cursor: "grab",
+                    }}
+                  >
+                    <ItemRow item={r} hydrated={hydrated} />
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-lg border border-dashed border-[var(--color-border)] bg-page px-4 py-3 text-xs italic text-tertiary">
+                  Open · drop an item here
+                </div>
+              )}
             </div>
           </div>
         );

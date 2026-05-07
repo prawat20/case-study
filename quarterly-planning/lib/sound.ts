@@ -60,3 +60,32 @@ export function playDeferTick() {
   osc.start(now);
   osc.stop(now + 0.12);
 }
+
+export function playSnapChime() {
+  const ac = getCtx();
+  if (!ac) return;
+  const now = ac.currentTime;
+
+  // Three-note resolving chord — feels like a plan locking in.
+  const tones = [
+    { freq: 523.25, start: 0, dur: 0.32 }, // C5
+    { freq: 659.25, start: 0.05, dur: 0.36 }, // E5
+    { freq: 783.99, start: 0.1, dur: 0.42 }, // G5
+  ];
+
+  for (const tone of tones) {
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.type = "sine";
+    osc.frequency.value = tone.freq;
+    gain.gain.setValueAtTime(0, now + tone.start);
+    gain.gain.linearRampToValueAtTime(0.06, now + tone.start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      now + tone.start + tone.dur,
+    );
+    osc.connect(gain).connect(ac.destination);
+    osc.start(now + tone.start);
+    osc.stop(now + tone.start + tone.dur);
+  }
+}

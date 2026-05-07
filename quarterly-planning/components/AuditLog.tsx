@@ -148,8 +148,21 @@ export function AuditLog() {
                     )}
                   </div>
 
-                  {note && (
+                  {initiative?.ai_recommendation.predicted_outcome && (
                     <div className="mt-3 flex items-start gap-2 rounded-md bg-[var(--color-page)] px-3 py-2">
+                      <span
+                        className="text-[10px] uppercase tracking-[0.12em] text-tertiary mt-0.5 shrink-0"
+                      >
+                        Predicted
+                      </span>
+                      <span className="text-[11px] leading-relaxed text-secondary">
+                        {initiative.ai_recommendation.predicted_outcome}
+                      </span>
+                    </div>
+                  )}
+
+                  {note && (
+                    <div className="mt-2 flex items-start gap-2 rounded-md bg-[var(--color-page)] px-3 py-2">
                       <Sparkles
                         size={12}
                         className="mt-0.5 shrink-0"

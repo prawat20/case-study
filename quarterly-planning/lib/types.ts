@@ -31,6 +31,13 @@ export interface Evidence {
 
 export type RecommendedAction = "commit" | "defer" | "escalate";
 
+export type Framework =
+  | "RICE"
+  | "ICE"
+  | "Value/Effort"
+  | "Strategic Bet"
+  | "WSJF";
+
 export interface AIRecommendation {
   action: RecommendedAction;
   action_reason: string;
@@ -42,6 +49,9 @@ export interface AIRecommendation {
   tradeoffs: string[];
   okr_alignment: string[];
   okr_contribution?: string;
+  framework: Framework;
+  framework_rationale: string; // why AI picked this framework for this item
+  predicted_outcome: string; // what AI expects if this is committed as recommended
   suggested_escalation?: {
     stakeholders: string[];
     draft_message: string;
