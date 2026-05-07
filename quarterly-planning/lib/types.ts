@@ -7,11 +7,26 @@ export type InitiativeStatus =
 
 export type StakeholderSignal = "sales" | "cs" | "support" | "exec" | "eng";
 
+export type SignalType =
+  | "deal_blocker"
+  | "deadline"
+  | "support_pain"
+  | "compliance"
+  | "strategic";
+
+export type EvidenceKind =
+  | "revenue"
+  | "deals"
+  | "support"
+  | "deadline"
+  | "strategic";
+
 export interface Evidence {
   metric: string;
   label: string;
   source: string;
   quote?: string;
+  kind?: EvidenceKind;
 }
 
 export interface AIRecommendation {
@@ -30,6 +45,8 @@ export interface Initiative {
   evidence: Evidence[];
   ai_recommendation: AIRecommendation;
   status: InitiativeStatus;
+  signal_type: SignalType;
+  priority_rank?: number;
   stakeholder_signals: StakeholderSignal[];
   theme: string;
   arr_exposure_usd?: number;

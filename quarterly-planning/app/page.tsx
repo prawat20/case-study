@@ -1,12 +1,17 @@
 import initiativesJson from "@/data/initiatives.json";
 import type { Initiative } from "@/lib/types";
+import { EvidenceChip } from "@/components/EvidenceChip";
 
 const initiatives = initiativesJson as Initiative[];
 
 export default function Home() {
-  const needsDecision = initiatives.filter(
-    (i) => i.status === "needs_decision",
-  );
+  const needsDecision = initiatives
+    .filter((i) => i.status === "needs_decision")
+    .sort(
+      (a, b) =>
+        (a.priority_rank ?? Number.MAX_SAFE_INTEGER) -
+        (b.priority_rank ?? Number.MAX_SAFE_INTEGER),
+    );
   const monitoring = initiatives.filter((i) => i.status !== "needs_decision");
 
   return (
@@ -30,28 +35,33 @@ export default function Home() {
           Good morning, Pravesh.
         </h1>
         <p className="mt-1 text-sm text-secondary">
-          {needsDecision.length} decisions today. The system is watching{" "}
-          {monitoring.length} more — none need you yet.
+          {needsDecision.length} decisions today, ordered by urgency. The
+          system is watching {monitoring.length} more — none need you yet.
         </p>
 
         <div className="mt-12 space-y-3">
           {needsDecision.map((i) => (
             <article
               key={i.id}
-              className="group cursor-pointer rounded-xl border border-[var(--color-border)] bg-elevated p-5 transition hover:bg-card-hover"
+              className="group cursor-pointer rounded-xl border border-[var(--color-border)] bg-elevated p-5 transition hover:bg-card-hover hover:border-[var(--color-border-strong)]"
             >
               <div className="flex items-start gap-3">
                 <span
-                  className="mt-2 inline-block h-2 w-2 rounded-full"
+                  className="mt-2 inline-block h-2 w-2 rounded-full shrink-0"
                   style={{ background: "var(--color-warning)" }}
                 />
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <h2 className="text-base font-medium">{i.title}</h2>
                   <p className="mt-1 text-sm text-secondary">
                     {i.synthesis_oneliner}
                   </p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {i.evidence.slice(0, 3).map((ev, idx) => (
+                      <EvidenceChip key={idx} evidence={ev} />
+                    ))}
+                  </div>
                 </div>
-                <span className="text-xs text-accent opacity-0 transition group-hover:opacity-100">
+                <span className="text-xs text-accent opacity-0 transition group-hover:opacity-100 shrink-0 mt-1">
                   Decide ↵
                 </span>
               </div>
@@ -60,8 +70,7 @@ export default function Home() {
         </div>
 
         <p className="mt-16 text-xs text-tertiary">
-          Scaffold ready · Priority Stream renders below first pass · Initiative
-          Detail and Quarterly Simulation come next.
+          Scaffold v0.2 · Sorted + chip-coded · Initiative Detail comes next.
         </p>
       </main>
     </div>

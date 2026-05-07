@@ -21,6 +21,18 @@
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
 
+  /* Evidence-chip semantic tints (background + text pairs) */
+  --color-chip-revenue-bg: rgba(34, 197, 94, 0.10);
+  --color-chip-revenue-text: #4ade80;
+  --color-chip-deals-bg: rgba(124, 92, 255, 0.14);
+  --color-chip-deals-text: #a78bfa;
+  --color-chip-support-bg: rgba(245, 158, 11, 0.12);
+  --color-chip-support-text: #fbbf24;
+  --color-chip-deadline-bg: rgba(239, 68, 68, 0.12);
+  --color-chip-deadline-text: #f87171;
+  --color-chip-strategic-bg: rgba(161, 161, 170, 0.10);
+  --color-chip-strategic-text: #a1a1aa;
+
   /* Borders */
   --color-border: #1a1a1f;
   --color-border-strong: #2a2a31;
