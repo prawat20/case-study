@@ -1,78 +1,108 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useCommandPalette } from "@/components/CommandProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
+
+type NavItem = {
+  label: string;
+  href: string;
+  match: (pathname: string) => boolean;
+};
+
+const NAV: NavItem[] = [
+  {
+    label: "Now",
+    href: "/",
+    match: (p) => p === "/" || p === "",
+  },
+  {
+    label: "Calendar",
+    href: "/quarter/",
+    match: (p) => p.startsWith("/quarter"),
+  },
+  {
+    label: "Audit",
+    href: "/audit/",
+    match: (p) => p.startsWith("/audit"),
+  },
+];
 
 export function Header() {
   const { open } = useCommandPalette();
-  const [today, setToday] = useState<string>("");
-
-  useEffect(() => {
-    const d = new Date();
-    const opts: Intl.DateTimeFormatOptions = {
-      month: "short",
-      day: "numeric",
-    };
-    const week = getISOWeek(d);
-    const start = new Date(d);
-    start.setDate(d.getDate() - ((d.getDay() + 6) % 7));
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    setToday(
-      `Week ${week} · ${start.toLocaleDateString("en-US", opts)} — ${end.toLocaleDateString(
-        "en-US",
-        opts,
-      )}`,
-    );
-  }, []);
+  const pathname = usePathname() || "/";
 
   return (
-    <header className="flex items-center justify-between border-b border-[var(--color-border)] px-8 py-4">
-      <Link href="/" className="flex items-center gap-3">
-        <span className="text-lg" style={{ color: "var(--color-accent)" }}>
-          ◐
+    <header
+      className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-elevated)]/85 px-6 backdrop-blur-md"
+      style={{ boxShadow: "var(--shadow-sm)" }}
+    >
+      {/* Wordmark */}
+      <Link href="/" className="flex items-center gap-2 group">
+        <span
+          aria-hidden
+          className="flex h-6 w-6 items-center justify-center rounded-[5px] transition-transform group-hover:scale-105"
+          style={{
+            background: "var(--color-accent)",
+            color: "var(--color-elevated)",
+            fontSize: 13,
+            fontWeight: 700,
+          }}
+        >
+          ◆
         </span>
-        <span className="text-sm text-secondary">Workspace</span>
+        <span
+          className="text-[15px] font-semibold tracking-tight"
+          style={{ color: "var(--color-primary)" }}
+        >
+          Glide
+        </span>
       </Link>
-      <div className="flex items-center gap-5 text-xs text-tertiary">
-        <span className="hidden sm:inline">{today}</span>
-        <Link
-          href="/quarter/"
-          className="transition hover:text-primary"
-        >
-          Quarter
-        </Link>
-        <Link
-          href="/audit/"
-          className="transition hover:text-primary"
-        >
-          Audit
-        </Link>
-        <Link
-          href="/architecture/"
-          className="transition hover:text-primary"
-        >
-          System
-        </Link>
+
+      {/* Nav */}
+      <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
+        {NAV.map((item) => {
+          const active = item.match(pathname);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`relative px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                active
+                  ? "text-[var(--color-primary)]"
+                  : "text-[var(--color-tertiary)] hover:text-[var(--color-primary)]"
+              }`}
+            >
+              {item.label}
+              {active && (
+                <span
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2"
+                  style={{
+                    height: 2,
+                    width: 16,
+                    background: "var(--color-accent)",
+                    borderRadius: 999,
+                  }}
+                />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Right cluster */}
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
         <button
           onClick={open}
-          className="inline-flex items-center gap-1.5 rounded border border-[var(--color-border-strong)] bg-elevated px-2 py-1 text-[10px] font-mono text-secondary transition hover:text-primary"
+          aria-label="Open command palette"
+          className="inline-flex h-7 items-center gap-1.5 rounded-md border border-[var(--color-border)] px-2 font-mono text-[10px] text-tertiary transition hover:bg-card-hover hover:text-primary"
+          style={{ background: "var(--color-page)" }}
         >
           <span>⌘K</span>
         </button>
-        <div className="h-7 w-7 rounded-full bg-elevated" />
       </div>
     </header>
-  );
-}
-
-function getISOWeek(d: Date): number {
-  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNum = date.getUTCDay() || 7;
-  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  return Math.ceil(
-    ((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
   );
 }

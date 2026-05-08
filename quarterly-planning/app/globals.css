@@ -1,65 +1,145 @@
 @import "tailwindcss";
 
+/* ──────────────────────────────────────────────────────────────
+   CS2 v2 — Design System Tokens
+   Source of truth: docs/cs2_design_system_v2.md
+   Light theme is the default. Dark is opt-in via [data-theme="dark"].
+   ────────────────────────────────────────────────────────────── */
+
 :root {
-  /* Surfaces */
-  --color-page: #0a0a0b;
-  --color-elevated: #111114;
-  --color-card-hover: #1a1a1f;
+  /* Surfaces — warm cream page, white elevated, paper-feel */
+  --color-page: #F8F5EE;
+  --color-elevated: #FFFFFF;
+  --color-card-hover: #FBFAF5;
+  --color-surface-sunken: #F2EFE7;
 
-  /* Text */
-  --color-primary: #fafafa;
-  --color-secondary: #a1a1aa;
-  --color-tertiary: #52525b;
-  --color-muted: #71717a;
+  /* Ink — never pure black; warm graphite ladder */
+  --color-primary: #1A1815;
+  --color-secondary: #58524A;
+  --color-tertiary: #8C857A;
+  --color-muted: #B8B0A2;
 
-  /* Accent — calm violet, distinctive without being loud */
-  --color-accent: #7c5cff;
-  --color-accent-soft: rgba(124, 92, 255, 0.12);
+  /* Borders — subtle warm tint */
+  --color-border: #ECE7DD;
+  --color-border-strong: #D9D2C5;
 
-  /* Status */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+  /* Accent — sage. Single accent, used sparingly. */
+  --color-accent: #5A8F6F;
+  --color-accent-hover: #4F7F62;
+  --color-accent-soft: rgba(90, 143, 111, 0.10);
+  --color-accent-tint: rgba(90, 143, 111, 0.04);
 
-  /* Evidence-chip semantic tints (background + text pairs) */
-  --color-chip-revenue-bg: rgba(34, 197, 94, 0.10);
-  --color-chip-revenue-text: #4ade80;
-  --color-chip-deals-bg: rgba(124, 92, 255, 0.14);
-  --color-chip-deals-text: #a78bfa;
-  --color-chip-support-bg: rgba(245, 158, 11, 0.12);
-  --color-chip-support-text: #fbbf24;
-  --color-chip-deadline-bg: rgba(239, 68, 68, 0.12);
-  --color-chip-deadline-text: #f87171;
-  --color-chip-strategic-bg: rgba(161, 161, 170, 0.10);
-  --color-chip-strategic-text: #a1a1aa;
+  /* Status — warm-tinted, never neon */
+  --color-success: #4A8159;
+  --color-warning: #B5772A;
+  --color-danger: #B04A47;
+  --color-success-soft: rgba(74, 129, 89, 0.10);
+  --color-warning-soft: rgba(181, 119, 42, 0.10);
+  --color-danger-soft: rgba(176, 74, 71, 0.10);
 
-  /* Borders */
-  --color-border: #1a1a1f;
-  --color-border-strong: #2a2a31;
+  /* Evidence chip semantic tints — re-tuned for warm palette */
+  --color-chip-revenue-bg: rgba(74, 129, 89, 0.12);
+  --color-chip-revenue-text: #3F6E4A;
+  --color-chip-deals-bg: rgba(90, 143, 111, 0.14);
+  --color-chip-deals-text: #4F7F62;
+  --color-chip-support-bg: rgba(181, 119, 42, 0.12);
+  --color-chip-support-text: #8E5C1F;
+  --color-chip-deadline-bg: rgba(176, 74, 71, 0.12);
+  --color-chip-deadline-text: #8C3A37;
+  --color-chip-strategic-bg: rgba(140, 133, 122, 0.12);
+  --color-chip-strategic-text: #58524A;
 
-  /* Type */
+  /* Shadows — light theme leans on shadow more than dark; tuned soft */
+  --shadow-sm: 0 1px 2px rgba(26, 24, 21, 0.04);
+  --shadow-md: 0 2px 8px rgba(26, 24, 21, 0.06), 0 1px 2px rgba(26, 24, 21, 0.04);
+  --shadow-lg: 0 12px 32px rgba(26, 24, 21, 0.08), 0 4px 12px rgba(26, 24, 21, 0.05);
+  --shadow-focus: 0 0 0 3px rgba(90, 143, 111, 0.18);
+
+  /* Motion */
+  --duration-instant: 100ms;
+  --duration-fast: 180ms;
+  --duration-slow: 320ms;
+  --duration-celebrate: 720ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 0.84, 0.4);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Type families — set in layout.tsx via next/font */
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-fraunces), "Tiempos Headline", Georgia, serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", monospace;
 }
+
+/* ─────────── Dark theme — earth-toned dark, parallel set ────────── */
+
+[data-theme="dark"] {
+  --color-page: #16140F;
+  --color-elevated: #1F1C16;
+  --color-card-hover: #25211A;
+  --color-surface-sunken: #100E0A;
+
+  --color-primary: #F4F0E8;
+  --color-secondary: #B8B0A2;
+  --color-tertiary: #8A8377;
+  --color-muted: #5C564D;
+
+  --color-border: #2A2620;
+  --color-border-strong: #3A332A;
+
+  --color-accent: #7AAE8B;
+  --color-accent-hover: #8BBE9C;
+  --color-accent-soft: rgba(122, 174, 139, 0.14);
+  --color-accent-tint: rgba(122, 174, 139, 0.06);
+
+  --color-success: #6FA87E;
+  --color-warning: #D49449;
+  --color-danger: #D27370;
+  --color-success-soft: rgba(111, 168, 126, 0.14);
+  --color-warning-soft: rgba(212, 148, 73, 0.14);
+  --color-danger-soft: rgba(210, 115, 112, 0.14);
+
+  --color-chip-revenue-bg: rgba(111, 168, 126, 0.16);
+  --color-chip-revenue-text: #8FC09E;
+  --color-chip-deals-bg: rgba(122, 174, 139, 0.18);
+  --color-chip-deals-text: #9ECDAE;
+  --color-chip-support-bg: rgba(212, 148, 73, 0.14);
+  --color-chip-support-text: #E2A968;
+  --color-chip-deadline-bg: rgba(210, 115, 112, 0.14);
+  --color-chip-deadline-text: #E69390;
+  --color-chip-strategic-bg: rgba(184, 176, 162, 0.10);
+  --color-chip-strategic-text: #B8B0A2;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 10px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-focus: 0 0 0 3px rgba(122, 174, 139, 0.28);
+}
+
+/* ─────────── Tailwind v4 theme bridge ────────── */
 
 @theme inline {
   --color-page: var(--color-page);
   --color-elevated: var(--color-elevated);
   --color-card-hover: var(--color-card-hover);
+  --color-surface-sunken: var(--color-surface-sunken);
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
   --color-tertiary: var(--color-tertiary);
   --color-muted: var(--color-muted);
   --color-accent: var(--color-accent);
   --color-accent-soft: var(--color-accent-soft);
+  --color-accent-tint: var(--color-accent-tint);
   --color-success: var(--color-success);
   --color-warning: var(--color-warning);
   --color-danger: var(--color-danger);
   --color-border: var(--color-border);
   --color-border-strong: var(--color-border-strong);
   --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
 }
+
+/* ─────────── Document base ────────── */
 
 html,
 body {
@@ -70,6 +150,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* light theme calls for slightly heavier body — line-height bumps to 1.55 */
+  line-height: 1.55;
+  transition: background var(--duration-slow) var(--ease-out),
+              color var(--duration-slow) var(--ease-out);
 }
 
 ::selection {
@@ -92,7 +176,21 @@ body {
   background: var(--color-muted);
 }
 
-/* cmdk Command Palette */
+/* Reduced-motion friendly defaults */
+@media (prefers-reduced-motion: reduce) {
+  html, body {
+    transition: none;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────── cmdk command palette ────────── */
+
 [cmdk-group-heading] {
   display: block;
   padding: 0.5rem 0.75rem 0.25rem;
@@ -112,7 +210,8 @@ body {
   font-size: 13px;
   color: var(--color-secondary);
   cursor: pointer;
-  transition: background 100ms ease, color 100ms ease;
+  transition: background var(--duration-instant) var(--ease-out),
+              color var(--duration-instant) var(--ease-out);
 }
 
 .cmd-item[data-selected="true"],
@@ -125,4 +224,25 @@ body {
   margin-top: 0.25rem;
   border-top: 1px solid var(--color-border);
   padding-top: 0.25rem;
+}
+
+/* ─────────── Type utility shortcuts (used across surfaces) ────────── */
+
+.font-display {
+  font-family: var(--font-serif);
+  font-feature-settings: "ss01", "ss02";
+  letter-spacing: -0.018em;
+}
+
+.font-numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-tertiary);
 }
