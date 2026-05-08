@@ -24,8 +24,13 @@ const NAV: NavItem[] = [
   },
   {
     label: "Calendar",
-    href: "/quarter/",
-    match: (p) => p.startsWith("/quarter"),
+    href: "/calendar/",
+    match: (p) => p.startsWith("/calendar") || p.startsWith("/quarter"),
+  },
+  {
+    label: "Stakeholders",
+    href: "/stakeholders/",
+    match: (p) => p.startsWith("/stakeholders"),
   },
   {
     label: "Audit",

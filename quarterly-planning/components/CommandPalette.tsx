@@ -6,10 +6,8 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
-  Layers,
   GitBranch,
   RefreshCw,
-  TriangleAlert,
   History,
   Plus,
   Inbox as InboxIcon,
@@ -17,6 +15,7 @@ import {
   Sun,
   Moon,
   Home,
+  Users,
 } from "lucide-react";
 import initiativesJson from "@/data/initiatives.json";
 import type { Initiative } from "@/lib/types";
@@ -24,16 +23,9 @@ import { clearDecisions, clearFrameworkOverrides } from "@/lib/decisions";
 import { clearTriage } from "@/lib/triage";
 import { clearCaptures } from "@/lib/captures";
 import { useCommandPalette } from "@/components/CommandProvider";
+import { AUDIENCES } from "@/lib/stakeholder-artifacts";
 
 const initiatives = initiativesJson as Initiative[];
-
-const audiences = [
-  { key: "all", label: "All" },
-  { key: "exec", label: "Exec" },
-  { key: "eng", label: "Eng" },
-  { key: "sales", label: "Sales" },
-  { key: "cs", label: "CS" },
-];
 
 export function CommandPalette({
   open,
@@ -169,12 +161,20 @@ export function CommandPalette({
                     <span>Now</span>
                   </Command.Item>
                   <Command.Item
-                    value="calendar quarter"
-                    onSelect={() => go("/quarter/")}
+                    value="calendar sprint plan"
+                    onSelect={() => go("/calendar/")}
                     className="cmd-item"
                   >
                     <CalendarIcon size={14} style={{ color: "var(--color-tertiary)" }} />
                     <span>Calendar</span>
+                  </Command.Item>
+                  <Command.Item
+                    value="stakeholders hub"
+                    onSelect={() => go("/stakeholders/")}
+                    className="cmd-item"
+                  >
+                    <Users size={14} style={{ color: "var(--color-tertiary)" }} />
+                    <span>Stakeholders</span>
                   </Command.Item>
                   <Command.Item
                     value="audit log"
@@ -194,6 +194,20 @@ export function CommandPalette({
                   </Command.Item>
                 </Command.Group>
 
+                <Command.Group heading="Stakeholder views" className="cmd-group">
+                  {AUDIENCES.map((a) => (
+                    <Command.Item
+                      key={a.key}
+                      value={`for ${a.label} stakeholder ${a.key}`}
+                      onSelect={() => go(`/stakeholders/${a.key}/`)}
+                      className="cmd-item"
+                    >
+                      <Users size={14} style={{ color: "var(--color-tertiary)" }} />
+                      <span>For {a.label}</span>
+                    </Command.Item>
+                  ))}
+                </Command.Group>
+
                 <Command.Group heading="Decisions" className="cmd-group">
                   {initiatives
                     .filter((i) => i.status === "needs_decision")
@@ -209,28 +223,6 @@ export function CommandPalette({
                         <span>Prioritize {i.title}</span>
                       </Command.Item>
                     ))}
-                </Command.Group>
-
-                <Command.Group heading="Plan" className="cmd-group">
-                  {audiences.map((a) => (
-                    <Command.Item
-                      key={a.key}
-                      value={`render plan for ${a.label}`}
-                      onSelect={() => go(`/quarter/?audience=${a.key}`)}
-                      className="cmd-item"
-                    >
-                      <Layers size={14} style={{ color: "var(--color-tertiary)" }} />
-                      <span>Render plan for {a.label}</span>
-                    </Command.Item>
-                  ))}
-                  <Command.Item
-                    value="show conflicts"
-                    onSelect={() => go("/quarter/?filter=conflicts")}
-                    className="cmd-item"
-                  >
-                    <TriangleAlert size={14} style={{ color: "var(--color-tertiary)" }} />
-                    <span>Show conflicts</span>
-                  </Command.Item>
                 </Command.Group>
 
                 <Command.Group heading="Theme" className="cmd-group">
@@ -260,6 +252,10 @@ export function CommandPalette({
                       clearFrameworkOverrides();
                       clearTriage();
                       clearCaptures();
+                      try {
+                        localStorage.removeItem("qp_calendar_assignments_v2");
+                        localStorage.removeItem("qp_calendar_locked_v2");
+                      } catch {}
                       onClose();
                       router.push("/");
                     }}

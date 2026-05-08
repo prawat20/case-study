@@ -1,24 +1,30 @@
 import Link from "next/link";
 import { Header } from "@/components/Header";
 
-export default function Architecture() {
+export default function ArchitecturePage() {
   return (
-    <div className="min-h-screen bg-page text-primary">
+    <div className="min-h-screen text-primary" style={{ background: "var(--color-page)" }}>
       <Header />
 
-      <main className="mx-auto max-w-[720px] px-8 py-12">
+      <main className="mx-auto max-w-[720px] px-6 pt-10 pb-24">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-secondary transition hover:text-primary"
+          className="inline-flex items-center gap-1.5 text-[12.5px] transition"
+          style={{ color: "var(--color-tertiary)" }}
         >
           ← Back
         </Link>
 
-        <h1 className="mt-8 text-2xl font-semibold tracking-tight">System</h1>
-        <p className="mt-2 text-sm text-secondary leading-relaxed">
-          A layered system. Ingestion at the bottom feeds the synthesis layers
-          in the middle. The decision audit log closes the loop back into the
-          priority engine — so the system learns from every override.
+        <p className="eyebrow mt-8">System</p>
+        <h1
+          className="font-display mt-2 text-[28px] leading-tight tracking-tight"
+          style={{ color: "var(--color-primary)", fontWeight: 500 }}
+        >
+          Architecture
+        </h1>
+        <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+          A layered system. Ingestion at the bottom feeds the synthesis layers in the middle.
+          The decision audit log closes the loop back into the priority engine — so the system learns from every override.
         </p>
 
         <div className="mt-12 space-y-3">
@@ -31,8 +37,8 @@ export default function Architecture() {
           <Connector />
           <Layer
             number={5}
-            title="Roadmap Drafting + Audience-Tuned Render"
-            description="Pre-fills quarterly plans, simulates sequence tradeoffs, renders the same plan in four audience modes (Exec, Eng, Sales, CS)."
+            title="Roadmap Drafting + Stakeholder Render"
+            description="Pre-fills quarterly plans, drag-to-resequence with capacity awareness, generates audience-shaped artifacts (Sales / Exec / Customer / Eng)."
           />
           <Layer
             number={4}
@@ -57,27 +63,30 @@ export default function Architecture() {
             foundation
           />
           <Connector small />
-          <div className="text-center text-[11px] uppercase tracking-[0.18em] text-tertiary py-2">
+          <p
+            className="text-center text-[10.5px] uppercase tracking-[0.18em] py-2"
+            style={{ color: "var(--color-tertiary)" }}
+          >
             Slack · Jira · CRM · Calls · Analytics
-          </div>
+          </p>
         </div>
 
-        <div className="mt-16 rounded-xl border border-[var(--color-border)] bg-elevated p-6">
-          <h3 className="text-base font-medium text-primary">
+        <div
+          className="mt-16 rounded-xl px-6 py-6"
+          style={{
+            background: "var(--color-elevated)",
+            border: "1px solid var(--color-border)",
+            boxShadow: "var(--shadow-sm)",
+          }}
+        >
+          <h3 className="text-[15px] font-semibold" style={{ color: "var(--color-primary)" }}>
             Why this shape
           </h3>
-          <p className="mt-3 text-sm text-secondary leading-relaxed">
-            Most prioritization tools live in layer 5 alone. They are systems
-            of record — they store the prioritized list after the PM has
-            already done the thinking. This system inverts that. Layers 1-3
-            do the synthesis. The PM operates in 4-5. Layer 6 makes the
-            system learn.
+          <p className="mt-3 text-[13.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+            Most prioritization tools live in layer 5 alone. They are systems of record — they store the prioritized list after the PM has already done the thinking. This system inverts that. Layers 1-3 do the synthesis. The PM operates in 4-5. Layer 6 makes the system learn.
           </p>
-          <p className="mt-3 text-sm text-secondary leading-relaxed">
-            The build in this case study covers layers 4-5 with realistic
-            mocked data. Layers 1-3 (ingestion, synthesis, engine) are the
-            architectural precondition; their existence is assumed in the
-            brief.
+          <p className="mt-3 text-[13.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+            The build in this case study covers layers 4-5 with realistic mocked data. Layers 1-3 (ingestion, synthesis, engine) are the architectural precondition; their existence is assumed in the brief.
           </p>
         </div>
       </main>
@@ -100,33 +109,33 @@ function Layer({
 }) {
   return (
     <div
-      className="flex items-start gap-4 rounded-xl border bg-elevated p-5"
+      className="flex items-start gap-4 rounded-xl px-5 py-5"
       style={{
+        background: foundation ? "var(--color-surface-sunken)" : "var(--color-elevated)",
+        border: "1px solid",
         borderColor: highlight
           ? "var(--color-accent)"
           : foundation
             ? "var(--color-border-strong)"
             : "var(--color-border)",
-        background: foundation ? "var(--color-card-hover)" : undefined,
+        boxShadow: "var(--shadow-sm)",
       }}
     >
       <div
-        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-xs tabular-nums"
+        className="font-numeric mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-medium"
         style={{
-          background: highlight
-            ? "var(--color-accent)"
-            : "var(--color-page)",
-          color: highlight ? "#fff" : "var(--color-tertiary)",
-          border: highlight
-            ? "none"
-            : "1px solid var(--color-border-strong)",
+          background: highlight ? "var(--color-accent)" : "var(--color-page)",
+          color: highlight ? "var(--color-elevated)" : "var(--color-tertiary)",
+          border: highlight ? "none" : "1px solid var(--color-border-strong)",
         }}
       >
         {number}
       </div>
       <div className="flex-1">
-        <h3 className="text-base font-medium text-primary">{title}</h3>
-        <p className="mt-1 text-sm text-secondary leading-relaxed">
+        <h3 className="text-[15px] font-semibold" style={{ color: "var(--color-primary)" }}>
+          {title}
+        </h3>
+        <p className="mt-1 text-[13px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
           {description}
         </p>
       </div>

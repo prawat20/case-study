@@ -83,7 +83,7 @@ export default function NowPage() {
 
             <DoTodayCard
               index={1}
-              href="/quarter/"
+              href="/calendar/"
               primary={`Sprint 2 of Q3, ${sprintItemsInFlight} items in flight`}
               secondary={`Capacity ${sprintCapacity}% · ${sprintRiskCount === 0 ? "No risks flagged" : `${sprintRiskCount} risk on track`}`}
               cta="Open plan"
