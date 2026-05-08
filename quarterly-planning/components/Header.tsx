@@ -18,6 +18,11 @@ const NAV: NavItem[] = [
     match: (p) => p === "/" || p === "",
   },
   {
+    label: "Inbox",
+    href: "/inbox/",
+    match: (p) => p.startsWith("/inbox") || p.startsWith("/initiative"),
+  },
+  {
     label: "Calendar",
     href: "/quarter/",
     match: (p) => p.startsWith("/quarter"),
