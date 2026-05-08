@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,12 +13,10 @@ import {
   Sparkles,
   AlertTriangle,
   History,
-  Info,
 } from "lucide-react";
 import type {
   Initiative,
-  Evidence,
-  EvidenceKind,
+  Framework,
   RecommendedAction,
 } from "@/lib/types";
 import {
@@ -30,33 +28,22 @@ import {
 } from "@/lib/decisions";
 import { playCommitChime, playDeferTick } from "@/lib/sound";
 import { getOKR } from "@/lib/strategic";
-import { SprintView } from "@/components/SprintView";
-
-const tintByKind: Record<EvidenceKind, { bg: string; text: string }> = {
-  revenue: { bg: "var(--color-chip-revenue-bg)", text: "var(--color-chip-revenue-text)" },
-  deals: { bg: "var(--color-chip-deals-bg)", text: "var(--color-chip-deals-text)" },
-  support: { bg: "var(--color-chip-support-bg)", text: "var(--color-chip-support-text)" },
-  deadline: { bg: "var(--color-chip-deadline-bg)", text: "var(--color-chip-deadline-text)" },
-  strategic: { bg: "var(--color-chip-strategic-bg)", text: "var(--color-chip-strategic-text)" },
-};
+import { getScoring, listFrameworks } from "@/lib/frameworks";
+import { Header } from "@/components/Header";
+import { signalToKind } from "@/lib/inbox-helpers";
 
 type Mode =
   | "default"
-  | "overriding" // user picked an action that differs from AI rec
-  | "escalating" // escalate path (with stakeholders + draft msg)
-  | "committing" // committed/done — animation playing, navigating away
+  | "overriding"
+  | "confirming"
+  | "escalating"
+  | "committing"
   | "deferred";
 
 const ACTION_LABEL: Record<RecommendedAction, string> = {
   commit: "Commit",
   defer: "Defer",
   escalate: "Escalate",
-};
-
-const ACTION_VERB: Record<RecommendedAction, string> = {
-  commit: "I recommend committing this.",
-  defer: "I recommend deferring this.",
-  escalate: "I recommend escalating this.",
 };
 
 const STAKEHOLDER_LABELS: Record<string, string> = {
@@ -66,12 +53,12 @@ const STAKEHOLDER_LABELS: Record<string, string> = {
   eng: "Engineering",
 };
 
-function actionColor(action: RecommendedAction): string {
+function actionTone(action: RecommendedAction): string {
   switch (action) {
     case "commit":
       return "var(--color-success)";
     case "defer":
-      return "var(--color-muted)";
+      return "var(--color-tertiary)";
     case "escalate":
       return "var(--color-warning)";
   }
@@ -79,85 +66,83 @@ function actionColor(action: RecommendedAction): string {
 
 export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   const router = useRouter();
+  const rec = initiative.ai_recommendation;
+  const recAction = rec.action;
+
   const [mode, setMode] = useState<Mode>("default");
-  // When user picks a non-AI action, we capture which action they're doing → triggers override prompt
   const [overrideTo, setOverrideTo] = useState<RecommendedAction | null>(null);
-  const [expandedChip, setExpandedChip] = useState<number | null>(null);
   const [overrideText, setOverrideText] = useState("");
   const [escalateTags, setEscalateTags] = useState<Set<string>>(
-    new Set(initiative.ai_recommendation.suggested_escalation?.stakeholders ?? []),
+    new Set(rec.suggested_escalation?.stakeholders ?? []),
   );
   const [escalateMessage, setEscalateMessage] = useState(
-    initiative.ai_recommendation.suggested_escalation?.draft_message ?? "",
+    rec.suggested_escalation?.draft_message ?? "",
   );
   const [toast, setToast] = useState<string | null>(null);
-  const [priorOverride, setPriorOverride] = useState<{
-    rationale: string;
-  } | null>(null);
-  const [showFrameworkInfo, setShowFrameworkInfo] = useState(false);
-  const [showFrameworkPicker, setShowFrameworkPicker] = useState(false);
-  const [activeFramework, setActiveFramework] = useState<string>(
-    initiative.ai_recommendation.framework,
-  );
+  const [priorOverride, setPriorOverride] = useState<{ rationale: string } | null>(null);
+  const [activeFramework, setActiveFramework] = useState<Framework>(rec.framework);
   const [flyToCorner, setFlyToCorner] = useState(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const overrideInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Hydrate user-overridden framework from localStorage
+  /* Hydrate framework override */
   useEffect(() => {
     function load() {
       const overrides = getFrameworkOverrides();
-      if (overrides[initiative.id]) {
-        setActiveFramework(overrides[initiative.id]);
+      const stored = overrides[initiative.id];
+      if (stored && (listFrameworks() as string[]).includes(stored)) {
+        setActiveFramework(stored as Framework);
       } else {
-        setActiveFramework(initiative.ai_recommendation.framework);
+        setActiveFramework(rec.framework);
       }
     }
     load();
     window.addEventListener(FRAMEWORK_OVERRIDES_EVENT, load);
-    return () =>
-      window.removeEventListener(FRAMEWORK_OVERRIDES_EVENT, load);
-  }, [initiative.id, initiative.ai_recommendation.framework]);
+    return () => window.removeEventListener(FRAMEWORK_OVERRIDES_EVENT, load);
+  }, [initiative.id, rec.framework]);
 
-  function pickFramework(fw: string) {
-    setActiveFramework(fw);
-    setShowFrameworkPicker(false);
-    if (fw !== initiative.ai_recommendation.framework) {
-      setFrameworkOverride(initiative.id, fw);
-      setToast(`Framework switched to ${fw}. AI will re-score on next sync.`);
-      setTimeout(() => setToast(null), 2200);
-    }
-  }
-
-  const rec = initiative.ai_recommendation;
-  const recAction = rec.action;
-
-  // System learning cue
+  /* System-learning cue */
   useEffect(() => {
     const decisions = getDecisions();
     const lastOverride = [...decisions]
       .reverse()
-      .find(
-        (d) => d.action === "overridden" && d.initiative_id !== initiative.id,
-      );
+      .find((d) => d.action === "overridden" && d.initiative_id !== initiative.id);
     if (lastOverride && lastOverride.human_rationale) {
       setPriorOverride({ rationale: lastOverride.human_rationale });
     }
   }, [initiative.id]);
 
-  // Auto-focus the override input
+  const scoring = useMemo(
+    () => getScoring(activeFramework, initiative),
+    [activeFramework, initiative],
+  );
+
+  function pickFramework(fw: Framework) {
+    setActiveFramework(fw);
+    if (fw !== rec.framework) {
+      setFrameworkOverride(initiative.id, fw);
+      setToast(`Framework switched to ${fw}.`);
+      setTimeout(() => setToast(null), 1800);
+    } else {
+      setFrameworkOverride(initiative.id, "");
+    }
+  }
+
+  /* Auto-focus override input when entering that mode */
   useEffect(() => {
     if (mode === "overriding") {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      setTimeout(() => overrideInputRef.current?.focus(), 50);
     }
   }, [mode]);
 
-  // Keyboard shortcuts
+  /* Keyboard map */
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const target = e.target as HTMLElement | null;
       const inForm =
         target &&
-        (target.tagName === "INPUT" || target.tagName === "TEXTAREA");
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT");
 
       if (mode === "committing" || mode === "deferred") return;
 
@@ -168,25 +153,34 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           setOverrideText("");
           setOverrideTo(null);
         } else {
-          router.push("/");
+          router.push("/inbox/");
         }
+        return;
+      }
+
+      // Confirming mode: ↵ to confirm
+      if (mode === "confirming" && e.key === "Enter") {
+        e.preventDefault();
+        finalizeCommit();
         return;
       }
 
       if (inForm) return;
 
-      if (e.key === "Enter" && mode === "default") {
-        e.preventDefault();
-        chooseAction(recAction);
-      } else if ((e.key === "c" || e.key === "C") && mode === "default") {
-        e.preventDefault();
-        chooseAction("commit");
-      } else if ((e.key === "d" || e.key === "D") && mode === "default") {
-        e.preventDefault();
-        chooseAction("defer");
-      } else if ((e.key === "s" || e.key === "S") && mode === "default") {
-        e.preventDefault();
-        chooseAction("escalate");
+      if (mode === "default") {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          chooseAction(recAction);
+        } else if (e.key === "c" || e.key === "C") {
+          e.preventDefault();
+          chooseAction("commit");
+        } else if (e.key === "d" || e.key === "D") {
+          e.preventDefault();
+          chooseAction("defer");
+        } else if (e.key === "s" || e.key === "S") {
+          e.preventDefault();
+          chooseAction("escalate");
+        }
       }
     }
     window.addEventListener("keydown", onKey);
@@ -196,607 +190,644 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
 
   function chooseAction(action: RecommendedAction) {
     if (action === "escalate") {
-      // Escalate has its own UI regardless of whether it matches AI rec
       setMode("escalating");
       return;
     }
     if (action === recAction) {
-      // Match AI rec — direct action, no reason needed
-      if (action === "commit") commit();
-      else if (action === "defer") defer();
+      // Match AI rec
+      if (action === "commit") {
+        setMode("confirming");
+      } else {
+        defer();
+      }
       return;
     }
-    // Mismatch — capture as override with reason
+    // Mismatch — capture override reason first
     setOverrideTo(action);
     setMode("overriding");
   }
 
-  function commit() {
+  function submitOverride() {
+    if (!overrideText.trim() || !overrideTo) return;
+    if (overrideTo === "commit") {
+      // After capturing reason, go to confirm step
+      setMode("confirming");
+    } else if (overrideTo === "defer") {
+      finalizeDefer({ asOverride: true });
+    }
+  }
+
+  function finalizeCommit() {
     setMode("committing");
     playCommitChime();
     setFlyToCorner(true);
+    const isOverride = overrideTo !== null;
     addDecision({
       initiative_id: initiative.id,
-      action: "committed",
+      action: isOverride ? "overridden" : "committed",
       ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
+      human_rationale: isOverride ? `Commit — ${overrideText.trim()}` : undefined,
       sequence: rec.sequence,
       decided_at: new Date().toISOString(),
     });
     setToast(`Committed. Sequenced in ${rec.sequence}.`);
-    setTimeout(() => router.push("/"), 1100);
-  }
-
-  function commitOverride() {
-    if (!overrideText.trim() || !overrideTo) return;
-    setMode("committing");
-    if (overrideTo === "defer") playDeferTick();
-    else {
-      playCommitChime();
-      setFlyToCorner(true);
-    }
-    addDecision({
-      initiative_id: initiative.id,
-      action: "overridden",
-      ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
-      human_rationale: `${ACTION_LABEL[overrideTo]} — ${overrideText.trim()}`,
-      sequence: overrideTo === "commit" ? rec.sequence : "Overridden",
-      decided_at: new Date().toISOString(),
-    });
-    setToast(
-      `Overridden — chose ${ACTION_LABEL[overrideTo]} instead of ${ACTION_LABEL[recAction]}.`,
-    );
-    setTimeout(() => router.push("/"), 1100);
+    setTimeout(() => router.push("/inbox/"), 1100);
   }
 
   function defer() {
+    finalizeDefer({ asOverride: false });
+  }
+
+  function finalizeDefer({ asOverride }: { asOverride: boolean }) {
     setMode("deferred");
     playDeferTick();
     addDecision({
       initiative_id: initiative.id,
-      action: "deferred",
+      action: asOverride ? "overridden" : "deferred",
       ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
+      human_rationale: asOverride ? `Defer — ${overrideText.trim()}` : undefined,
+      sequence: asOverride ? "Overridden" : "Deferred",
       decided_at: new Date().toISOString(),
     });
     setToast("Deferred. Will resurface on context shift.");
-    setTimeout(() => router.push("/"), 900);
+    setTimeout(() => router.push("/inbox/"), 900);
   }
 
   function escalate() {
     if (escalateTags.size === 0) return;
     setMode("committing");
     playCommitChime();
-    const matchedRec = recAction === "escalate";
+    const matched = recAction === "escalate";
     addDecision({
       initiative_id: initiative.id,
-      action: matchedRec ? "escalated" : "overridden",
+      action: matched ? "escalated" : "overridden",
       ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
-      human_rationale: matchedRec
+      human_rationale: matched
         ? `Escalated to: ${[...escalateTags].join(", ")}`
         : `Escalate (overrode ${ACTION_LABEL[recAction]}) — sent to ${[...escalateTags].join(", ")}`,
       decided_at: new Date().toISOString(),
     });
     setToast(`Escalated to ${[...escalateTags].join(", ")}. Awaiting input.`);
-    setTimeout(() => router.push("/"), 1100);
+    setTimeout(() => router.push("/inbox/"), 1100);
   }
 
   const okrLabels = rec.okr_alignment
     .map((id) => getOKR(id)?.label)
     .filter(Boolean) as string[];
 
+  const signalKind = signalToKind(initiative.signal_type);
+  const arrLabel =
+    initiative.arr_exposure_usd && initiative.arr_exposure_usd > 0
+      ? `$${(initiative.arr_exposure_usd / 1000).toFixed(0)}k ARR exposure`
+      : null;
+
   return (
-    <div className="min-h-screen bg-page text-primary">
-      <div className="mx-auto max-w-[720px] px-8 py-10">
+    <div className="min-h-screen text-primary" style={{ background: "var(--color-page)" }}>
+      <Header />
+
+      <main className="mx-auto max-w-[720px] px-6 pt-8 pb-24">
+        {/* Top breadcrumbs */}
         <div className="flex items-center justify-between">
           <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm text-secondary transition hover:text-primary"
+            href="/inbox/"
+            className="inline-flex items-center gap-1.5 text-[12.5px] transition"
+            style={{ color: "var(--color-tertiary)" }}
           >
-            <ArrowLeft size={14} />
-            <span>Back</span>
+            <ArrowLeft size={13} />
+            <span>Inbox</span>
           </Link>
           <Link
             href="/audit/"
-            className="inline-flex items-center gap-1.5 text-xs text-tertiary transition hover:text-primary"
+            className="inline-flex items-center gap-1.5 text-[12px] transition"
+            style={{ color: "var(--color-tertiary)" }}
           >
-            <History size={12} />
             <span>Audit log</span>
+            <History size={12} />
           </Link>
         </div>
 
-        <div className="mt-10 flex items-baseline justify-between gap-6">
-          <h1 className="text-xl font-medium tracking-tight">
-            {initiative.title}
-          </h1>
-          <span className="shrink-0 text-[11px] uppercase tracking-wider text-tertiary">
-            {initiative.theme}
-          </span>
+        {/* Title */}
+        <p className="eyebrow mt-8">Prioritize</p>
+        <h1
+          className="font-display mt-2 text-[28px] leading-tight tracking-tight"
+          style={{ color: "var(--color-primary)", fontWeight: 500 }}
+        >
+          {initiative.title}
+        </h1>
+
+        {/* Metadata row */}
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-[12.5px]" style={{ color: "var(--color-tertiary)" }}>
+          <SignalChip kind={signalKind} />
+          {arrLabel && (
+            <>
+              <span style={{ color: "var(--color-muted)" }}>·</span>
+              <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>{arrLabel}</span>
+            </>
+          )}
+          {initiative.stakeholder_signals.length > 0 && (
+            <>
+              <span style={{ color: "var(--color-muted)" }}>·</span>
+              <span>{initiative.stakeholder_signals.length} stakeholder{initiative.stakeholder_signals.length === 1 ? "" : "s"}</span>
+            </>
+          )}
+          <span style={{ color: "var(--color-muted)" }}>·</span>
+          <span>{initiative.theme}</span>
         </div>
 
-        {/* OKR alignment */}
+        {/* OKR alignment row */}
         {okrLabels.length > 0 && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-secondary">
-            <span className="text-tertiary">Aligned with:</span>
-            {okrLabels.map((label, idx) => (
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px]">
+            <span className="eyebrow" style={{ color: "var(--color-muted)" }}>Aligned with</span>
+            {okrLabels.map((l, i) => (
               <span
-                key={idx}
-                className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5"
+                key={i}
+                className="inline-flex rounded-md px-2 py-0.5 text-[12px] font-medium"
                 style={{
                   background: "var(--color-accent-soft)",
                   color: "var(--color-accent)",
                 }}
               >
-                {label}
+                {l}
               </span>
             ))}
           </div>
         )}
 
-        {/* System-learning cue */}
+        {/* System learning cue */}
         {priorOverride && mode === "default" && (
           <motion.div
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-6 flex items-start gap-3 rounded-lg border border-[var(--color-border)] bg-elevated px-4 py-3"
+            transition={{ delay: 0.3, duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-6 flex items-start gap-3 rounded-lg px-4 py-3"
+            style={{
+              background: "var(--color-elevated)",
+              border: "1px solid var(--color-border)",
+              boxShadow: "var(--shadow-sm)",
+            }}
           >
-            <Sparkles
-              size={14}
-              className="mt-0.5 shrink-0"
-              style={{ color: "var(--color-accent)" }}
-            />
-            <div className="text-xs leading-relaxed text-secondary">
-              <span className="text-tertiary">Noting your last override:</span>{" "}
-              you flagged &ldquo;{priorOverride.rationale}&rdquo; as a reason —
-              I&rsquo;ve weighted that consideration in the recommendation
-              below.
-            </div>
+            <Sparkles size={13} className="mt-0.5 shrink-0" style={{ color: "var(--color-accent)" }} />
+            <p className="text-[12.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+              <span style={{ color: "var(--color-tertiary)" }}>Noting your last override:</span>{" "}
+              you flagged &ldquo;{priorOverride.rationale}&rdquo; as a reason — I&rsquo;ve weighted that consideration in this recommendation.
+            </p>
           </motion.div>
         )}
 
-        {/* Hero rationale */}
+        {/* Hero rationale — Fraunces-leaning serif moment */}
         <p
-          className="mt-12 text-[28px] leading-[1.35] tracking-tight text-primary"
-          style={{ fontWeight: 400 }}
+          className="font-display mt-10 text-[22px] leading-[1.45] tracking-tight"
+          style={{ color: "var(--color-primary)", fontWeight: 400 }}
         >
           {initiative.rationale_narrative}
         </p>
 
-        {/* Evidence */}
-        <section className="mt-16">
-          <p className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
-            Evidence
+        {/* ─── Framework picker (first-class control) ─── */}
+        <section className="mt-12">
+          <p className="eyebrow">Framework</p>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {listFrameworks().map((fw) => {
+              const active = fw === activeFramework;
+              const isAIPick = fw === rec.framework;
+              return (
+                <button
+                  key={fw}
+                  onClick={() => pickFramework(fw)}
+                  className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-[13px] font-medium transition"
+                  style={{
+                    background: active ? "var(--color-accent)" : "var(--color-elevated)",
+                    color: active ? "var(--color-elevated)" : "var(--color-secondary)",
+                    border: "1px solid",
+                    borderColor: active ? "var(--color-accent)" : "var(--color-border)",
+                    boxShadow: active ? "var(--shadow-sm)" : "none",
+                  }}
+                >
+                  <span>{fw}</span>
+                  {isAIPick && (
+                    <span
+                      className="text-[10px] font-medium"
+                      style={{
+                        color: active
+                          ? "rgba(255, 255, 255, 0.78)"
+                          : "var(--color-tertiary)",
+                      }}
+                    >
+                      AI pick
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-[12.5px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
+            {scoring.description}
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {initiative.evidence.map((ev, idx) => (
-              <ChipWithSource
-                key={idx}
-                ev={ev}
-                expanded={expandedChip === idx}
-                onToggle={() =>
-                  setExpandedChip(expandedChip === idx ? null : idx)
-                }
+          {activeFramework !== rec.framework && (
+            <p className="mt-1 text-[12px]" style={{ color: "var(--color-accent)" }}>
+              Override: AI picked {rec.framework} because — {rec.framework_rationale}
+            </p>
+          )}
+        </section>
+
+        {/* ─── Scorecard ─── */}
+        <section className="mt-10">
+          <p className="eyebrow">Score</p>
+          <div
+            className="mt-3 overflow-hidden rounded-xl"
+            style={{
+              background: "var(--color-elevated)",
+              border: "1px solid var(--color-border)",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          >
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: `repeat(${scoring.rows.length + 1}, minmax(0, 1fr))`,
+              }}
+            >
+              {scoring.rows.map((row, idx) => (
+                <ScoreCell
+                  key={idx}
+                  label={row.label}
+                  value={row.value}
+                  hint={row.hint}
+                  isLast={false}
+                />
+              ))}
+              <ScoreCell
+                label={scoring.total.label}
+                value={scoring.total.value}
+                isLast
+                accent
               />
-            ))}
+            </div>
+          </div>
+          <p className="mt-3 text-[12.5px] italic" style={{ color: "var(--color-tertiary)" }}>
+            {scoring.rationale}
+          </p>
+        </section>
+
+        {/* ─── Recommendation card ─── */}
+        <section className="mt-10">
+          <p className="eyebrow">Recommendation</p>
+          <div
+            className="mt-3 rounded-xl px-6 py-5"
+            style={{
+              background: "var(--color-elevated)",
+              border: "1px solid var(--color-border)",
+              borderLeft: `2px solid ${actionTone(recAction)}`,
+              boxShadow: "var(--shadow-sm)",
+            }}
+          >
+            <div className="flex flex-wrap items-baseline gap-2.5 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+              <span
+                className="text-[11px] font-semibold uppercase tracking-[0.1em]"
+                style={{ color: actionTone(recAction) }}
+              >
+                {ACTION_LABEL[recAction]}
+              </span>
+              <span style={{ color: "var(--color-muted)" }}>·</span>
+              <span style={{ color: "var(--color-secondary)" }}>{rec.sequence}</span>
+              <span style={{ color: "var(--color-muted)" }}>·</span>
+              <span>{rec.effort_sprints} sprint{rec.effort_sprints > 1 ? "s" : ""}</span>
+              <span style={{ color: "var(--color-muted)" }}>·</span>
+              <span>{rec.eng_confidence} confidence</span>
+            </div>
+            <p className="mt-2.5 text-[14.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+              {rec.action_reason}
+            </p>
+            {rec.okr_contribution && (
+              <p className="mt-2 text-[13px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
+                {rec.okr_contribution}
+              </p>
+            )}
+
+            <div
+              className="mt-4 flex items-start gap-2 rounded-md px-3 py-2.5 text-[12.5px]"
+              style={{
+                background: "var(--color-accent-soft)",
+              }}
+            >
+              <Sparkles size={12} className="mt-0.5 shrink-0" style={{ color: "var(--color-accent)" }} />
+              <span className="leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+                <span style={{ color: "var(--color-tertiary)" }}>Predicted outcome —</span>{" "}
+                <span style={{ color: "var(--color-primary)" }}>{rec.predicted_outcome}</span>
+              </span>
+            </div>
           </div>
         </section>
 
-        {/* Recommendation / Override / Escalate */}
-        <section className="mt-12">
-          <p className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
-            Recommendation
-          </p>
-
-          <AnimatePresence mode="wait">
-            {(mode === "default" || mode === "committing") && (
-              <motion.div
-                key="rec-card"
-                initial={{ opacity: 0, y: 4 }}
-                animate={{
-                  opacity: 1,
-                  y: 0,
-                  scale: mode === "committing" ? 1.015 : 1,
-                }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.18 }}
-                className="mt-4 rounded-xl border-l-2 border border-[var(--color-border)] bg-elevated p-6"
-                style={{ borderLeftColor: actionColor(recAction) }}
-              >
-                <div className="flex items-baseline gap-3 flex-wrap">
+        {/* ─── Trade-offs ─── */}
+        {rec.tradeoffs.length > 0 && (
+          <section className="mt-10">
+            <p className="eyebrow">Trade-offs · what shifts when this commits</p>
+            <ul className="mt-3 space-y-2.5">
+              {rec.tradeoffs.map((t, idx) => (
+                <li
+                  key={idx}
+                  className="flex gap-3 text-[13.5px] leading-relaxed"
+                  style={{ color: "var(--color-secondary)" }}
+                >
                   <span
-                    className="text-[11px] uppercase tracking-[0.12em] font-semibold"
-                    style={{ color: actionColor(recAction) }}
-                  >
-                    {ACTION_LABEL[recAction]}
-                  </span>
-                  <span className="text-[11px] text-tertiary">
-                    · {rec.sequence}
-                  </span>
-                  <span className="text-[11px] text-tertiary">
-                    · {rec.effort_sprints} sprint
-                    {rec.effort_sprints > 1 ? "s" : ""}
-                  </span>
-                  <span className="text-[11px] text-tertiary">
-                    · {rec.eng_confidence} confidence
-                  </span>
-                </div>
-                <p className="mt-3 text-base text-primary leading-relaxed">
-                  {ACTION_VERB[recAction]}{" "}
-                  <span className="text-secondary">{rec.action_reason}</span>
-                </p>
-                {rec.okr_contribution && (
-                  <p className="mt-2 text-sm text-tertiary leading-relaxed">
-                    {rec.okr_contribution}
-                  </p>
-                )}
-
-                {/* Framework chip + picker + predicted outcome */}
-                <div className="mt-5 border-t border-[var(--color-border)] pt-4">
-                  <div className="relative flex flex-wrap items-center gap-2">
-                    <button
-                      onClick={() => setShowFrameworkPicker(!showFrameworkPicker)}
-                      onMouseEnter={() => setShowFrameworkInfo(true)}
-                      onMouseLeave={() => setShowFrameworkInfo(false)}
-                      className="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-medium transition"
-                      style={{
-                        background:
-                          activeFramework !== rec.framework
-                            ? "var(--color-accent-soft)"
-                            : "var(--color-page)",
-                        color:
-                          activeFramework !== rec.framework
-                            ? "var(--color-accent)"
-                            : "var(--color-secondary)",
-                        border: "1px solid var(--color-border-strong)",
-                      }}
-                    >
-                      <span className="text-tertiary">Framework:</span>
-                      <span>{activeFramework}</span>
-                      <Info size={10} className="text-tertiary" />
-                    </button>
-                    <span className="text-[11px] text-tertiary">
-                      ·{" "}
-                      {activeFramework === rec.framework
-                        ? "AI picked this — click to switch"
-                        : "Your override"}
-                    </span>
-
-                    <AnimatePresence>
-                      {showFrameworkPicker && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -4 }}
-                          transition={{ duration: 0.14 }}
-                          className="absolute left-0 top-7 z-10 min-w-[200px] rounded-lg border border-[var(--color-border-strong)] bg-elevated p-1 shadow-xl"
-                        >
-                          {[
-                            "RICE",
-                            "ICE",
-                            "Value/Effort",
-                            "Strategic Bet",
-                            "WSJF",
-                          ].map((fw) => {
-                            const isCurrent = fw === activeFramework;
-                            const isAIRec = fw === rec.framework;
-                            return (
-                              <button
-                                key={fw}
-                                onClick={() => pickFramework(fw)}
-                                className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-xs transition hover:bg-card-hover"
-                                style={{
-                                  color: isCurrent
-                                    ? "var(--color-primary)"
-                                    : "var(--color-secondary)",
-                                  background: isCurrent
-                                    ? "var(--color-card-hover)"
-                                    : "transparent",
-                                }}
-                              >
-                                <span>{fw}</span>
-                                <span className="ml-2 text-[10px] text-tertiary">
-                                  {isAIRec && "AI default"}
-                                  {isCurrent && !isAIRec && "selected"}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  <AnimatePresence>
-                    {showFrameworkInfo && !showFrameworkPicker && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.15 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="mt-2 text-xs italic text-tertiary leading-relaxed">
-                          {rec.framework_rationale}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                <div className="mt-4 flex items-start gap-2 rounded-md bg-page px-3 py-2 text-xs">
-                  <Sparkles
-                    size={11}
-                    className="mt-0.5 shrink-0"
-                    style={{ color: "var(--color-accent)" }}
+                    className="mt-2 inline-block h-1 w-1 rounded-full shrink-0"
+                    style={{ background: "var(--color-tertiary)" }}
                   />
-                  <span className="leading-relaxed text-secondary">
-                    <span className="text-tertiary">
-                      Predicted outcome:
-                    </span>{" "}
-                    {rec.predicted_outcome}
-                  </span>
-                </div>
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ─── Conflicts (warning) ─── */}
+        {rec.conflicts.length > 0 && (
+          <section className="mt-8">
+            <p
+              className="text-[11px] font-semibold uppercase tracking-[0.1em]"
+              style={{ color: "var(--color-warning)" }}
+            >
+              Conflicts to surface
+            </p>
+            <ul className="mt-3 space-y-1.5">
+              {rec.conflicts.map((c, idx) => (
+                <li
+                  key={idx}
+                  className="text-[13.5px] leading-relaxed"
+                  style={{ color: "var(--color-secondary)" }}
+                >
+                  {c}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ─── Action zone ─── */}
+        <section
+          className="mt-12 rounded-xl px-5 py-4"
+          style={{
+            background: "var(--color-elevated)",
+            border: "1px solid var(--color-border)",
+            boxShadow: "var(--shadow-sm)",
+          }}
+        >
+          <AnimatePresence mode="wait">
+            {/* Default — three-action bar */}
+            {mode === "default" && (
+              <motion.div
+                key="action-bar"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-wrap items-center gap-2"
+              >
+                <ActionButton
+                  onClick={() => chooseAction("commit")}
+                  primary={recAction === "commit"}
+                  kbd={recAction === "commit" ? "↵" : "C"}
+                  icon={<Check size={14} />}
+                  label="Commit"
+                />
+                <ActionButton
+                  onClick={() => chooseAction("defer")}
+                  primary={recAction === "defer"}
+                  kbd={recAction === "defer" ? "↵" : "D"}
+                  icon={<Clock size={14} />}
+                  label="Defer"
+                />
+                <ActionButton
+                  onClick={() => chooseAction("escalate")}
+                  primary={recAction === "escalate"}
+                  kbd={recAction === "escalate" ? "↵" : "S"}
+                  icon={<Send size={14} />}
+                  label="Escalate"
+                />
+                <span className="ml-auto text-[11.5px]" style={{ color: "var(--color-tertiary)" }}>
+                  ↵ follows AI · or pick any other
+                </span>
               </motion.div>
             )}
 
+            {/* Override-as-path — capture reason */}
             {mode === "overriding" && overrideTo && (
               <motion.div
                 key="override"
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.18 }}
-                className="mt-4 rounded-xl border border-[var(--color-border-strong)] bg-elevated p-6"
+                transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-tertiary">Choosing</span>
-                  <span
-                    className="font-medium"
-                    style={{ color: actionColor(overrideTo) }}
-                  >
+                <div className="flex items-center gap-2 text-[13px]">
+                  <span style={{ color: "var(--color-tertiary)" }}>Choosing</span>
+                  <span className="font-medium" style={{ color: actionTone(overrideTo) }}>
                     {ACTION_LABEL[overrideTo]}
                   </span>
-                  <span className="text-tertiary">instead of AI&rsquo;s</span>
-                  <span
-                    className="font-medium"
-                    style={{ color: actionColor(recAction) }}
-                  >
+                  <span style={{ color: "var(--color-tertiary)" }}>instead of AI&rsquo;s</span>
+                  <span className="font-medium" style={{ color: actionTone(recAction) }}>
                     {ACTION_LABEL[recAction]}
                   </span>
                 </div>
-                <label className="mt-4 block text-[11px] uppercase tracking-[0.12em] text-tertiary">
-                  Why a different call?
-                </label>
+                <label className="eyebrow mt-3 block">Why a different call?</label>
                 <input
-                  ref={inputRef}
+                  ref={overrideInputRef}
                   value={overrideText}
                   onChange={(e) => setOverrideText(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      commitOverride();
+                      submitOverride();
                     }
                   }}
                   placeholder="Type a reason, then ↵"
-                  className="mt-2 w-full bg-transparent text-base text-primary placeholder:text-tertiary outline-none"
+                  className="mt-2 w-full bg-transparent text-[14px] outline-none placeholder:opacity-40"
+                  style={{ color: "var(--color-primary)" }}
                 />
-                <div className="mt-3 flex items-center gap-3 text-xs text-tertiary">
+                <div className="mt-3 flex items-center gap-3 text-[11.5px]" style={{ color: "var(--color-tertiary)" }}>
                   <span>
-                    <kbd className="rounded border border-[var(--color-border-strong)] bg-page px-1.5 py-0.5 font-mono text-[10px]">
-                      ↵
-                    </kbd>{" "}
+                    <Kbd>↵</Kbd>{" "}
                     save · the system learns from your reason
                   </span>
                   <span>
-                    <kbd className="rounded border border-[var(--color-border-strong)] bg-page px-1.5 py-0.5 font-mono text-[10px]">
-                      Esc
-                    </kbd>{" "}
+                    <Kbd>Esc</Kbd>{" "}
                     cancel
                   </span>
                 </div>
               </motion.div>
             )}
 
+            {/* Confirming — trade-off preview before commit fires */}
+            {mode === "confirming" && (
+              <motion.div
+                key="confirm"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="flex items-center gap-2">
+                  <Check size={14} style={{ color: "var(--color-success)" }} />
+                  <p className="text-[13px] font-medium" style={{ color: "var(--color-primary)" }}>
+                    Confirm this commits to {rec.sequence}.
+                  </p>
+                </div>
+                {rec.tradeoffs.length > 0 && (
+                  <ul className="mt-3 space-y-1.5 pl-5">
+                    {rec.tradeoffs.slice(0, 3).map((t, idx) => (
+                      <li
+                        key={idx}
+                        className="relative text-[12.5px] leading-relaxed"
+                        style={{ color: "var(--color-secondary)" }}
+                      >
+                        <span
+                          className="absolute -left-3 top-2 inline-block h-1 w-1 rounded-full"
+                          style={{ background: "var(--color-tertiary)" }}
+                        />
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="mt-4 flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setMode("default");
+                      setOverrideText("");
+                      setOverrideTo(null);
+                    }}
+                    className="rounded-md px-3 py-1.5 text-[13px] font-medium transition hover:bg-card-hover"
+                    style={{
+                      background: "transparent",
+                      color: "var(--color-secondary)",
+                      border: "1px solid var(--color-border)",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={finalizeCommit}
+                    autoFocus
+                    className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium transition"
+                    style={{
+                      background: "var(--color-accent)",
+                      color: "var(--color-elevated)",
+                    }}
+                  >
+                    <Check size={13} />
+                    Confirm
+                    <Kbd light>↵</Kbd>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Escalating — stakeholders + draft */}
             {mode === "escalating" && (
               <motion.div
                 key="escalate"
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.18 }}
-                className="mt-4 rounded-xl border border-[var(--color-border-strong)] bg-elevated p-6"
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="flex items-start gap-2 rounded-md bg-page px-3 py-2 text-xs text-secondary">
+                <div
+                  className="flex items-start gap-2 rounded-md px-3 py-2 text-[12px]"
+                  style={{
+                    background: "var(--color-warning-soft)",
+                    color: "var(--color-secondary)",
+                  }}
+                >
                   <AlertTriangle
                     size={12}
                     className="mt-0.5 shrink-0"
                     style={{ color: "var(--color-warning)" }}
                   />
                   <span>
-                    <strong className="text-primary">Escalate</strong> means
-                    this decision needs stakeholder alignment or exec input
-                    before you can confidently commit. Use for strategic
-                    ambiguity, capacity-vs-scope tension, or cross-team
-                    dependencies.
+                    <strong style={{ color: "var(--color-primary)" }}>Escalate</strong>{" "}
+                    means this needs stakeholder input before commit. Use for strategic ambiguity, capacity-vs-scope tension, or cross-team dependencies.
                   </span>
                 </div>
 
-                <div className="mt-4">
-                  <label className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
-                    Stakeholders
-                  </label>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {(["sales", "cs", "exec", "eng"] as const).map((tag) => {
-                      const active = escalateTags.has(tag);
-                      const aiSuggested =
-                        rec.suggested_escalation?.stakeholders.includes(tag);
-                      return (
-                        <button
-                          key={tag}
-                          onClick={() => {
-                            const next = new Set(escalateTags);
-                            if (active) next.delete(tag);
-                            else next.add(tag);
-                            setEscalateTags(next);
-                          }}
-                          className="relative rounded-md px-3 py-1.5 text-xs font-medium transition"
-                          style={{
-                            background: active
-                              ? "var(--color-accent-soft)"
-                              : "var(--color-page)",
-                            color: active
-                              ? "var(--color-accent)"
-                              : "var(--color-secondary)",
-                            border: "1px solid var(--color-border-strong)",
-                          }}
-                        >
-                          {STAKEHOLDER_LABELS[tag]}
-                          {aiSuggested && !active && (
-                            <span
-                              className="ml-1.5 text-[9px]"
-                              style={{ color: "var(--color-tertiary)" }}
-                            >
-                              · AI suggests
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
+                <p className="eyebrow mt-4">Stakeholders</p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {(["sales", "cs", "exec", "eng"] as const).map((tag) => {
+                    const active = escalateTags.has(tag);
+                    const aiSuggested = rec.suggested_escalation?.stakeholders.includes(tag);
+                    return (
+                      <button
+                        key={tag}
+                        onClick={() => {
+                          const next = new Set(escalateTags);
+                          if (active) next.delete(tag);
+                          else next.add(tag);
+                          setEscalateTags(next);
+                        }}
+                        className="rounded-md px-3 py-1.5 text-[12px] font-medium transition"
+                        style={{
+                          background: active ? "var(--color-accent-soft)" : "var(--color-page)",
+                          color: active ? "var(--color-accent)" : "var(--color-secondary)",
+                          border: "1px solid",
+                          borderColor: active ? "var(--color-accent)" : "var(--color-border)",
+                        }}
+                      >
+                        {STAKEHOLDER_LABELS[tag]}
+                        {aiSuggested && !active && (
+                          <span className="ml-1.5 text-[9.5px]" style={{ color: "var(--color-tertiary)" }}>
+                            · AI suggests
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <div className="mt-4">
-                  <label className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
-                    Draft message
-                    {rec.suggested_escalation && (
-                      <span className="ml-2 normal-case text-tertiary">
-                        · AI-drafted, edit as needed
-                      </span>
-                    )}
-                  </label>
-                  <textarea
-                    value={escalateMessage}
-                    onChange={(e) => setEscalateMessage(e.target.value)}
-                    rows={4}
-                    className="mt-2 w-full resize-none rounded-md border border-[var(--color-border)] bg-page px-3 py-2 text-sm text-primary outline-none focus:border-[var(--color-accent)]"
-                  />
-                </div>
+                <p className="eyebrow mt-4">Draft message</p>
+                <textarea
+                  value={escalateMessage}
+                  onChange={(e) => setEscalateMessage(e.target.value)}
+                  rows={4}
+                  className="mt-2 w-full resize-none rounded-md px-3 py-2 text-[13.5px] outline-none"
+                  style={{
+                    background: "var(--color-page)",
+                    color: "var(--color-primary)",
+                    border: "1px solid var(--color-border)",
+                  }}
+                />
 
-                <button
-                  onClick={escalate}
-                  disabled={escalateTags.size === 0}
-                  className="mt-4 inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition disabled:opacity-40"
-                  style={{ background: "var(--color-accent)", color: "#fff" }}
-                >
-                  <Send size={14} />
-                  Send to{" "}
-                  {escalateTags.size > 0
-                    ? `${escalateTags.size} stakeholder${escalateTags.size > 1 ? "s" : ""}`
-                    : "stakeholders"}
-                </button>
+                <div className="mt-4 flex items-center gap-2">
+                  <button
+                    onClick={() => setMode("default")}
+                    className="rounded-md px-3 py-1.5 text-[13px] font-medium transition hover:bg-card-hover"
+                    style={{
+                      background: "transparent",
+                      color: "var(--color-secondary)",
+                      border: "1px solid var(--color-border)",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={escalate}
+                    disabled={escalateTags.size === 0}
+                    className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[13px] font-medium transition disabled:opacity-40"
+                    style={{
+                      background: "var(--color-accent)",
+                      color: "var(--color-elevated)",
+                    }}
+                  >
+                    <Send size={13} />
+                    Send to{" "}
+                    {escalateTags.size > 0
+                      ? `${escalateTags.size} stakeholder${escalateTags.size > 1 ? "s" : ""}`
+                      : "stakeholders"}
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
         </section>
-
-        {/* Trade-offs */}
-        {(mode === "default" || mode === "committing") &&
-          rec.tradeoffs.length > 0 && (
-            <section className="mt-10">
-              <p className="text-[11px] uppercase tracking-[0.12em] text-tertiary">
-                Trade-offs · what shifts in the roadmap
-              </p>
-              <ul className="mt-4 space-y-2">
-                {rec.tradeoffs.map((t, idx) => (
-                  <li
-                    key={idx}
-                    className="flex gap-3 text-sm text-secondary leading-relaxed"
-                  >
-                    <span
-                      className="mt-1.5 inline-block h-1 w-1 rounded-full shrink-0"
-                      style={{ background: "var(--color-tertiary)" }}
-                    />
-                    <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-        {/* Conflicts */}
-        {(mode === "default" || mode === "committing") &&
-          rec.conflicts.length > 0 && (
-            <section className="mt-8">
-              <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--color-warning)]">
-                Conflicts
-              </p>
-              <ul className="mt-3 space-y-1.5">
-                {rec.conflicts.map((c, idx) => (
-                  <li
-                    key={idx}
-                    className="text-sm text-secondary leading-relaxed"
-                  >
-                    {c}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-        {/* Sprint context view */}
-        {(mode === "default" || mode === "committing") && (
-          <SprintView currentInitiative={initiative} />
-        )}
-
-        {/* Action bar — always 3 actions */}
-        <div className="mt-12 flex items-center gap-2 border-t border-[var(--color-border)] pt-6">
-          {mode === "default" ? (
-            <>
-              <ActionButton
-                onClick={() => chooseAction("commit")}
-                primary={recAction === "commit"}
-                kbd={recAction === "commit" ? "↵" : "C"}
-                icon={<Check size={14} />}
-                label="Commit"
-                tone={actionColor("commit")}
-              />
-              <ActionButton
-                onClick={() => chooseAction("defer")}
-                primary={recAction === "defer"}
-                kbd={recAction === "defer" ? "↵" : "D"}
-                icon={<Clock size={14} />}
-                label="Defer"
-                tone={actionColor("defer")}
-              />
-              <ActionButton
-                onClick={() => chooseAction("escalate")}
-                primary={recAction === "escalate"}
-                kbd={recAction === "escalate" ? "↵" : "S"}
-                icon={<Send size={14} />}
-                label="Escalate"
-                tone={actionColor("escalate")}
-              />
-              <span className="ml-auto text-[11px] text-tertiary">
-                ↵ follows AI · or pick any other
-              </span>
-            </>
-          ) : (
-            <button
-              onClick={() => {
-                setMode("default");
-                setOverrideText("");
-                setOverrideTo(null);
-              }}
-              className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-secondary transition hover:text-primary"
-            >
-              <X size={14} />
-              <span>Cancel</span>
-              <kbd className="ml-1 rounded border border-[var(--color-border-strong)] bg-page px-1.5 py-0.5 font-mono text-[10px] text-tertiary">
-                Esc
-              </kbd>
-            </button>
-          )}
-        </div>
-      </div>
+      </main>
 
       {/* Toast */}
       <AnimatePresence>
@@ -805,15 +836,21 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
-            transition={{ duration: 0.2 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg border border-[var(--color-border-strong)] bg-elevated px-4 py-2.5 text-sm text-primary shadow-lg"
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 rounded-lg px-4 py-2.5 text-[13px]"
+            style={{
+              background: "var(--color-elevated)",
+              border: "1px solid var(--color-border)",
+              color: "var(--color-primary)",
+              boxShadow: "var(--shadow-lg)",
+            }}
           >
             {toast}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Decision-lands-in-timeline mini card animation */}
+      {/* Decision-lands choreography */}
       <AnimatePresence>
         {flyToCorner && (
           <motion.div
@@ -834,18 +871,19 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
               y: 0,
               scale: 0.45,
             }}
-            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="pointer-events-none fixed z-50 rounded-lg border bg-elevated px-3 py-2 shadow-2xl"
+            transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
+            className="pointer-events-none fixed z-50 rounded-lg px-3 py-2"
             style={{
-              borderColor: "var(--color-accent)",
+              background: "var(--color-elevated)",
+              border: "1px solid var(--color-accent)",
               boxShadow:
                 "0 20px 40px -12px var(--color-accent-soft), 0 0 0 1px var(--color-accent-soft)",
             }}
           >
-            <div className="text-xs font-medium text-primary">
+            <div className="text-[12.5px] font-medium" style={{ color: "var(--color-primary)" }}>
               {initiative.title}
             </div>
-            <div className="mt-0.5 text-[10px] text-tertiary">
+            <div className="mt-0.5 text-[10.5px]" style={{ color: "var(--color-accent)" }}>
               → {rec.sequence}
             </div>
           </motion.div>
@@ -855,46 +893,60 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   );
 }
 
-function ChipWithSource({
-  ev,
-  expanded,
-  onToggle,
+/* ─────────── Sub-components ─────────── */
+
+function ScoreCell({
+  label,
+  value,
+  hint,
+  isLast,
+  accent = false,
 }: {
-  ev: Evidence;
-  expanded: boolean;
-  onToggle: () => void;
+  label: string;
+  value: string;
+  hint?: string;
+  isLast: boolean;
+  accent?: boolean;
 }) {
-  const tint = tintByKind[ev.kind ?? "strategic"];
   return (
-    <div className="inline-flex flex-col">
-      <button
-        onClick={onToggle}
-        className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition hover:scale-[1.02]"
-        style={{ background: tint.bg, color: tint.text }}
+    <div
+      className="px-4 py-4"
+      style={{
+        background: accent ? "var(--color-accent-soft)" : "transparent",
+        borderRight: isLast ? "none" : "1px solid var(--color-border)",
+      }}
+    >
+      <p className="eyebrow" style={{ fontSize: 10 }}>
+        {label}
+      </p>
+      <p
+        className="font-numeric mt-1.5 text-[18px] tabular-nums"
+        style={{
+          color: accent ? "var(--color-accent)" : "var(--color-primary)",
+          fontWeight: accent ? 600 : 500,
+        }}
       >
-        <span className="font-semibold tabular-nums">{ev.metric}</span>
-        <span className="opacity-70">{ev.label}</span>
-      </button>
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: "auto", marginTop: 8 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            transition={{ duration: 0.18 }}
-            className="overflow-hidden rounded-md bg-page px-3 py-2 text-xs leading-relaxed text-secondary"
-          >
-            <div className="text-tertiary">Source</div>
-            <div className="mt-0.5">{ev.source}</div>
-            {ev.quote && (
-              <div className="mt-2 border-l-2 border-[var(--color-border-strong)] pl-2 italic text-secondary">
-                {ev.quote}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {value}
+      </p>
+      {hint && (
+        <p className="mt-0.5 text-[10.5px]" style={{ color: "var(--color-tertiary)" }}>
+          {hint}
+        </p>
+      )}
     </div>
+  );
+}
+
+function SignalChip({ kind }: { kind: "revenue" | "deals" | "support" | "deadline" | "strategic" }) {
+  const bgVar = `var(--color-chip-${kind}-bg)`;
+  const fgVar = `var(--color-chip-${kind}-text)`;
+  return (
+    <span
+      className="inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium"
+      style={{ background: bgVar, color: fgVar }}
+    >
+      {kind}
+    </span>
   );
 }
 
@@ -904,43 +956,49 @@ function ActionButton({
   kbd,
   icon,
   label,
-  tone,
 }: {
   onClick: () => void;
   primary?: boolean;
   kbd: string;
   icon: React.ReactNode;
   label: string;
-  tone?: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition"
+      className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-[13px] font-medium transition"
       style={
         primary
           ? {
-              background: tone ?? "var(--color-accent)",
-              color: "#0a0a0b",
+              background: "var(--color-accent)",
+              color: "var(--color-elevated)",
+              boxShadow: "var(--shadow-sm)",
             }
           : {
-              background: "var(--color-elevated)",
+              background: "transparent",
               color: "var(--color-secondary)",
-              border: "1px solid var(--color-border-strong)",
+              border: "1px solid var(--color-border)",
             }
       }
     >
       {icon}
       <span>{label}</span>
-      <kbd
-        className="ml-1 rounded px-1.5 py-0.5 font-mono text-[10px]"
-        style={{
-          background: primary ? "rgba(0,0,0,0.18)" : "var(--color-page)",
-          color: primary ? "#0a0a0b" : "var(--color-tertiary)",
-        }}
-      >
-        {kbd}
-      </kbd>
+      <Kbd light={primary}>{kbd}</Kbd>
     </button>
+  );
+}
+
+function Kbd({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+  return (
+    <kbd
+      className="ml-0.5 rounded px-1.5 py-0.5 font-mono text-[10px]"
+      style={{
+        background: light ? "rgba(255, 255, 255, 0.18)" : "var(--color-page)",
+        color: light ? "rgba(255, 255, 255, 0.9)" : "var(--color-tertiary)",
+        border: light ? "none" : "1px solid var(--color-border)",
+      }}
+    >
+      {children}
+    </kbd>
   );
 }
