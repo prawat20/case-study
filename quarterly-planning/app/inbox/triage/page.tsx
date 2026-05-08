@@ -210,18 +210,31 @@ export default function TriagePage() {
           </div>
 
           <div className="mt-10 flex items-center justify-center gap-3">
+            {tally.promote > 0 ? (
+              <Link
+                href="/calendar/"
+                className="rounded-md px-4 py-2 text-[13px] font-medium transition"
+                style={{
+                  background: "var(--color-accent)",
+                  color: "var(--color-elevated)",
+                }}
+              >
+                Place {tally.promote} in calendar →
+              </Link>
+            ) : (
+              <Link
+                href="/"
+                className="rounded-md px-4 py-2 text-[13px] font-medium transition"
+                style={{
+                  background: "var(--color-accent)",
+                  color: "var(--color-elevated)",
+                }}
+              >
+                Back to Now
+              </Link>
+            )}
             <Link
               href="/inbox/"
-              className="rounded-md px-4 py-2 text-[13px] font-medium transition"
-              style={{
-                background: "var(--color-accent)",
-                color: "var(--color-elevated)",
-              }}
-            >
-              Back to Inbox
-            </Link>
-            <Link
-              href="/"
               className="rounded-md px-4 py-2 text-[13px] font-medium transition"
               style={{
                 background: "var(--color-elevated)",
@@ -229,7 +242,7 @@ export default function TriagePage() {
                 color: "var(--color-secondary)",
               }}
             >
-              Open Now
+              Back to Inbox
             </Link>
           </div>
         </motion.div>

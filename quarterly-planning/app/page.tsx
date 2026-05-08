@@ -36,6 +36,12 @@ export default function NowPage() {
   const inboxCount = untriagedInitiativesCount + untriagedCapturesCount;
   const hydrated = decisionsHydrated && triageHydrated && capturesHydrated;
 
+  // Items promoted via triage but not yet placed in a sprint
+  const toPlaceCount = allInitiatives.filter((i) => {
+    const t = triage.find((x) => x.initiative_id === i.id);
+    return t?.action === "promote" && !decidedIds.has(i.id);
+  }).length;
+
   // Demo placeholders — these become real data when Calendar + Audit ship
   const overnightShifts: number = 2;
   const sprintItemsInFlight: number = 4;
@@ -84,10 +90,18 @@ export default function NowPage() {
             <DoTodayCard
               index={1}
               href="/calendar/"
-              primary={`Sprint 2 of Q3, ${sprintItemsInFlight} items in flight`}
-              secondary={`Capacity ${sprintCapacity}% · ${sprintRiskCount === 0 ? "No risks flagged" : `${sprintRiskCount} risk on track`}`}
-              cta="Open plan"
-              accent={false}
+              primary={
+                toPlaceCount > 0
+                  ? `${toPlaceCount} item${toPlaceCount === 1 ? "" : "s"} waiting to place in your plan`
+                  : `Sprint 2 of Q3, ${sprintItemsInFlight} items in flight`
+              }
+              secondary={
+                toPlaceCount > 0
+                  ? "Drag each into a sprint or push to next quarter"
+                  : `Capacity ${sprintCapacity}% · ${sprintRiskCount === 0 ? "No risks flagged" : `${sprintRiskCount} risk on track`}`
+              }
+              cta={toPlaceCount > 0 ? "Place items" : "Open plan"}
+              accent={toPlaceCount > 0}
               hydrated={hydrated}
             />
 
