@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Check, Lock, AlertTriangle, ArrowRight } from "lucide-react";
@@ -16,43 +16,16 @@ import {
 import { signalToKind } from "@/lib/inbox-helpers";
 import { useDecisions } from "@/lib/use-decisions";
 import { playSnapChime } from "@/lib/sound";
+import {
+  useCalendarState,
+  saveAssignments,
+  saveLocked,
+} from "@/lib/calendar-state";
 
 const allInitiatives = initiativesJson as Initiative[];
 
-const ASSIGNMENT_KEY = "qp_calendar_assignments_v2";
-const PLAN_LOCKED_KEY = "qp_calendar_locked_v2";
-
-type Assignments = Record<string, number>; // initiative_id → sprint index
-
-function loadAssignments(): Assignments {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = localStorage.getItem(ASSIGNMENT_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveAssignments(a: Assignments) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(ASSIGNMENT_KEY, JSON.stringify(a));
-}
-
-function loadLocked(): boolean {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(PLAN_LOCKED_KEY) === "true";
-}
-
-function saveLocked(b: boolean) {
-  if (typeof window === "undefined") return;
-  if (b) localStorage.setItem(PLAN_LOCKED_KEY, "true");
-  else localStorage.removeItem(PLAN_LOCKED_KEY);
-}
-
 export function CalendarPlan() {
-  const [assignments, setAssignments] = useState<Assignments>({});
-  const [locked, setLocked] = useState(false);
+  const { assignments, locked } = useCalendarState();
   const [hovered, setHovered] = useState<number | null>(null);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -65,15 +38,8 @@ export function CalendarPlan() {
     return m;
   }, [decisions]);
 
-  useEffect(() => {
-    setAssignments(loadAssignments());
-    setLocked(loadLocked());
-  }, []);
-
   function setItemSprint(id: string, sprintIndex: number) {
-    const next = { ...assignments, [id]: sprintIndex };
-    setAssignments(next);
-    saveAssignments(next);
+    saveAssignments({ ...assignments, [id]: sprintIndex });
   }
 
   /* Build planned items, with assignments override */
@@ -166,7 +132,6 @@ export function CalendarPlan() {
   }
 
   function snap() {
-    setLocked(true);
     saveLocked(true);
     playSnapChime();
     setSnapPulse(true);
@@ -176,7 +141,6 @@ export function CalendarPlan() {
   }
 
   function unsnap() {
-    setLocked(false);
     saveLocked(false);
     setToast("Plan unlocked. You can move items again.");
     setTimeout(() => setToast(null), 1800);

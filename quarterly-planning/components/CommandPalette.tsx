@@ -22,6 +22,7 @@ import type { Initiative } from "@/lib/types";
 import { clearDecisions, clearFrameworkOverrides } from "@/lib/decisions";
 import { clearTriage } from "@/lib/triage";
 import { clearCaptures } from "@/lib/captures";
+import { clearCalendarState } from "@/lib/calendar-state";
 import { useCommandPalette } from "@/components/CommandProvider";
 import { AUDIENCES } from "@/lib/stakeholder-artifacts";
 
@@ -252,10 +253,7 @@ export function CommandPalette({
                       clearFrameworkOverrides();
                       clearTriage();
                       clearCaptures();
-                      try {
-                        localStorage.removeItem("qp_calendar_assignments_v2");
-                        localStorage.removeItem("qp_calendar_locked_v2");
-                      } catch {}
+                      clearCalendarState();
                       onClose();
                       router.push("/");
                     }}

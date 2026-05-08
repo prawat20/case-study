@@ -26,11 +26,18 @@ import {
   setFrameworkOverride,
   FRAMEWORK_OVERRIDES_EVENT,
 } from "@/lib/decisions";
+import { useDecisions } from "@/lib/use-decisions";
 import { playCommitChime, playDeferTick } from "@/lib/sound";
 import { getOKR } from "@/lib/strategic";
 import { getScoring, listFrameworks } from "@/lib/frameworks";
 import { Header } from "@/components/Header";
 import { signalToKind } from "@/lib/inbox-helpers";
+import { useCalendarState, saveAssignments } from "@/lib/calendar-state";
+import { computeCommitImpact, type CommitImpact } from "@/lib/sprint-conflict";
+import { SPRINTS } from "@/lib/sprint-data";
+import initiativesJson from "@/data/initiatives.json";
+
+const allInitiativesArr = initiativesJson as Initiative[];
 
 type Mode =
   | "default"
@@ -68,6 +75,22 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   const router = useRouter();
   const rec = initiative.ai_recommendation;
   const recAction = rec.action;
+
+  const { decisions } = useDecisions();
+  const { assignments } = useCalendarState();
+
+  // Compute commit impact reactively — this is what powers the
+  // dynamic trade-off preview and the confirm step.
+  const commitImpact: CommitImpact = useMemo(
+    () =>
+      computeCommitImpact({
+        initiative,
+        allInitiatives: allInitiativesArr,
+        decisions,
+        assignments,
+      }),
+    [initiative, decisions, assignments],
+  );
 
   const [mode, setMode] = useState<Mode>("default");
   const [overrideTo, setOverrideTo] = useState<RecommendedAction | null>(null);
@@ -222,16 +245,23 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
     playCommitChime();
     setFlyToCorner(true);
     const isOverride = overrideTo !== null;
+    // Apply the resolved sprint reflow — committed item lands in target,
+    // pushed items move to their new sprint.
+    saveAssignments(commitImpact.final_assignments);
     addDecision({
       initiative_id: initiative.id,
       action: isOverride ? "overridden" : "committed",
       ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
       human_rationale: isOverride ? `Commit — ${overrideText.trim()}` : undefined,
-      sequence: rec.sequence,
+      sequence: commitImpact.target_sprint_label,
       decided_at: new Date().toISOString(),
     });
-    setToast(`Committed. Sequenced in ${rec.sequence}.`);
-    setTimeout(() => router.push("/inbox/"), 1100);
+    const pushSummary =
+      commitImpact.pushed_items.length > 0
+        ? ` ${commitImpact.pushed_items.length} item${commitImpact.pushed_items.length === 1 ? "" : "s"} reflowed.`
+        : "";
+    setToast(`Committed to ${commitImpact.target_sprint_label}.${pushSummary}`);
+    setTimeout(() => router.push("/calendar/"), 1100);
   }
 
   function defer() {
@@ -518,27 +548,85 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           </div>
         </section>
 
-        {/* ─── Trade-offs ─── */}
-        {rec.tradeoffs.length > 0 && (
-          <section className="mt-10">
-            <p className="eyebrow">Trade-offs · what shifts when this commits</p>
-            <ul className="mt-3 space-y-2.5">
-              {rec.tradeoffs.map((t, idx) => (
-                <li
-                  key={idx}
-                  className="flex gap-3 text-[13.5px] leading-relaxed"
-                  style={{ color: "var(--color-secondary)" }}
+        {/* ─── Trade-offs · sprint impact + strategic notes ─── */}
+        <section className="mt-10">
+          <p className="eyebrow">Trade-offs · what shifts when this commits</p>
+
+          {/* Sprint-impact card */}
+          <div
+            className="mt-3 rounded-xl px-5 py-4"
+            style={{
+              background: "var(--color-elevated)",
+              border: "1px solid var(--color-border)",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          >
+            <SprintImpactBar impact={commitImpact} />
+
+            {commitImpact.pushed_items.length > 0 ? (
+              <div className="mt-4 space-y-2">
+                <p
+                  className="text-[12px] font-medium"
+                  style={{ color: "var(--color-warning)" }}
                 >
-                  <span
-                    className="mt-2 inline-block h-1 w-1 rounded-full shrink-0"
-                    style={{ background: "var(--color-tertiary)" }}
-                  />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+                  To make room, {commitImpact.pushed_items.length} item{commitImpact.pushed_items.length === 1 ? "" : "s"} reflow:
+                </p>
+                {commitImpact.pushed_items.map((p) => (
+                  <div
+                    key={p.initiative_id}
+                    className="flex items-center gap-2 text-[12.5px]"
+                    style={{ color: "var(--color-secondary)" }}
+                  >
+                    <span
+                      className="font-numeric inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 text-[10.5px] font-medium"
+                      style={{
+                        background: "var(--color-warning-soft)",
+                        color: "var(--color-warning)",
+                      }}
+                    >
+                      {p.effort_points}p
+                    </span>
+                    <span style={{ color: "var(--color-primary)" }}>{p.title}</span>
+                    <span style={{ color: "var(--color-tertiary)" }}>
+                      pushes from {SPRINTS[p.from_sprint - 1]?.label} → {SPRINTS[p.to_sprint - 1]?.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p
+                className="mt-3 text-[12.5px]"
+                style={{ color: "var(--color-success)" }}
+              >
+                No items push. Capacity allows this directly.
+              </p>
+            )}
+          </div>
+
+          {/* Strategic notes from AI */}
+          {rec.tradeoffs.length > 0 && (
+            <>
+              <p className="eyebrow mt-6" style={{ fontSize: 10 }}>
+                Strategic context
+              </p>
+              <ul className="mt-3 space-y-2.5">
+                {rec.tradeoffs.map((t, idx) => (
+                  <li
+                    key={idx}
+                    className="flex gap-3 text-[13.5px] leading-relaxed"
+                    style={{ color: "var(--color-secondary)" }}
+                  >
+                    <span
+                      className="mt-2 inline-block h-1 w-1 rounded-full shrink-0"
+                      style={{ background: "var(--color-tertiary)" }}
+                    />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </section>
 
         {/* ─── Conflicts (warning) ─── */}
         {rec.conflicts.length > 0 && (
@@ -657,7 +745,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
               </motion.div>
             )}
 
-            {/* Confirming — trade-off preview before commit fires */}
+            {/* Confirming — real sprint impact before commit fires */}
             {mode === "confirming" && (
               <motion.div
                 key="confirm"
@@ -669,26 +757,41 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                 <div className="flex items-center gap-2">
                   <Check size={14} style={{ color: "var(--color-success)" }} />
                   <p className="text-[13px] font-medium" style={{ color: "var(--color-primary)" }}>
-                    Confirm this commits to {rec.sequence}.
+                    Commit to {commitImpact.target_sprint_label}?
                   </p>
                 </div>
-                {rec.tradeoffs.length > 0 && (
-                  <ul className="mt-3 space-y-1.5 pl-5">
-                    {rec.tradeoffs.slice(0, 3).map((t, idx) => (
-                      <li
-                        key={idx}
-                        className="relative text-[12.5px] leading-relaxed"
-                        style={{ color: "var(--color-secondary)" }}
-                      >
-                        <span
-                          className="absolute -left-3 top-2 inline-block h-1 w-1 rounded-full"
-                          style={{ background: "var(--color-tertiary)" }}
-                        />
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+
+                <div className="mt-3 rounded-md px-3 py-3" style={{ background: "var(--color-page)" }}>
+                  <SprintImpactBar impact={commitImpact} />
+
+                  {commitImpact.pushed_items.length > 0 ? (
+                    <div className="mt-3 space-y-1.5">
+                      <p className="text-[11.5px] font-medium" style={{ color: "var(--color-warning)" }}>
+                        Reflow needed —
+                      </p>
+                      {commitImpact.pushed_items.map((p) => (
+                        <p
+                          key={p.initiative_id}
+                          className="text-[12px] leading-relaxed"
+                          style={{ color: "var(--color-secondary)" }}
+                        >
+                          <span style={{ color: "var(--color-primary)" }}>{p.title}</span>{" "}
+                          <span style={{ color: "var(--color-tertiary)" }}>
+                            pushes {SPRINTS[p.from_sprint - 1]?.label} → {SPRINTS[p.to_sprint - 1]?.label}
+                          </span>
+                        </p>
+                      ))}
+                    </div>
+                  ) : (
+                    <p
+                      className="mt-2 text-[12px]"
+                      style={{ color: "var(--color-success)" }}
+                    >
+                      No reflow needed.
+                    </p>
+                  )}
+                </div>
+
                 <div className="mt-4 flex items-center gap-2">
                   <button
                     onClick={() => {
@@ -894,6 +997,73 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
 }
 
 /* ─────────── Sub-components ─────────── */
+
+function SprintImpactBar({ impact }: { impact: CommitImpact }) {
+  const beforePct = Math.min(100, (impact.before_load / impact.capacity) * 100);
+  const newAddPct = Math.min(
+    100 - beforePct,
+    (Math.min(impact.resolved_load, impact.capacity) - impact.before_load) /
+      impact.capacity *
+      100,
+  );
+  const overflowPct = Math.max(0, ((impact.resolved_load - impact.capacity) / impact.capacity) * 100);
+  const overflow = impact.resolved_load > impact.capacity;
+
+  return (
+    <div>
+      <div className="flex items-baseline justify-between">
+        <p className="text-[12.5px] font-medium" style={{ color: "var(--color-primary)" }}>
+          {impact.target_sprint_label}
+        </p>
+        <p
+          className="font-numeric text-[12px]"
+          style={{ color: overflow ? "var(--color-warning)" : "var(--color-secondary)" }}
+        >
+          {impact.before_load} → {impact.resolved_load} / {impact.capacity}p
+        </p>
+      </div>
+
+      <div
+        className="mt-2 relative h-2 w-full overflow-hidden rounded-full"
+        style={{ background: "var(--color-border)" }}
+      >
+        <motion.div
+          initial={false}
+          animate={{ width: `${beforePct}%` }}
+          transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+          className="absolute left-0 top-0 h-full"
+          style={{ background: "var(--color-tertiary)", opacity: 0.5 }}
+        />
+        <motion.div
+          initial={false}
+          animate={{ left: `${beforePct}%`, width: `${Math.max(0, newAddPct)}%` }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+          className="absolute top-0 h-full"
+          style={{ background: overflow ? "var(--color-warning)" : "var(--color-accent)" }}
+        />
+      </div>
+
+      <div className="mt-1.5 flex items-center gap-3 text-[10.5px]" style={{ color: "var(--color-tertiary)" }}>
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: "var(--color-tertiary)", opacity: 0.5 }} />
+          Existing
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <span
+            className="inline-block h-1.5 w-1.5 rounded-full"
+            style={{ background: overflow ? "var(--color-warning)" : "var(--color-accent)" }}
+          />
+          This commit
+        </span>
+        {overflow && (
+          <span style={{ color: "var(--color-warning)" }}>
+            · {Math.round(overflowPct)}p over before reflow
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function ScoreCell({
   label,

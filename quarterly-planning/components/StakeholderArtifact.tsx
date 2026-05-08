@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, Copy, MessageSquare, Mail, FileDown } from "lucide-react";
+import { ArrowLeft, Check, MessageSquare, Mail, FileDown } from "lucide-react";
 import initiativesJson from "@/data/initiatives.json";
 import type { Initiative } from "@/lib/types";
 import { useDecisions } from "@/lib/use-decisions";
 import { Header } from "@/components/Header";
+import { useCalendarState } from "@/lib/calendar-state";
 import {
   AUDIENCES,
   type AudienceKey,
@@ -18,27 +19,12 @@ import {
 } from "@/lib/stakeholder-artifacts";
 
 const allInitiatives = initiativesJson as Initiative[];
-const ASSIGNMENT_KEY = "qp_calendar_assignments_v2";
-
-function loadAssignments(): Record<string, number> {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = localStorage.getItem(ASSIGNMENT_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
 
 export function StakeholderArtifact({ audience }: { audience: AudienceKey }) {
   const meta = AUDIENCES.find((a) => a.key === audience);
   const { decisions } = useDecisions();
-  const [assignments, setAssignments] = useState<Record<string, number>>({});
+  const { assignments } = useCalendarState();
   const [copied, setCopied] = useState<"slack" | "email" | null>(null);
-
-  useEffect(() => {
-    setAssignments(loadAssignments());
-  }, []);
 
   const lines: Line[] = useMemo(() => {
     if (!meta) return [];
