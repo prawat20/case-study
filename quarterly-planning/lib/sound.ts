@@ -1,5 +1,7 @@
-// Tiny Web Audio chime — no asset shipping required.
-// Used as the "engage the senses" feedback on decision commit (DfD principle 2).
+/**
+ * Tiny Web Audio chimes — no asset shipping required.
+ * v2: gains dropped ~30% from v1 (cream/light context calls for quieter feedback).
+ */
 
 let ctx: AudioContext | null = null;
 
@@ -17,75 +19,51 @@ function getCtx() {
   return ctx;
 }
 
-export function playCommitChime() {
-  const ac = getCtx();
-  if (!ac) return;
-  const now = ac.currentTime;
-
-  // Two-note soft chime, decays fast — feels like a confirmation, not a fanfare.
-  const tones = [
-    { freq: 587.33, start: 0, dur: 0.18 }, // D5
-    { freq: 880.0, start: 0.06, dur: 0.22 }, // A5
-  ];
-
-  for (const tone of tones) {
-    const osc = ac.createOscillator();
-    const gain = ac.createGain();
-    osc.type = "sine";
-    osc.frequency.value = tone.freq;
-    gain.gain.setValueAtTime(0, now + tone.start);
-    gain.gain.linearRampToValueAtTime(0.08, now + tone.start + 0.01);
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001,
-      now + tone.start + tone.dur,
-    );
-    osc.connect(gain).connect(ac.destination);
-    osc.start(now + tone.start);
-    osc.stop(now + tone.start + tone.dur);
-  }
-}
-
-export function playDeferTick() {
+function tone({ freq, start, dur, gain }: { freq: number; start: number; dur: number; gain: number }) {
   const ac = getCtx();
   if (!ac) return;
   const now = ac.currentTime;
   const osc = ac.createOscillator();
-  const gain = ac.createGain();
+  const g = ac.createGain();
   osc.type = "sine";
-  osc.frequency.value = 392.0; // G4
-  gain.gain.setValueAtTime(0, now);
-  gain.gain.linearRampToValueAtTime(0.05, now + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-  osc.connect(gain).connect(ac.destination);
-  osc.start(now);
-  osc.stop(now + 0.12);
+  osc.frequency.value = freq;
+  g.gain.setValueAtTime(0, now + start);
+  g.gain.linearRampToValueAtTime(gain, now + start + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+  osc.connect(g).connect(ac.destination);
+  osc.start(now + start);
+  osc.stop(now + start + dur);
 }
 
+/* ───────── Single soft pluck — capture confirmation ───────── */
+export function playCaptureChime() {
+  tone({ freq: 880.0, start: 0, dur: 0.14, gain: 0.045 });
+}
+
+/* ───────── Triage tones by action ───────── */
+export function playTriageTone(action: "promote" | "route" | "defer") {
+  const map = {
+    defer: 392.0, // G4
+    route: 493.88, // B4
+    promote: 587.33, // D5
+  };
+  tone({ freq: map[action], start: 0, dur: 0.16, gain: 0.05 });
+}
+
+/* ───────── Commit — two-tone D5 + A5 ───────── */
+export function playCommitChime() {
+  tone({ freq: 587.33, start: 0, dur: 0.18, gain: 0.055 });
+  tone({ freq: 880.0, start: 0.06, dur: 0.22, gain: 0.055 });
+}
+
+/* ───────── Defer tick (legacy single tone) ───────── */
+export function playDeferTick() {
+  tone({ freq: 392.0, start: 0, dur: 0.12, gain: 0.035 });
+}
+
+/* ───────── Snap-as-plan — three-note resolving ───────── */
 export function playSnapChime() {
-  const ac = getCtx();
-  if (!ac) return;
-  const now = ac.currentTime;
-
-  // Three-note resolving chord — feels like a plan locking in.
-  const tones = [
-    { freq: 523.25, start: 0, dur: 0.32 }, // C5
-    { freq: 659.25, start: 0.05, dur: 0.36 }, // E5
-    { freq: 783.99, start: 0.1, dur: 0.42 }, // G5
-  ];
-
-  for (const tone of tones) {
-    const osc = ac.createOscillator();
-    const gain = ac.createGain();
-    osc.type = "sine";
-    osc.frequency.value = tone.freq;
-    gain.gain.setValueAtTime(0, now + tone.start);
-    gain.gain.linearRampToValueAtTime(0.06, now + tone.start + 0.015);
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001,
-      now + tone.start + tone.dur,
-    );
-    osc.connect(gain).connect(ac.destination);
-    osc.start(now + tone.start);
-    osc.stop(now + tone.start + tone.dur);
-  }
+  tone({ freq: 523.25, start: 0, dur: 0.32, gain: 0.04 });
+  tone({ freq: 659.25, start: 0.05, dur: 0.36, gain: 0.04 });
+  tone({ freq: 783.99, start: 0.1, dur: 0.42, gain: 0.04 });
 }

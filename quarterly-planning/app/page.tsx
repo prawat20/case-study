@@ -7,22 +7,34 @@ import initiativesJson from "@/data/initiatives.json";
 import type { Initiative } from "@/lib/types";
 import { Header } from "@/components/Header";
 import { useDecisions } from "@/lib/use-decisions";
+import { useTriage } from "@/lib/triage";
+import { useCaptures } from "@/lib/captures";
 import {
   NORTH_STAR,
   computeNorthStar,
   formatMetric,
 } from "@/lib/strategic";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const allInitiatives = initiativesJson as Initiative[];
 
 export default function NowPage() {
-  const { decisions, hydrated } = useDecisions();
-  const decidedIds = new Set(decisions.map((d) => d.initiative_id));
+  const { decisions, hydrated: decisionsHydrated } = useDecisions();
+  const { triage, hydrated: triageHydrated } = useTriage();
+  const { captures, hydrated: capturesHydrated } = useCaptures();
 
-  const inboxCount = allInitiatives.filter(
-    (i) => i.status === "needs_decision" && !decidedIds.has(i.id),
+  const decidedIds = useMemo(() => new Set(decisions.map((d) => d.initiative_id)), [decisions]);
+  const triagedIds = useMemo(() => new Set(triage.map((t) => t.initiative_id)), [triage]);
+
+  const untriagedInitiativesCount = allInitiatives.filter(
+    (i) =>
+      i.status === "needs_decision" &&
+      !decidedIds.has(i.id) &&
+      !triagedIds.has(i.id),
   ).length;
+  const untriagedCapturesCount = captures.filter((c) => !triagedIds.has(c.id)).length;
+  const inboxCount = untriagedInitiativesCount + untriagedCapturesCount;
+  const hydrated = decisionsHydrated && triageHydrated && capturesHydrated;
 
   // Demo placeholders — these become real data when Calendar + Audit ship
   const overnightShifts: number = 2;
