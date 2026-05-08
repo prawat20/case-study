@@ -320,9 +320,12 @@ export default function TriagePage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-6 pb-6 text-[11px]" style={{ color: "var(--color-muted)" }}>
+      <div className="flex items-center justify-center gap-3 pb-6 text-[10.5px]" style={{ color: "var(--color-muted)" }}>
+        <span>Keys</span>
         <KbdHint k="D" label="Defer" />
+        <span>·</span>
         <KbdHint k="R" label="Route" />
+        <span>·</span>
         <KbdHint k="P" label="Promote" />
       </div>
     </div>
@@ -422,6 +425,12 @@ function CaptureCard({ capture }: { capture: Capture }) {
   );
 }
 
+const ACTION_INTENT: Record<TriageAction, string> = {
+  defer: "not this quarter",
+  route: "someone else owns this",
+  promote: "needs my decision",
+};
+
 function ActionButton({
   kind,
   onClick,
@@ -433,28 +442,33 @@ function ActionButton({
   const key = kind === "defer" ? "D" : kind === "route" ? "R" : "P";
   const isPromote = kind === "promote";
   return (
-    <button
-      onClick={onClick}
-      className="group inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-[13px] font-medium transition-all"
-      style={{
-        background: isPromote ? "var(--color-accent)" : "var(--color-elevated)",
-        color: isPromote ? "var(--color-elevated)" : "var(--color-secondary)",
-        border: isPromote ? "1px solid var(--color-accent)" : "1px solid var(--color-border)",
-        boxShadow: isPromote ? "var(--shadow-md)" : "var(--shadow-sm)",
-      }}
-    >
-      <Icon size={14} />
-      <span>{ACTION_LABEL[kind]}</span>
-      <kbd
-        className="ml-1 rounded px-1 py-0.5 font-mono text-[10px]"
+    <div className="flex flex-col items-center gap-1.5">
+      <button
+        onClick={onClick}
+        className="group inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-[13px] font-medium transition-all"
         style={{
-          background: isPromote ? "rgba(255,255,255,0.18)" : "var(--color-page)",
-          color: isPromote ? "rgba(255,255,255,0.9)" : "var(--color-tertiary)",
+          background: isPromote ? "var(--color-accent)" : "var(--color-elevated)",
+          color: isPromote ? "var(--color-elevated)" : "var(--color-secondary)",
+          border: isPromote ? "1px solid var(--color-accent)" : "1px solid var(--color-border)",
+          boxShadow: isPromote ? "var(--shadow-md)" : "var(--shadow-sm)",
         }}
       >
-        {key}
-      </kbd>
-    </button>
+        <Icon size={14} />
+        <span>{ACTION_LABEL[kind]}</span>
+        <kbd
+          className="ml-1 rounded px-1 py-0.5 font-mono text-[10px]"
+          style={{
+            background: isPromote ? "rgba(255,255,255,0.18)" : "var(--color-page)",
+            color: isPromote ? "rgba(255,255,255,0.9)" : "var(--color-tertiary)",
+          }}
+        >
+          {key}
+        </kbd>
+      </button>
+      <span className="text-[11px]" style={{ color: "var(--color-muted)" }}>
+        {ACTION_INTENT[kind]}
+      </span>
+    </div>
   );
 }
 

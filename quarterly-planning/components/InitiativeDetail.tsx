@@ -13,6 +13,7 @@ import {
   Sparkles,
   AlertTriangle,
   History,
+  ChevronDown,
 } from "lucide-react";
 import type {
   Initiative,
@@ -105,6 +106,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
   const [priorOverride, setPriorOverride] = useState<{ rationale: string } | null>(null);
   const [activeFramework, setActiveFramework] = useState<Framework>(rec.framework);
   const [flyToCorner, setFlyToCorner] = useState(false);
+  const [whyOpen, setWhyOpen] = useState(false);
   const overrideInputRef = useRef<HTMLInputElement | null>(null);
 
   /* Hydrate framework override */
@@ -404,252 +406,275 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
           </motion.div>
         )}
 
-        {/* Hero rationale — Fraunces-leaning serif moment */}
-        <p
-          className="font-display mt-10 text-[22px] leading-[1.45] tracking-tight"
-          style={{ color: "var(--color-primary)", fontWeight: 400 }}
-        >
-          {initiative.rationale_narrative}
-        </p>
-
-        {/* ─── Framework picker (first-class control) ─── */}
-        <section className="mt-12">
-          <p className="eyebrow">Framework</p>
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {listFrameworks().map((fw) => {
-              const active = fw === activeFramework;
-              const isAIPick = fw === rec.framework;
-              return (
-                <button
-                  key={fw}
-                  onClick={() => pickFramework(fw)}
-                  className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-[13px] font-medium transition"
-                  style={{
-                    background: active ? "var(--color-accent)" : "var(--color-elevated)",
-                    color: active ? "var(--color-elevated)" : "var(--color-secondary)",
-                    border: "1px solid",
-                    borderColor: active ? "var(--color-accent)" : "var(--color-border)",
-                    boxShadow: active ? "var(--shadow-sm)" : "none",
-                  }}
-                >
-                  <span>{fw}</span>
-                  {isAIPick && (
-                    <span
-                      className="text-[10px] font-medium"
-                      style={{
-                        color: active
-                          ? "rgba(255, 255, 255, 0.78)"
-                          : "var(--color-tertiary)",
-                      }}
-                    >
-                      AI pick
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          <p className="mt-3 text-[12.5px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
-            {scoring.description}
-          </p>
-          {activeFramework !== rec.framework && (
-            <p className="mt-1 text-[12px]" style={{ color: "var(--color-accent)" }}>
-              Override: AI picked {rec.framework} because — {rec.framework_rationale}
-            </p>
-          )}
-        </section>
-
-        {/* ─── Scorecard ─── */}
-        <section className="mt-10">
-          <p className="eyebrow">Score</p>
-          <div
-            className="mt-3 overflow-hidden rounded-xl"
-            style={{
-              background: "var(--color-elevated)",
-              border: "1px solid var(--color-border)",
-              boxShadow: "var(--shadow-sm)",
-            }}
-          >
-            <div
-              className="grid"
-              style={{
-                gridTemplateColumns: `repeat(${scoring.rows.length + 1}, minmax(0, 1fr))`,
-              }}
-            >
-              {scoring.rows.map((row, idx) => (
-                <ScoreCell
-                  key={idx}
-                  label={row.label}
-                  value={row.value}
-                  hint={row.hint}
-                  isLast={false}
-                />
-              ))}
-              <ScoreCell
-                label={scoring.total.label}
-                value={scoring.total.value}
-                isLast
-                accent
-              />
-            </div>
-          </div>
-          <p className="mt-3 text-[12.5px] italic" style={{ color: "var(--color-tertiary)" }}>
-            {scoring.rationale}
-          </p>
-        </section>
-
-        {/* ─── Recommendation card ─── */}
-        <section className="mt-10">
-          <p className="eyebrow">Recommendation</p>
-          <div
-            className="mt-3 rounded-xl px-6 py-5"
-            style={{
-              background: "var(--color-elevated)",
-              border: "1px solid var(--color-border)",
-              borderLeft: `2px solid ${actionTone(recAction)}`,
-              boxShadow: "var(--shadow-sm)",
-            }}
-          >
-            <div className="flex flex-wrap items-baseline gap-2.5 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-              <span
-                className="text-[11px] font-semibold uppercase tracking-[0.1em]"
-                style={{ color: actionTone(recAction) }}
+        {/* ─── Framework chips (compact) ─── */}
+        <div className="mt-8 flex flex-wrap items-center gap-1.5">
+          {listFrameworks().map((fw) => {
+            const active = fw === activeFramework;
+            const isAIPick = fw === rec.framework;
+            return (
+              <button
+                key={fw}
+                onClick={() => pickFramework(fw)}
+                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[12px] font-medium transition"
+                style={{
+                  background: active ? "var(--color-accent)" : "transparent",
+                  color: active ? "var(--color-elevated)" : "var(--color-tertiary)",
+                  border: "1px solid",
+                  borderColor: active ? "var(--color-accent)" : "var(--color-border)",
+                }}
+                title={isAIPick ? `AI picked ${fw}` : `Switch to ${fw}`}
               >
-                {ACTION_LABEL[recAction]}
-              </span>
-              <span style={{ color: "var(--color-muted)" }}>·</span>
-              <span style={{ color: "var(--color-secondary)" }}>{rec.sequence}</span>
-              <span style={{ color: "var(--color-muted)" }}>·</span>
-              <span>{rec.effort_sprints} sprint{rec.effort_sprints > 1 ? "s" : ""}</span>
-              <span style={{ color: "var(--color-muted)" }}>·</span>
-              <span>{rec.eng_confidence} confidence</span>
-            </div>
-            <p className="mt-2.5 text-[14.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
-              {rec.action_reason}
-            </p>
-            {rec.okr_contribution && (
-              <p className="mt-2 text-[13px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
-                {rec.okr_contribution}
-              </p>
-            )}
+                <span>{fw}</span>
+                {isAIPick && (
+                  <span
+                    aria-hidden
+                    className="inline-block h-1 w-1 rounded-full"
+                    style={{
+                      background: active ? "rgba(255,255,255,0.7)" : "var(--color-accent)",
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
+          <span className="ml-1 text-[11px]" style={{ color: "var(--color-muted)" }}>
+            • marks AI&rsquo;s pick
+          </span>
+        </div>
 
-            <div
-              className="mt-4 flex items-start gap-2 rounded-md px-3 py-2.5 text-[12.5px]"
-              style={{
-                background: "var(--color-accent-soft)",
-              }}
-            >
-              <Sparkles size={12} className="mt-0.5 shrink-0" style={{ color: "var(--color-accent)" }} />
-              <span className="leading-relaxed" style={{ color: "var(--color-secondary)" }}>
-                <span style={{ color: "var(--color-tertiary)" }}>Predicted outcome —</span>{" "}
-                <span style={{ color: "var(--color-primary)" }}>{rec.predicted_outcome}</span>
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* ─── Trade-offs · sprint impact + strategic notes ─── */}
-        <section className="mt-10">
-          <p className="eyebrow">Trade-offs · what shifts when this commits</p>
-
-          {/* Sprint-impact card */}
-          <div
-            className="mt-3 rounded-xl px-5 py-4"
-            style={{
-              background: "var(--color-elevated)",
-              border: "1px solid var(--color-border)",
-              boxShadow: "var(--shadow-sm)",
-            }}
+        {/* ─── The Decision card — score + impact + conflicts + recommendation in one frame ─── */}
+        <section
+          className="mt-4 rounded-2xl px-6 py-5"
+          style={{
+            background: "var(--color-elevated)",
+            border: "1px solid var(--color-border)",
+            borderLeft: `2px solid ${actionTone(recAction)}`,
+            boxShadow: "var(--shadow-sm)",
+          }}
+        >
+          {/* Headline: action + sequence + outcome */}
+          <p className="eyebrow">{ACTION_LABEL[recAction]} · recommended</p>
+          <p
+            className="mt-1.5 text-[20px] tracking-tight"
+            style={{ color: "var(--color-primary)", fontWeight: 500 }}
           >
-            <SprintImpactBar impact={commitImpact} />
+            {ACTION_LABEL[recAction]} · {commitImpact.target_sprint_label}
+          </p>
+          <p className="mt-1 text-[13.5px] leading-snug" style={{ color: "var(--color-secondary)" }}>
+            {rec.predicted_outcome}
+          </p>
 
-            {commitImpact.pushed_items.length > 0 ? (
-              <div className="mt-4 space-y-2">
-                <p
-                  className="text-[12px] font-medium"
-                  style={{ color: "var(--color-warning)" }}
-                >
-                  To make room, {commitImpact.pushed_items.length} item{commitImpact.pushed_items.length === 1 ? "" : "s"} reflow:
-                </p>
+          <div className="my-5 h-px" style={{ background: "var(--color-border)" }} />
+
+          {/* Compact decision strip */}
+          <DecisionRow
+            label="Score"
+            primary={`${scoring.total.value}`}
+            secondary={`${activeFramework}${activeFramework !== rec.framework ? " · override" : ""}`}
+          />
+
+          <DecisionRow
+            label="Capacity"
+            primary={
+              <span
+                className={
+                  commitImpact.resolved_load > commitImpact.capacity ? "" : ""
+                }
+                style={{
+                  color: commitImpact.resolved_load > commitImpact.capacity
+                    ? "var(--color-warning)"
+                    : "var(--color-primary)",
+                }}
+              >
+                {commitImpact.before_load} → {commitImpact.resolved_load} / {commitImpact.capacity}p
+              </span>
+            }
+            secondary={
+              commitImpact.pushed_items.length > 0
+                ? `${commitImpact.pushed_items.length} item${commitImpact.pushed_items.length === 1 ? "" : "s"} reflow`
+                : "no reflow"
+            }
+            secondaryTone={commitImpact.pushed_items.length > 0 ? "warning" : "success"}
+          >
+            {commitImpact.pushed_items.length > 0 && (
+              <div className="mt-2 space-y-1 pl-2">
                 {commitImpact.pushed_items.map((p) => (
-                  <div
+                  <p
                     key={p.initiative_id}
-                    className="flex items-center gap-2 text-[12.5px]"
-                    style={{ color: "var(--color-secondary)" }}
+                    className="text-[12px]"
+                    style={{ color: "var(--color-tertiary)" }}
                   >
-                    <span
-                      className="font-numeric inline-flex items-center gap-1.5 rounded px-1.5 py-0.5 text-[10.5px] font-medium"
-                      style={{
-                        background: "var(--color-warning-soft)",
-                        color: "var(--color-warning)",
-                      }}
-                    >
-                      {p.effort_points}p
-                    </span>
-                    <span style={{ color: "var(--color-primary)" }}>{p.title}</span>
-                    <span style={{ color: "var(--color-tertiary)" }}>
-                      pushes from {SPRINTS[p.from_sprint - 1]?.label} → {SPRINTS[p.to_sprint - 1]?.label}
-                    </span>
-                  </div>
+                    <span style={{ color: "var(--color-secondary)" }}>{p.title}</span>
+                    {" → "}
+                    {SPRINTS[p.to_sprint - 1]?.label}
+                  </p>
                 ))}
               </div>
-            ) : (
-              <p
-                className="mt-3 text-[12.5px]"
-                style={{ color: "var(--color-success)" }}
-              >
-                No items push. Capacity allows this directly.
-              </p>
             )}
-          </div>
+          </DecisionRow>
 
-          {/* Strategic notes from AI */}
-          {rec.tradeoffs.length > 0 && (
-            <>
-              <p className="eyebrow mt-6" style={{ fontSize: 10 }}>
-                Strategic context
-              </p>
-              <ul className="mt-3 space-y-2.5">
-                {rec.tradeoffs.map((t, idx) => (
-                  <li
-                    key={idx}
-                    className="flex gap-3 text-[13.5px] leading-relaxed"
-                    style={{ color: "var(--color-secondary)" }}
-                  >
-                    <span
-                      className="mt-2 inline-block h-1 w-1 rounded-full shrink-0"
-                      style={{ background: "var(--color-tertiary)" }}
-                    />
-                    <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+          <DecisionRow
+            label="Conflicts"
+            primary={
+              rec.conflicts.length === 0 ? (
+                <span style={{ color: "var(--color-success)" }}>None</span>
+              ) : (
+                <span style={{ color: "var(--color-warning)" }}>
+                  {rec.conflicts.length} flagged
+                </span>
+              )
+            }
+            secondary={rec.conflicts.length > 0 ? rec.conflicts[0] : undefined}
+            secondaryTone={rec.conflicts.length > 0 ? "warning" : undefined}
+            isLast
+          />
         </section>
 
-        {/* ─── Conflicts (warning) ─── */}
-        {rec.conflicts.length > 0 && (
-          <section className="mt-8">
-            <p
-              className="text-[11px] font-semibold uppercase tracking-[0.1em]"
-              style={{ color: "var(--color-warning)" }}
+        {/* ─── "Why this" — collapsed by default, expand for the long context ─── */}
+        <button
+          onClick={() => setWhyOpen((v) => !v)}
+          className="mt-4 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[12.5px] font-medium transition hover:bg-card-hover"
+          style={{ color: "var(--color-tertiary)" }}
+          aria-expanded={whyOpen}
+        >
+          <ChevronDown
+            size={14}
+            style={{
+              transform: whyOpen ? "rotate(0deg)" : "rotate(-90deg)",
+              transition: "transform 180ms cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+          />
+          <span>Why this</span>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {whyOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
             >
-              Conflicts to surface
-            </p>
-            <ul className="mt-3 space-y-1.5">
-              {rec.conflicts.map((c, idx) => (
-                <li
-                  key={idx}
-                  className="text-[13.5px] leading-relaxed"
-                  style={{ color: "var(--color-secondary)" }}
-                >
-                  {c}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
+              <div className="mt-4 space-y-6">
+                {/* Long rationale */}
+                <div>
+                  <p className="eyebrow">Rationale</p>
+                  <p
+                    className="font-display mt-2 text-[18px] leading-[1.45]"
+                    style={{ color: "var(--color-primary)", fontWeight: 400 }}
+                  >
+                    {initiative.rationale_narrative}
+                  </p>
+                </div>
+
+                {/* AI's action reason */}
+                <div>
+                  <p className="eyebrow">AI reasoning</p>
+                  <p className="mt-2 text-[13.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+                    {rec.action_reason}
+                  </p>
+                  {rec.okr_contribution && (
+                    <p className="mt-1.5 text-[12.5px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
+                      {rec.okr_contribution}
+                    </p>
+                  )}
+                </div>
+
+                {/* Framework rationale */}
+                <div>
+                  <p className="eyebrow">Why {activeFramework}</p>
+                  <p className="mt-2 text-[13px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+                    <span style={{ color: "var(--color-tertiary)" }}>{scoring.description}</span>{" "}
+                    {scoring.rationale}
+                  </p>
+                  {activeFramework !== rec.framework && (
+                    <p className="mt-1.5 text-[12px]" style={{ color: "var(--color-accent)" }}>
+                      AI originally picked {rec.framework} — {rec.framework_rationale}
+                    </p>
+                  )}
+                </div>
+
+                {/* Score breakdown */}
+                <div>
+                  <p className="eyebrow">Score breakdown</p>
+                  <div
+                    className="mt-2 overflow-hidden rounded-xl"
+                    style={{
+                      background: "var(--color-elevated)",
+                      border: "1px solid var(--color-border)",
+                    }}
+                  >
+                    <div
+                      className="grid"
+                      style={{
+                        gridTemplateColumns: `repeat(${scoring.rows.length + 1}, minmax(0, 1fr))`,
+                      }}
+                    >
+                      {scoring.rows.map((row, idx) => (
+                        <ScoreCell
+                          key={idx}
+                          label={row.label}
+                          value={row.value}
+                          hint={row.hint}
+                          isLast={false}
+                        />
+                      ))}
+                      <ScoreCell
+                        label={scoring.total.label}
+                        value={scoring.total.value}
+                        isLast
+                        accent
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Strategic context */}
+                {rec.tradeoffs.length > 0 && (
+                  <div>
+                    <p className="eyebrow">Strategic context</p>
+                    <ul className="mt-2 space-y-2">
+                      {rec.tradeoffs.map((t, idx) => (
+                        <li
+                          key={idx}
+                          className="flex gap-3 text-[13px] leading-relaxed"
+                          style={{ color: "var(--color-secondary)" }}
+                        >
+                          <span
+                            className="mt-1.5 inline-block h-1 w-1 rounded-full shrink-0"
+                            style={{ background: "var(--color-tertiary)" }}
+                          />
+                          <span>{t}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Full conflict list */}
+                {rec.conflicts.length > 0 && (
+                  <div>
+                    <p className="eyebrow" style={{ color: "var(--color-warning)" }}>
+                      Conflicts
+                    </p>
+                    <ul className="mt-2 space-y-1.5">
+                      {rec.conflicts.map((c, idx) => (
+                        <li
+                          key={idx}
+                          className="text-[13px] leading-relaxed"
+                          style={{ color: "var(--color-secondary)" }}
+                        >
+                          {c}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ─── Action zone ─── */}
         <section
@@ -997,6 +1022,60 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
 }
 
 /* ─────────── Sub-components ─────────── */
+
+function DecisionRow({
+  label,
+  primary,
+  secondary,
+  secondaryTone,
+  isLast = false,
+  children,
+}: {
+  label: string;
+  primary: React.ReactNode;
+  secondary?: React.ReactNode;
+  secondaryTone?: "warning" | "success";
+  isLast?: boolean;
+  children?: React.ReactNode;
+}) {
+  const secondaryColor =
+    secondaryTone === "warning"
+      ? "var(--color-warning)"
+      : secondaryTone === "success"
+        ? "var(--color-success)"
+        : "var(--color-tertiary)";
+  return (
+    <div
+      className="py-2.5"
+      style={{
+        borderBottom: isLast ? "none" : "1px solid var(--color-border)",
+      }}
+    >
+      <div className="flex items-baseline justify-between gap-3">
+        <p
+          className="text-[11.5px] uppercase tracking-[0.06em]"
+          style={{ color: "var(--color-tertiary)", fontWeight: 600 }}
+        >
+          {label}
+        </p>
+        <div className="flex items-baseline gap-2 text-right">
+          <p
+            className="font-numeric text-[14px] tabular-nums"
+            style={{ color: "var(--color-primary)", fontWeight: 500 }}
+          >
+            {primary}
+          </p>
+          {secondary && (
+            <p className="text-[12px]" style={{ color: secondaryColor }}>
+              {secondary}
+            </p>
+          )}
+        </div>
+      </div>
+      {children}
+    </div>
+  );
+}
 
 function SprintImpactBar({ impact }: { impact: CommitImpact }) {
   const beforePct = Math.min(100, (impact.before_load / impact.capacity) * 100);
