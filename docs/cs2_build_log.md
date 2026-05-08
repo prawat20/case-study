@@ -1,15 +1,91 @@
 # CS2 Build Log
 
 > Running record of what was actually built, what changed from the wireframe spec, and current demo state.
-> Started 2026-05-07. Most recent entry 2026-05-08.
+> Started 2026-05-07. Most recent entry 2026-05-09.
 
 ---
 
-## Current state
+## Current state (v2 — 2026-05-09)
 
-**Status:** POV-complete (every requirement in `cs2_product_pov.md` is implemented), deployed. UX polish pass next.
+**Status:** v2 redesign shipped. Step-change rebuild from JBTDs first. Six surfaces in the new IA, all wired end-to-end.
 **Live:** https://case-study-iud.pages.dev/
-**Source:** github.com/prawat20/case-study (latest `3570b89`)
+**Source:** github.com/prawat20/case-study (latest `2a99957`)
+**Source-of-truth docs:** `docs/cs2_jbtd_and_pov.md` · `docs/cs2_design_system_v2.md` · `docs/cs2_ia_and_surfaces.md`
+
+### Routes shipped (v2)
+
+| Route | Purpose | Notes |
+|---|---|---|
+| `/` | **Now** (home) | NSM hero (Fraunces 48px), pace gap + same-day decision %, three "do today" cards (Triage / Sprint peek / Predictions due). Sprint card swaps to "N items waiting to place" when calendar rail has items. |
+| `/inbox/` | **Inbox** list | Sectioned: Just landed (under 90 min) · Earlier · Ready to prioritize. Big "Start triage" sage CTA + `+ New (⌘N)`. |
+| `/inbox/triage/` | **Triage** flow | Tinder-style swipe card. Right = Promote, left = Defer, R/up = Route. Velocity-aware threshold. PROMOTE/DEFER stamp tints during drag. Card front carries time/source/channel · title · synthesis · evidence quote · signal chip + ARR + RICE + effort + "If we ship —" predicted-outcome callout. **"Why this" expand inline** (Space) reveals score breakdown, AI reasoning, conflicts, trade-offs. 44px circular action buttons sit close below card. Stack hint peeks underneath active card. |
+| `/calendar/` | **Calendar** puzzle | TO PLACE rail (sage dashed) at top + 4 sprint lanes + DEFER tray (warm dashed) at bottom. **Drag = decide**: rail → sprint commits + may auto-reflow lower-priority items; rail → defer pushes to next quarter. Capacity bars amber on overflow. Snap as Q3 plan only enables when rail empty + no overflow. |
+| `/initiative/[id]/` | **Prioritize** (deep view) | Compact single Decision card consolidating Score · Capacity · Reflow · Conflicts · Recommendation · Predicted outcome. Framework picker (5 chips) above. **"Why this" expand** for rationale narrative + AI reasoning + score math + strategic context + full conflict list. Now the alt path; Calendar puzzle is primary. |
+| `/stakeholders/` + `/stakeholders/[audience]/` | **Stakeholders** | Hub with 4 cards (Sales / Exec / Customer / Eng). Each artifact is *generated* per-audience (not filtered): lines fade in 50ms staggered. Copy-as-Slack and copy-as-email. |
+| `/audit/` | **Audit** | Tabs: Decisions / Predictions. Predictions panel: prediction-vs-actual loop with mock 21d-old SAML prediction always seeded. System-learning summary banner with per-claim-type accuracy. |
+| `/architecture/` | Architecture | Reviewer-facing only. Six-layer stack diagram, restyled v2. |
+| `/quarter/` | (alias for `/calendar`) | Kept for backward compat. |
+| `Cmd+K` overlay | Command palette | Restyled v2. Groups: Inbox / Navigate / Stakeholder views / Decisions / Theme / System. Reset demo nukes 5 stores: decisions, framework overrides, triage, captures, calendar. |
+| `Cmd+N` overlay | Capture modal | Single textarea autofocus, source/channel/signal chips infer as you type, Enter saves with capture pluck chime. |
+
+### v2 visual language
+
+- **Light theme default**, dark optional via `data-theme` toggle in header.
+- **Warm cream + sage** — page `#F8F5EE`, surface `#FFFFFF`, accent `#5A8F6F` (rare, marks active/CTA/confirmed).
+- **Ink ladder is warm graphite**, never pure black: `#1A1815` / `#58524A` / `#8C857A` / `#B8B0A2`.
+- **Three fonts** — Inter (UI), Fraunces (serif hero moments), JetBrains Mono (numerics).
+- **Status warm-tinted**, never neon: success `#4A8159`, warning `#B5772A`, danger `#B04A47`.
+- **Motion** — 100/180/320/720ms; ease-out entry, ease-in exit, spring overshoot only for celebration.
+- **Sound** — 5 Web Audio chimes, ~30% softer than v1: capture pluck, triage tones (G4/B4/D5 by action), commit two-tone, defer tick, snap three-note resolving chord.
+
+### State stores (localStorage)
+
+| Key | Module | Purpose |
+|---|---|---|
+| `qp_decisions_v1` | `lib/decisions.ts` | Committed / Deferred / Escalated / Overridden |
+| `qp_framework_overrides_v1` | `lib/decisions.ts` | Per-initiative framework switches |
+| `qp_triage_v2` | `lib/triage.ts` | Triage actions (Promote/Route/Defer) |
+| `qp_captures_v2` | `lib/captures.ts` | Items captured via ⌘N |
+| `qp_calendar_assignments_v2` | `lib/calendar-state.ts` | Per-initiative sprint index overrides |
+| `qp_calendar_locked_v2` | `lib/calendar-state.ts` | Whether the plan is snapped/locked |
+| `qp_theme_v2` | `components/ThemeToggle.tsx` | light / dark preference |
+
+`lib/calendar-state.useCalendarState` emits a custom event so Calendar / Prioritize / Stakeholders all refresh together. `lib/sprint-conflict.computeCommitImpact` is the centralized auto-reflow engine — reused by Prioritize commit and Calendar drag.
+
+---
+
+## Round 8 — v2 redesign (2026-05-09)
+
+User direction on 2026-05-09: *"current UI/UX is not at all up to the mark, needs a step jump, like a wow."* Re-architected from JBTDs first, design system second, surfaces third.
+
+**Sub-rounds:**
+
+1. **Foundation** (`26a747a`) — design tokens + Fraunces serif + light/dark theme toggle. Wholesale palette swap from cold dark to warm cream + sage. Existing surfaces inherit the new look.
+2. **Now (home)** (`d961018`) — replace Priority Stream front-door with NSM-hero aggregator + three "do today" cards. Existing initiative list moves to `/inbox` as a bridge.
+3. **Inbox + Triage + Cmd+N** (`9d7d11d`) — proper sectioned Inbox, deck-of-cards triage flow (D/R/P keyboard), `⌘N` capture modal with auto-detect chips, Cmd+K palette restyled to v2 with new groups.
+4. **Prioritize v2** (`aefaacb`) — framework picker as a 5-chip first-class control, scorecard table, commit-confirm step (replaces direct fire), override-as-path preserved.
+5. **Calendar + Stakeholders + Audit + Architecture** (`c2a749c`) — full surface set in v2 visual language. Sprint lanes with HTML5 drag-to-resequence. Stakeholders hub + per-audience artifact generation. Audit Predictions tab. Architecture restyled.
+6. **Real sprint impact on commit** (`4a970e1`) — `lib/sprint-conflict.computeCommitImpact` replaces static AI-authored trade-off text with computed sprint reflow. Commits write the resolved assignment map atomically.
+7. **Compact Prioritize + triage intent labels** (`b6291b9`) — collapse 5 sections (Score / Recommendation / Trade-offs / Conflicts / Sprint impact) into one Decision card. "Why this" expand for depth. Triage buttons get one-line intent labels (*"not this quarter"* etc).
+8. **Calendar = puzzle** (`9d2b9de`) — TO PLACE rail at top + DEFER tray at bottom. Drag from rail → sprint = commit. Drag → defer = push to next quarter. Auto-reflow on overflow. Snap as plan gated on rail-empty + no-overflow.
+9. **Triage = Tinder swipe** (`a6e8e04`) — replace D/R/P button-driven deck with swipe interactions. Right/left thresholds, velocity-aware, tilt + tint during drag, PROMOTE/DEFER stamp overlays. "Why this" expand inline.
+10. **Action buttons close to card** (`2a99957`) — drop minHeight floor on card stage so buttons sit ~16px under the card; tighten hint text.
+
+**What's no longer in the build (deleted):** SprintView, QuarterPlan, StrategicBanner, SignalShifts components — replaced by Now / Calendar / Stakeholders.
+
+---
+
+## v1 history (historical, 2026-05-07 → 2026-05-08)
+
+The sections below describe the v1 build that v2 superseded. Kept for context.
+
+---
+
+## (v1) Current state — superseded
+
+**Status (v1, archived):** POV-complete against the original wireframe spec. Replaced by v2 on 2026-05-09.
+**Live (v1, archived):** https://case-study-iud.pages.dev/ (now serves v2)
+**Source (v1, archived):** github.com/prawat20/case-study (last v1 commit `cd0985d`)
 
 ### Routes shipped
 

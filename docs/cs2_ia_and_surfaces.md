@@ -156,46 +156,49 @@ What Maya sees when she opens Inbox without committing to triage. Stack of un-tr
 - Signal-tag (revenue / customer / strategic / etc) as a single-color chip.
 - Click any row → opens triage flow at that item.
 
-### 5b. Triage — flow mode (`/inbox/triage`)
+### 5b. Triage — Tinder swipe card (`/inbox/triage`) **[shipped — final design]**
 
-The wow moment. Full-screen, single card, keyboard-first.
+The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with keyboard fallback.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                                                       3/5 │  ← progress in corner
-│                                                          │
-│                                                          │
-│                                                          │
+│                                                       3/5 │  ← progress
 │              ┌──────────────────────────────┐            │
-│              │ ◷ 11 min · Sales · Slack     │            │
+│              │ ◷ 11m · Sales · Slack        │            │
 │              │                              │            │
 │              │ Acme blocked on SAML —       │            │
 │              │ 3 deals stalling             │            │
 │              │                              │            │
 │              │ "We've had 3 enterprise      │            │
-│              │ deals slip in the last 2     │            │
-│              │ weeks. SAML support is the   │            │
-│              │ blocker." — sales lead       │            │
+│              │ deals slip..." — Acme        │            │
 │              │                              │            │
-│              │ signal: revenue · $480K ARR  │            │
+│              │ revenue · $480k · RICE 14.4  │            │
+│              │ · 3 sprints                  │            │
+│              │                              │            │
+│              │ ✦ If we ship — 3 deals close │            │
+│              │   in ~6 weeks                │            │
+│              │                              │            │
+│              │ ⌄ Why this  [Space]          │            │
 │              └──────────────────────────────┘            │
 │                                                          │
+│              ⊘   ↗   →                                   │
+│             Defer Route Promote                          │
 │                                                          │
-│        [D] Defer    [R] Route    [P] Promote             │
-│                                                          │
-│        AI suggests: Promote to prioritize                │
-│        "Revenue-blocking + named accounts + recent"      │
-│                                                          │
+│              Swipe · click button · keyboard             │
 └──────────────────────────────────────────────────────────┘
 ```
 
-- Card is centered, ~480px wide, ~360px tall. Shadow-md. White on cream — floats.
-- Three keyboard targets: `D` (defer to next quarter), `R` (route to another team/owner), `P` (promote to Prioritize surface).
-- AI suggestion is below the actions, never above. *Maya decides first; AI is the ghost in the room.*
-- Decision → card slides 120px in direction (D=down, R=right, P=up) + fades 240ms. Next card rises from y+24 to y+0.
-- Counter top-right: `1/5 → 2/5 → ... → done`.
-- `Esc` exits to list mode mid-flow with progress saved.
-- "Done" state: page fades to a calm completion message — *"Inbox cleared. 3 promoted, 1 routed, 1 deferred."* + CTA to Prioritize first promoted item.
+- **Drag right (or `→` / `P`) → Promote.** Card tilts +12°, sage tint emerges from right edge, "PROMOTE" stamp at +12° fades in.
+- **Drag left (or `←` / `D`) → Defer.** Brick tint, "DEFER" stamp at -12°.
+- **Click ↗ button or press `R` → Route.** Rare; "someone else owns this." Doesn't deserve a primary gesture.
+- **Velocity-aware threshold** — fast flick triggers earlier than slow drag; below threshold the card springs back to center.
+- **Past threshold** the card snaps off-screen with rotation; next card rises from y+24.
+- **Counter top-right** ticks `1/N → 2/N → done`. **Esc** exits to list mode mid-flow.
+- **Card front** carries everything needed for fast judgment: time/source/channel · title · synthesis · evidence quote · signal chip + ARR + RICE score + effort sprints · "If we ship —" predicted-outcome callout (sage-soft).
+- **"Why this" expands inline** (Space or click) without leaving the card. Reveals: full score breakdown, AI's `action_reason`, conflicts to surface, full trade-offs list. Tap again to collapse.
+- **44×44 circular action buttons** sit ~16px below the card — secondary affordances. Defer (red), Route (neutral), Promote (green).
+- A **24px ghost slice** peeks below the active card edge — Tinder's "stack of cards" cue.
+- **Done state**: *"Inbox cleared."* with promoted/routed/deferred tally. Sage CTA: **Place N in calendar →** when promotions exist.
 
 ### Capture — `Cmd+N` modal (global)
 
@@ -304,12 +307,30 @@ Sprint-by-sprint vertical timeline. Each sprint is a horizontal lane (~120px tal
 └───────────────────────────────────────────────────────────────┘
 ```
 
-- Sprint headers are eyebrow-style. Capacity bar inline (sage = ok, amber = full, brick = overflow).
-- Items are 160×64px chips, status icon left, name right.
-- Drag chip between sprints — capacity bars animate, dependencies render as ghost-lines.
-- "Snap as Q3 plan" CTA top-right — fires snap chime, locks plan, surfaces to Stakeholders surface.
+- Sprint headers are eyebrow-style. Capacity bar inline (sage = ok, amber = tight or overflow).
+- Items are chips with title + effort-points badge tinted by signal kind.
+- Drag chip between sprints — capacity bars animate live.
+- "Snap as Q3 plan" CTA top-right — fires snap chime, locks plan, surfaces sage callout linking to Stakeholders.
 
-This is where Cron-grade craft lands.
+### What actually shipped — the **puzzle** model
+
+The implementation evolved past a pure "calendar with drag." Per user direction on 2026-05-09 (*"placement IS the prioritization, like a puzzle"*), the surface now has three zones:
+
+1. **TO PLACE rail** at the top (sage dashed border) — items promoted via triage but not yet placed in a sprint. Each rail card shows title, effort points, RICE score, and AI's suggested-sprint chip. **The rail is the queue from triage.** It hides itself when empty.
+2. **Four sprint lanes** as above. The AI-suggested sprint outlines softly while a card is being dragged ("AI suggests" pill on the sprint header).
+3. **DEFER tray** at the bottom (warm dashed border) — drop any item here to push it out of Q3. Drag a deferred item back to a sprint to bring it into Q3 again.
+
+**Drag = decide.** Drag rail → sprint commits the item (logs a `committed` decision via `addDecision`). Drag rail → defer tray records a `deferred` decision. Drag sprint → sprint just resequences. **No abstract Commit button on Calendar** — the placement IS the commit (per JBTD-4).
+
+**Auto-reflow on overflow**: dropping into a full sprint fires `lib/sprint-conflict.computeCommitImpact`. Lower-priority items push to the next available sprint with a quiet toast announcing the chain. PM is free to drag pushed items back if they don't like the choice.
+
+**Snap as Q3 plan** only enables when the rail is empty AND no sprint is over capacity. Forces the puzzle to actually be solved before the plan locks.
+
+**Visual state** the PM can read at a glance:
+- **Soft-placed** (AI-suggested, PM hasn't touched): dashed border
+- **Committed** (PM placed): solid border + sage check
+- **Deferred**: strikethrough, in the tray
+- **AI-rec sprint while dragging**: sage outline + "AI suggests" pill
 
 ---
 
@@ -382,23 +403,25 @@ Same `cmdk` library. Restyled to match design system v2.
 
 ---
 
-## 12. Build sequence
+## 12. Build sequence — what actually shipped (2026-05-09)
 
-Surface-by-surface, each shipped to preview before next.
+All ten steps shipped, plus three follow-up rounds in response to user feedback during the build.
 
-1. **Foundation** — design system tokens in `globals.css`, fonts loaded, `data-theme` toggle wired, motion config.
-2. **Now** — home aggregator. Establishes the visual language end-to-end.
-3. **Inbox + Triage** — Cmd+N capture, list mode, deck-of-cards triage flow. The first wow moment.
-4. **Prioritize** — single-item depth, framework picker, scorecard, trade-off-on-commit.
-5. **Calendar** — sprint-by-sprint, drag-to-resequence, capacity bars, ripple ghost.
-6. **Stakeholders** — generated artifacts, four audiences, copy-paste-ready.
-7. **Audit** — decisions + predictions tabs, system-learning callout.
-8. **Cmd+K refit** — restyled palette, new actions wired.
-9. **Architecture refresh** — same diagram, new design system applied.
-10. **Polish pass** — sound tuning, motion timing review, accessibility audit, deploy.
+| # | Commit | What landed |
+|---|---|---|
+| 1 | `26a747a` | Foundation — tokens + fonts + theme toggle |
+| 2 | `d961018` | Now (home aggregator) + Inbox bridge |
+| 3 | `9d7d11d` | Inbox + deck-of-cards triage + Cmd+N capture + Cmd+K refit |
+| 4 | `aefaacb` | Prioritize v2 — framework picker + scorecard + commit-confirm |
+| 5 | `c2a749c` | Calendar + Stakeholders + Audit + Architecture |
+| 6 | `4a970e1` | **Real sprint impact on commit** — auto-reflow via `computeCommitImpact` |
+| 7 | `b6291b9` | **Compact Prioritize** to single Decision card · triage intent labels |
+| 8 | `9d2b9de` | **Calendar = puzzle** — TO PLACE rail + DEFER tray + drag-to-decide |
+| 9 | `a6e8e04` | **Triage = Tinder swipe** with "Why this" inline expand |
+| 10 | `2a99957` | Triage action buttons close to card |
 
-Each step is its own commit, each ships to preview. You react after each.
+The three highlighted rounds (6, 8, 9) emerged from user feedback during the build — items that the original IA spec had right in spirit but not in the specific interaction model. The doc above has been updated to reflect the actual shipped surfaces.
 
 ---
 
-**Next step:** start §12 step 1 (foundation). Tokens + fonts + theme toggle, no surfaces yet — establishes the new look at the layout level. Then Now page as the first surface to react to.
+**v2 build complete.** Next: CS1 written doc (Revolut Primacy + Plottwyst pitch).
