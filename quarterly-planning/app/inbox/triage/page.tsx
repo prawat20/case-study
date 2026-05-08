@@ -303,18 +303,19 @@ export default function TriagePage() {
 
       {/* Card stage */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-6">
-        <div className="relative w-full max-w-[520px]" style={{ minHeight: 480 }}>
-          {/* Next card peeking from below */}
+        <div className="relative w-full max-w-[520px]">
+          {/* Next card peeking from below — sits behind the active card */}
           {queue && index + 1 < total && (
             <div
-              className="absolute inset-x-0 top-2 mx-auto rounded-2xl"
+              className="absolute inset-x-0 -bottom-2 mx-auto rounded-2xl"
               style={{
-                height: 24,
+                height: 16,
                 background: "var(--color-elevated)",
                 border: "1px solid var(--color-border)",
                 opacity: 0.4,
                 transform: "scale(0.96)",
                 pointerEvents: "none",
+                zIndex: -1,
               }}
             />
           )}
@@ -333,19 +334,18 @@ export default function TriagePage() {
           </AnimatePresence>
         </div>
 
-        {/* Action buttons (small, secondary to swipe) */}
-        <div className="mt-8 flex items-center gap-3">
+        {/* Action buttons — sit right under the card */}
+        <div className="mt-4 flex items-center gap-3">
           <ActionButton kind="defer" onClick={() => decide("defer")} />
           <ActionButton kind="route" onClick={() => decide("route")} />
           <ActionButton kind="promote" onClick={() => decide("promote")} />
         </div>
 
-        {/* Hint */}
         <p
-          className="mt-4 text-[11px] text-center"
+          className="mt-3 text-[10.5px] text-center"
           style={{ color: "var(--color-muted)" }}
         >
-          Swipe left to defer · right to promote · tap to read more
+          Swipe · click button · or use keyboard
         </p>
       </div>
     </div>
