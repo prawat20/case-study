@@ -19,7 +19,7 @@ export default async function InitiativePage({
   if (!initiative) {
     return (
       <div className="min-h-screen bg-page text-primary">
-        <main className="mx-auto max-w-[720px] px-8 py-16">
+        <main className="mx-auto max-w-[720px] px-4 sm:px-6 md:px-8 py-10 sm:py-16">
           <a href="/" className="text-sm text-secondary hover:text-primary">
             ← Back
           </a>

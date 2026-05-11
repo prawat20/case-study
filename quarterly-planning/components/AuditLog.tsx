@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -52,6 +52,21 @@ export function AuditLog() {
   const [tab, setTab] = useState<Tab>("decisions");
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
 
+  // Read URL hash on mount to land on the right tab when arriving from
+  // Now → "Predictions due" (which links to /audit/#predictions). Also
+  // respond to hash changes if the user pastes a deep link.
+  useEffect(() => {
+    function applyHash() {
+      if (typeof window === "undefined") return;
+      const h = window.location.hash.replace("#", "").toLowerCase();
+      if (h === "predictions") setTab("predictions");
+      else if (h === "decisions") setTab("decisions");
+    }
+    applyHash();
+    window.addEventListener("hashchange", applyHash);
+    return () => window.removeEventListener("hashchange", applyHash);
+  }, []);
+
   const decidedDecorated = useMemo(() => {
     return decisions
       .map((d) => ({
@@ -90,7 +105,7 @@ export function AuditLog() {
   const accuracyAdoption = 38;
 
   return (
-    <main className="mx-auto max-w-[720px] px-6 pt-10 pb-24">
+    <main className="mx-auto max-w-[720px] px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
       <p className="eyebrow">Audit · Q3 2026</p>
       <h1
         className="font-display mt-2 text-[28px] leading-tight tracking-tight"
@@ -98,28 +113,25 @@ export function AuditLog() {
       >
         Decisions in memory
       </h1>
-      <p className="mt-2 text-[13.5px]" style={{ color: "var(--color-secondary)" }}>
-        Every commit, defer, escalate, and override — kept with reasoning and a prediction the system can grade later.
-      </p>
 
       {hydrated && decisions.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.32, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 flex items-start gap-3 rounded-lg px-4 py-3"
+          className="mt-4 flex items-center gap-3 rounded-lg px-4 py-2.5"
           style={{
             background: "var(--color-accent-soft)",
             border: "1px solid var(--color-accent)",
           }}
         >
-          <Sparkles size={13} className="mt-0.5 shrink-0" style={{ color: "var(--color-accent)" }} />
-          <p className="text-[12.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+          <Sparkles size={13} className="shrink-0" style={{ color: "var(--color-accent)" }} />
+          <p className="text-[12.5px]" style={{ color: "var(--color-secondary)" }}>
             <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
-              {decisions.length} decision{decisions.length === 1 ? "" : "s"} logged · {totalOverrides} override{totalOverrides === 1 ? "" : "s"} · {triage.length} triaged
+              {decisions.length} logged · {totalOverrides} override{totalOverrides === 1 ? "" : "s"} · {triage.length} triaged
             </span>
-            <br />
-            Prediction accuracy so far — revenue claims: <span className="font-numeric" style={{ color: "var(--color-accent)" }}>{accuracyRevenue}%</span> · adoption claims: <span className="font-numeric" style={{ color: "var(--color-accent)" }}>{accuracyAdoption}%</span>. The system weights revenue claims higher.
+            <span style={{ color: "var(--color-muted)" }}> · </span>
+            Accuracy: revenue <span className="font-numeric" style={{ color: "var(--color-accent)" }}>{accuracyRevenue}%</span> · adoption <span className="font-numeric" style={{ color: "var(--color-accent)" }}>{accuracyAdoption}%</span>
           </p>
         </motion.div>
       )}
@@ -315,6 +327,63 @@ function DecisionCard({
   );
 }
 
+type Verdict = "missed" | "partial" | "met" | "pending";
+
+function verdictFor(entry: PredictionEntry): {
+  kind: Verdict;
+  headline: string;
+  actual: string;
+} {
+  // Window hasn't elapsed yet — neutral verdict.
+  if (entry.ageDays < 21) {
+    return {
+      kind: "pending",
+      headline: "Review window opens at 21 days",
+      actual: "Window not yet elapsed.",
+    };
+  }
+  // Mock SAML case — adoption fell short of target.
+  if (entry.initiative.id === "init_saml_sso") {
+    return {
+      kind: "missed",
+      headline: "Adoption 28% vs 60% target",
+      actual: "2 of 3 deals closed; 1 stalled. SAML adoption ~28% on enterprise demos.",
+    };
+  }
+  return {
+    kind: "partial",
+    headline: "Partial — review notes below",
+    actual: "Outcome data pending — log what you saw.",
+  };
+}
+
+const VERDICT_STYLE: Record<Verdict, { dot: string; text: string; bg: string; label: string }> = {
+  missed: {
+    dot: "var(--color-warning)",
+    text: "var(--color-warning)",
+    bg: "var(--color-warning-soft)",
+    label: "Missed",
+  },
+  partial: {
+    dot: "var(--color-accent)",
+    text: "var(--color-accent)",
+    bg: "var(--color-accent-soft)",
+    label: "Partial",
+  },
+  met: {
+    dot: "var(--color-success)",
+    text: "var(--color-success)",
+    bg: "var(--color-success-soft)",
+    label: "Met",
+  },
+  pending: {
+    dot: "var(--color-muted)",
+    text: "var(--color-tertiary)",
+    bg: "var(--color-surface-sunken)",
+    label: "Pending",
+  },
+};
+
 function PredictionCard({
   entry,
   index,
@@ -328,107 +397,147 @@ function PredictionCard({
 }) {
   const overdue = entry.ageDays >= 14;
   const due = entry.ageDays >= 21;
+  const verdict = verdictFor(entry);
+  const style = VERDICT_STYLE[verdict.kind];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-xl px-5 py-4"
+      className="overflow-hidden rounded-xl"
       style={{
         background: "var(--color-elevated)",
         border: "1px solid",
-        borderColor: due ? "var(--color-accent)" : "var(--color-border)",
+        borderColor: due ? "var(--color-border-strong)" : "var(--color-border)",
         boxShadow: "var(--shadow-sm)",
       }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[14.5px] font-medium" style={{ color: "var(--color-primary)" }}>
-              {entry.initiative.title}
+      {/* Verdict strip — top-of-card visual answer. */}
+      <div
+        className="flex items-center gap-2 px-5 py-2.5 border-b"
+        style={{
+          background: style.bg,
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <span
+          aria-hidden
+          className="inline-flex h-2 w-2 rounded-full shrink-0"
+          style={{ background: style.dot }}
+        />
+        <span
+          className="text-[10.5px] font-semibold uppercase tracking-[0.1em] shrink-0"
+          style={{ color: style.text }}
+        >
+          {style.label}
+        </span>
+        <span className="text-[12.5px] truncate" style={{ color: "var(--color-secondary)" }}>
+          {verdict.headline}
+        </span>
+      </div>
+
+      {/* Body */}
+      <div className="px-5 pt-4 pb-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-[14.5px] font-medium" style={{ color: "var(--color-primary)" }}>
+                {entry.initiative.title}
+              </p>
+              {entry.isMock && (
+                <span
+                  className="rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
+                  style={{
+                    background: "var(--color-surface-sunken)",
+                    color: "var(--color-tertiary)",
+                  }}
+                >
+                  Mock
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+              Decision logged {entry.ageDays === 0 ? "today" : `${entry.ageDays} day${entry.ageDays === 1 ? "" : "s"} ago`}
+              {overdue && !due ? " · review window opens at 21d" : ""}
             </p>
-            {due && (
-              <span
-                className="rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
-                style={{
-                  background: "var(--color-accent-soft)",
-                  color: "var(--color-accent)",
-                }}
-              >
-                Due for review
-              </span>
-            )}
-            {entry.isMock && (
-              <span
-                className="rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
-                style={{
-                  background: "var(--color-surface-sunken)",
-                  color: "var(--color-tertiary)",
-                }}
-              >
-                Mock
-              </span>
-            )}
           </div>
-          <p className="mt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-            Decision logged {entry.ageDays === 0 ? "today" : `${entry.ageDays} day${entry.ageDays === 1 ? "" : "s"} ago`}
-            {overdue && !due ? " · review window opens at 21d" : ""}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-3 space-y-2 text-[12.5px] leading-relaxed">
-        <div
-          className="rounded-md px-3 py-2"
-          style={{ background: "var(--color-accent-soft)" }}
-        >
-          <span style={{ color: "var(--color-tertiary)" }}>Predicted —</span>{" "}
-          <span style={{ color: "var(--color-primary)" }}>{entry.initiative.ai_recommendation.predicted_outcome}</span>
         </div>
 
-        <div
-          className="rounded-md px-3 py-2"
-          style={{ background: "var(--color-page)" }}
-        >
-          <span style={{ color: "var(--color-tertiary)" }}>Actual —</span>{" "}
-          <span style={{ color: due ? "var(--color-secondary)" : "var(--color-muted)" }}>
-            {due
-              ? "2 of 3 deals closed; 1 stalled. SAML adoption ~28% on enterprise demos (target was 60%)."
-              : "Window not yet elapsed."}
-          </span>
-        </div>
-      </div>
+        {/* Predicted vs Actual — side by side */}
+        <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto_1fr] items-stretch">
+          <div
+            className="rounded-md px-3 py-2.5"
+            style={{ background: "var(--color-accent-soft)" }}
+          >
+            <p
+              className="text-[9.5px] font-semibold uppercase tracking-[0.1em]"
+              style={{ color: "var(--color-tertiary)" }}
+            >
+              Predicted
+            </p>
+            <p className="mt-1 text-[12.5px] leading-relaxed" style={{ color: "var(--color-primary)" }}>
+              {entry.initiative.ai_recommendation.predicted_outcome}
+            </p>
+          </div>
 
-      {due && (
-        <div className="mt-3">
-          <label className="eyebrow">What was wrong with the prediction?</label>
-          <textarea
-            value={reviewNote}
-            onChange={(e) => onReviewNote(e.target.value)}
-            placeholder="The system reads this to recalibrate weighting. e.g. 'Adoption stalls without exec sponsor — weight that more.'"
-            rows={2}
-            className="mt-2 w-full resize-none rounded-md px-3 py-2 text-[12.5px] outline-none"
+          {/* Arrow — desktop only */}
+          <div className="hidden sm:flex items-center justify-center" aria-hidden>
+            <ArrowRight size={14} style={{ color: "var(--color-tertiary)" }} />
+          </div>
+
+          <div
+            className="rounded-md px-3 py-2.5"
             style={{
               background: "var(--color-page)",
-              color: "var(--color-primary)",
-              border: "1px solid var(--color-border)",
+              border: due ? `1px solid ${style.dot}` : undefined,
             }}
-          />
-          {reviewNote.trim().length > 0 && (
-            <button
-              className="mt-2 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium transition"
-              style={{
-                background: "var(--color-accent)",
-                color: "var(--color-elevated)",
-              }}
+          >
+            <p
+              className="text-[9.5px] font-semibold uppercase tracking-[0.1em]"
+              style={{ color: "var(--color-tertiary)" }}
             >
-              <Send size={12} />
-              Save & recalibrate
-            </button>
-          )}
+              Actual
+            </p>
+            <p
+              className="mt-1 text-[12.5px] leading-relaxed"
+              style={{ color: due ? "var(--color-primary)" : "var(--color-muted)" }}
+            >
+              {verdict.actual}
+            </p>
+          </div>
         </div>
-      )}
+
+        {due && (
+          <div className="mt-4">
+            <label className="eyebrow">What to recalibrate</label>
+            <textarea
+              value={reviewNote}
+              onChange={(e) => onReviewNote(e.target.value)}
+              placeholder="e.g. 'Weight exec-sponsor signal higher on adoption claims'"
+              rows={2}
+              className="mt-2 w-full resize-none rounded-md px-3 py-2 text-[12.5px] outline-none"
+              style={{
+                background: "var(--color-page)",
+                color: "var(--color-primary)",
+                border: "1px solid var(--color-border)",
+              }}
+            />
+            {reviewNote.trim().length > 0 && (
+              <button
+                className="mt-2 inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12px] font-medium transition"
+                style={{
+                  background: "var(--color-accent)",
+                  color: "var(--color-elevated)",
+                }}
+              >
+                <Send size={12} />
+                Save & recalibrate
+              </button>
+            )}
+          </div>
+        )}
+      </div>
     </motion.div>
   );
 }

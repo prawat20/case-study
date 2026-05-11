@@ -35,7 +35,33 @@
     "priority_rank": 1,
     "stakeholder_signals": ["sales", "cs"],
     "theme": "Enterprise Readiness",
-    "arr_exposure_usd": 480000
+    "arr_exposure_usd": 480000,
+    "cluster_sources": [
+      {
+        "source": "Sales · Acme Corp",
+        "channel": "Slack DM (sales-leadership)",
+        "quote": "Without bulk import we can't migrate from our current vendor — they're waiting on us.",
+        "captured_at": "2026-05-08T09:14:00Z"
+      },
+      {
+        "source": "Sales · Northwind",
+        "channel": "Salesforce note",
+        "quote": "Asked again about CSV upload — third call running. Said it's a non-starter for procurement.",
+        "captured_at": "2026-05-09T16:42:00Z"
+      },
+      {
+        "source": "Support · Cohort 12 onboarding",
+        "channel": "Zendesk ticket (#48211)",
+        "quote": "Customer needs to migrate 8,000 records — copy-paste is not feasible. Can engineering build an API endpoint?",
+        "captured_at": "2026-05-10T11:03:00Z"
+      },
+      {
+        "source": "Customer call · Globex eval",
+        "channel": "Gong call · 32 min in",
+        "quote": "We have data migration on every RFP — what's your import story?",
+        "captured_at": "2026-05-11T14:28:00Z"
+      }
+    ]
   },
   {
     "id": "init_saml_sso",
@@ -71,7 +97,27 @@
     "priority_rank": 2,
     "stakeholder_signals": ["sales", "cs"],
     "theme": "Enterprise Readiness",
-    "arr_exposure_usd": 340000
+    "arr_exposure_usd": 340000,
+    "cluster_sources": [
+      {
+        "source": "Sales · Initech renewal",
+        "channel": "Salesforce note",
+        "quote": "SAML/SSO is a hard requirement for Q3 renewal — IT security flagged it as blocker.",
+        "captured_at": "2026-05-07T08:31:00Z"
+      },
+      {
+        "source": "Sales · Soylent expansion",
+        "channel": "Slack DM (sales)",
+        "quote": "Their security review came back — need SAML before they sign the bigger contract.",
+        "captured_at": "2026-05-09T11:22:00Z"
+      },
+      {
+        "source": "CS · Quarterly renewal review",
+        "channel": "Notion — Q3 renewal risks",
+        "quote": "Two accounts at risk. Both cite SSO. Single root cause across both.",
+        "captured_at": "2026-05-10T09:45:00Z"
+      }
+    ]
   },
   {
     "id": "init_audit_log",

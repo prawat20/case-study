@@ -29,6 +29,18 @@ export interface Evidence {
   kind?: EvidenceKind;
 }
 
+/**
+ * Cluster source — when the Opportunity Synthesis Engine merges duplicate
+ * requests from N channels into one initiative, each merged ask is recorded
+ * here. UI surfaces this as "Merged · N sources" with a hover/tap to expand.
+ */
+export interface ClusterSource {
+  source: string; // e.g. "Sales · Acme Corp"
+  channel: string; // e.g. "Slack DM", "Salesforce note", "Zendesk ticket"
+  quote: string; // verbatim or paraphrased
+  captured_at?: string; // ISO timestamp
+}
+
 export type RecommendedAction = "commit" | "defer" | "escalate";
 
 export type Framework =
@@ -71,4 +83,5 @@ export interface Initiative {
   stakeholder_signals: StakeholderSignal[];
   theme: string;
   arr_exposure_usd?: number;
+  cluster_sources?: ClusterSource[];
 }

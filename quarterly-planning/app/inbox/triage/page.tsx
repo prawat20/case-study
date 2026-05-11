@@ -38,6 +38,8 @@ import {
 import { playTriageTone } from "@/lib/sound";
 import type { Capture } from "@/lib/captures";
 import { getScoring } from "@/lib/frameworks";
+import { useIsMac } from "@/lib/platform";
+import { ClusterChip } from "@/components/ClusterChip";
 
 const allInitiatives = initiativesJson as Initiative[];
 
@@ -173,7 +175,7 @@ export default function TriagePage() {
     return (
       <EmptyState
         title="Nothing to triage."
-        body="Your inbox is empty. Capture an ask with ⌘N or head back to Now."
+        body={<>Your inbox is empty. Capture an ask with <KbdInline letter="N" /> or head back to Now.</>}
       />
     );
   }
@@ -227,16 +229,29 @@ export default function TriagePage() {
 
           <div className="mt-10 flex items-center justify-center gap-3">
             {tally.promote > 0 ? (
-              <Link
-                href="/calendar/"
-                className="rounded-md px-4 py-2 text-[13px] font-medium transition"
-                style={{
-                  background: "var(--color-accent)",
-                  color: "var(--color-elevated)",
-                }}
-              >
-                Place {tally.promote} in calendar →
-              </Link>
+              <>
+                <Link
+                  href="/calendar/"
+                  className="rounded-md px-4 py-2 text-[13px] font-medium transition"
+                  style={{
+                    background: "var(--color-accent)",
+                    color: "var(--color-elevated)",
+                  }}
+                >
+                  Place {tally.promote} in calendar →
+                </Link>
+                <Link
+                  href="/"
+                  className="rounded-md px-4 py-2 text-[13px] font-medium transition"
+                  style={{
+                    background: "var(--color-elevated)",
+                    border: "1px solid var(--color-border)",
+                    color: "var(--color-secondary)",
+                  }}
+                >
+                  Back to Now
+                </Link>
+              </>
             ) : (
               <Link
                 href="/"
@@ -249,17 +264,6 @@ export default function TriagePage() {
                 Back to Now
               </Link>
             )}
-            <Link
-              href="/inbox/"
-              className="rounded-md px-4 py-2 text-[13px] font-medium transition"
-              style={{
-                background: "var(--color-elevated)",
-                border: "1px solid var(--color-border)",
-                color: "var(--color-secondary)",
-              }}
-            >
-              Back to Inbox
-            </Link>
           </div>
         </motion.div>
       </div>
@@ -273,7 +277,7 @@ export default function TriagePage() {
       style={{ background: "var(--color-page)" }}
     >
       {/* Top chrome */}
-      <div className="flex items-center justify-between px-6 pt-6">
+      <div className="flex items-center justify-between px-4 sm:px-6 pt-4 sm:pt-6">
         <Link
           href="/inbox/"
           aria-label="Exit triage"
@@ -302,7 +306,7 @@ export default function TriagePage() {
       </div>
 
       {/* Card stage */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-4 sm:py-6">
         <div className="relative w-full max-w-[520px]">
           {/* Next card peeking from below — sits behind the active card */}
           {queue && index + 1 < total && (
@@ -345,7 +349,7 @@ export default function TriagePage() {
           className="mt-3 text-[10.5px] text-center"
           style={{ color: "var(--color-muted)" }}
         >
-          Swipe · click button · or use keyboard
+          Swipe, click, or use keys
         </p>
       </div>
     </div>
@@ -573,6 +577,9 @@ function InitiativeFront({ initiative }: { initiative: Initiative }) {
           {initiative.ai_recommendation.effort_sprints} sprint
           {initiative.ai_recommendation.effort_sprints > 1 ? "s" : ""}
         </span>
+        {initiative.cluster_sources && initiative.cluster_sources.length >= 2 && (
+          <ClusterChip sources={initiative.cluster_sources} size="md" />
+        )}
       </div>
 
       <div
@@ -826,7 +833,24 @@ function Stat({ label, value, accent = false }: { label: string; value: number; 
   );
 }
 
-function EmptyState({ title, body }: { title: string; body: string }) {
+function KbdInline({ letter }: { letter: string }) {
+  const isMac = useIsMac();
+  return (
+    <kbd
+      suppressHydrationWarning
+      className="rounded border px-1.5 py-0.5 font-mono text-[10px]"
+      style={{
+        borderColor: "var(--color-border-strong)",
+        background: "var(--color-page)",
+        color: "var(--color-tertiary)",
+      }}
+    >
+      {isMac ? `⌘${letter}` : `Ctrl+${letter}`}
+    </kbd>
+  );
+}
+
+function EmptyState({ title, body }: { title: string; body: React.ReactNode }) {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-6 text-center"

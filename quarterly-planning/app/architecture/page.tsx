@@ -6,7 +6,7 @@ export default function ArchitecturePage() {
     <div className="min-h-screen text-primary" style={{ background: "var(--color-page)" }}>
       <Header />
 
-      <main className="mx-auto max-w-[720px] px-6 pt-10 pb-24">
+      <main className="mx-auto max-w-[720px] px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-[12.5px] transition"

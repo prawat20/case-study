@@ -25,6 +25,7 @@ import { clearCaptures } from "@/lib/captures";
 import { clearCalendarState } from "@/lib/calendar-state";
 import { useCommandPalette } from "@/components/CommandProvider";
 import { AUDIENCES } from "@/lib/stakeholder-artifacts";
+import { useIsMac } from "@/lib/platform";
 
 const initiatives = initiativesJson as Initiative[];
 
@@ -37,6 +38,7 @@ export function CommandPalette({
 }) {
   const router = useRouter();
   const { openCapture } = useCommandPalette();
+  const isMac = useIsMac();
 
   useEffect(() => {
     if (!open) return;
@@ -132,7 +134,7 @@ export function CommandPalette({
                   >
                     <Plus size={14} style={{ color: "var(--color-tertiary)" }} />
                     <span>Capture an ask</span>
-                    <span className="ml-auto font-mono text-[10px]" style={{ color: "var(--color-muted)" }}>⌘N</span>
+                    <span className="ml-auto font-mono text-[10px]" style={{ color: "var(--color-muted)" }} suppressHydrationWarning>{isMac ? "⌘N" : "Ctrl+N"}</span>
                   </Command.Item>
                   <Command.Item
                     value="run triage start"

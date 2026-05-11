@@ -1,129 +1,278 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowRight,
+  ArrowLeft,
+  ArrowUpRight,
+  Plus,
+  Sparkles,
+} from "lucide-react";
+import { useMemo, useCallback } from "react";
 import initiativesJson from "@/data/initiatives.json";
 import type { Initiative } from "@/lib/types";
 import { Header } from "@/components/Header";
 import { useDecisions } from "@/lib/use-decisions";
-import { useTriage } from "@/lib/triage";
-import { useCaptures } from "@/lib/captures";
+import { useTriage, setTriageAction, type TriageAction } from "@/lib/triage";
+import { useCaptures, type Capture } from "@/lib/captures";
+import { useCommandPalette } from "@/components/CommandProvider";
+import { ShortcutKbd } from "@/components/ShortcutKbd";
+import { ClusterChip } from "@/components/ClusterChip";
+import { playTriageTone } from "@/lib/sound";
+import { getScoring } from "@/lib/frameworks";
 import {
   NORTH_STAR,
   computeNorthStar,
   formatMetric,
 } from "@/lib/strategic";
-import { useEffect, useMemo, useState } from "react";
+import {
+  formatRelative,
+  getChannelLabel,
+  getMinutesAgo,
+  getSourceLabel,
+  signalToKind,
+  JUST_LANDED_CUTOFF_MIN,
+} from "@/lib/inbox-helpers";
+import { useEffect, useState } from "react";
 
 const allInitiatives = initiativesJson as Initiative[];
+const VISIBLE_TRIAGE_ROWS = 4;
+
+type Row =
+  | { kind: "initiative"; data: Initiative; minAgo: number }
+  | { kind: "capture"; data: Capture; minAgo: number };
 
 export default function NowPage() {
   const { decisions, hydrated: decisionsHydrated } = useDecisions();
   const { triage, hydrated: triageHydrated } = useTriage();
   const { captures, hydrated: capturesHydrated } = useCaptures();
+  const { openCapture } = useCommandPalette();
 
-  const decidedIds = useMemo(() => new Set(decisions.map((d) => d.initiative_id)), [decisions]);
   const triagedIds = useMemo(() => new Set(triage.map((t) => t.initiative_id)), [triage]);
+  const decidedIds = useMemo(() => new Set(decisions.map((d) => d.initiative_id)), [decisions]);
 
-  const untriagedInitiativesCount = allInitiatives.filter(
-    (i) =>
-      i.status === "needs_decision" &&
-      !decidedIds.has(i.id) &&
-      !triagedIds.has(i.id),
-  ).length;
-  const untriagedCapturesCount = captures.filter((c) => !triagedIds.has(c.id)).length;
-  const inboxCount = untriagedInitiativesCount + untriagedCapturesCount;
-  const hydrated = decisionsHydrated && triageHydrated && capturesHydrated;
+  /* Build untriaged rows — captures land first, then needs_decision initiatives by recency */
+  const untriaged: Row[] = useMemo(() => {
+    const captureRows: Row[] = captures
+      .filter((c) => !triagedIds.has(c.id))
+      .map((c) => {
+        const minAgo = Math.max(
+          1,
+          Math.round((Date.now() - new Date(c.captured_at).getTime()) / 60000),
+        );
+        return { kind: "capture" as const, data: c, minAgo };
+      });
 
-  // Items promoted via triage but not yet placed in a sprint
-  const toPlaceCount = allInitiatives.filter((i) => {
-    const t = triage.find((x) => x.initiative_id === i.id);
-    return t?.action === "promote" && !decidedIds.has(i.id);
-  }).length;
+    const initiativeRows: Row[] = allInitiatives
+      .filter(
+        (i) =>
+          i.status === "needs_decision" &&
+          !triagedIds.has(i.id) &&
+          !decidedIds.has(i.id),
+      )
+      .map((i) => ({ kind: "initiative" as const, data: i, minAgo: getMinutesAgo(i) }));
 
-  // Demo placeholders — these become real data when Calendar + Audit ship
-  const overnightShifts: number = 2;
-  const sprintItemsInFlight: number = 4;
-  const sprintCapacity: number = 87;
-  const sprintRiskCount: number = 1;
+    return [...captureRows.sort((a, b) => a.minAgo - b.minAgo), ...initiativeRows.sort((a, b) => a.minAgo - b.minAgo)];
+  }, [captures, triagedIds, decidedIds]);
+
+  const triageCount = untriaged.length;
+  const top = untriaged[0] ?? null;
+  const queue = untriaged.slice(1, VISIBLE_TRIAGE_ROWS);
+  const overflowCount = Math.max(0, triageCount - VISIBLE_TRIAGE_ROWS);
+  const freshCount = untriaged.filter((r) => r.minAgo <= JUST_LANDED_CUTOFF_MIN).length;
+
+  const decideTop = useCallback(
+    (action: TriageAction) => {
+      if (!top) return;
+      setTriageAction(top.data.id, action);
+      playTriageTone(action);
+    },
+    [top],
+  );
+
+  // Keyboard shortcuts — act on the top card directly. Ignore when typing in an
+  // input/textarea or when the command palette is open.
+  useEffect(() => {
+    if (!top) return;
+    function onKey(e: KeyboardEvent) {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const k = e.key.toLowerCase();
+      if (k === "p" || e.key === "ArrowRight") {
+        e.preventDefault();
+        decideTop("promote");
+      } else if (k === "d" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        decideTop("defer");
+      } else if (k === "r" || e.key === "ArrowUp") {
+        e.preventDefault();
+        decideTop("route");
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [top, decideTop]);
+
+  /* Promoted but not yet placed — feeds the Calendar handoff */
+  const promotedItems = useMemo(
+    () =>
+      allInitiatives.filter((i) => {
+        const t = triage.find((x) => x.initiative_id === i.id);
+        return t?.action === "promote" && !decidedIds.has(i.id);
+      }),
+    [triage, decidedIds],
+  );
+
+  /* Predictions due — single demo entry that's always seeded */
   const predictionsDue: number = 1;
 
-  // Leading indicator — "% same-day decided" — fixed for demo
-  const sameDayDecisionPct = 67;
+  const hydrated = decisionsHydrated && triageHydrated && capturesHydrated;
 
   return (
     <div className="min-h-screen text-primary" style={{ background: "var(--color-page)" }}>
       <Header />
 
-      <main className="mx-auto max-w-[720px] px-6 pt-10 pb-24">
-        <DateEyebrow />
+      <main className="mx-auto max-w-[720px] px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
+        {/* Top row — date + capture affordance */}
+        <div className="flex items-start justify-between gap-4">
+          <DateEyebrow />
+          <CaptureButton onClick={openCapture} />
+        </div>
 
         <NSMHero />
 
         <div className="mt-3 flex items-center gap-2 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-          <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>{sameDayDecisionPct}%</span>
+          <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>67%</span>
           <span>of items decided same day they land</span>
         </div>
 
-        <div className="mt-12">
-          <p className="eyebrow">Today</p>
-          <div className="mt-4 space-y-4">
-            <DoTodayCard
-              index={0}
-              href="/inbox/"
-              primary={
-                inboxCount === 0
-                  ? "Inbox is clear"
-                  : `${inboxCount} ${inboxCount === 1 ? "item" : "items"} waiting in your inbox`
-              }
-              secondary={
-                overnightShifts > 0
-                  ? `${overnightShifts} shifted priority overnight`
-                  : "Nothing changed overnight"
-              }
-              cta={inboxCount === 0 ? "Open inbox" : "Triage"}
-              accent={inboxCount > 0}
-              hydrated={hydrated}
-            />
+        {/* ─────────── To triage ─────────── */}
+        <SectionEyebrow
+          label="To triage"
+          count={triageCount}
+          fresh={freshCount}
+          hydrated={hydrated}
+        />
 
-            <DoTodayCard
-              index={1}
-              href="/calendar/"
-              primary={
-                toPlaceCount > 0
-                  ? `${toPlaceCount} item${toPlaceCount === 1 ? "" : "s"} waiting to place in your plan`
-                  : `Sprint 2 of Q3, ${sprintItemsInFlight} items in flight`
-              }
-              secondary={
-                toPlaceCount > 0
-                  ? "Drag each into a sprint or push to next quarter"
-                  : `Capacity ${sprintCapacity}% · ${sprintRiskCount === 0 ? "No risks flagged" : `${sprintRiskCount} risk on track`}`
-              }
-              cta={toPlaceCount > 0 ? "Place items" : "Open plan"}
-              accent={toPlaceCount > 0}
-              hydrated={hydrated}
-            />
+        {hydrated && triageCount === 0 ? (
+          <EmptyState
+            message="Nothing waiting on you."
+            sub={
+              <>
+                Capture an ask with{" "}
+                <ShortcutKbd letter="N" />
+                {" "}when one lands.
+              </>
+            }
+          />
+        ) : (
+          <div className="mt-4">
+            {/* Top card — act on the next item directly */}
+            <AnimatePresence mode="wait">
+              {top && (
+                <InlineTriageCard
+                  key={top.data.id}
+                  row={top}
+                  onDecide={decideTop}
+                />
+              )}
+            </AnimatePresence>
 
-            <DoTodayCard
-              index={2}
-              href="/audit/"
-              primary={
-                predictionsDue === 0
-                  ? "No predictions due"
-                  : `${predictionsDue} prediction${predictionsDue === 1 ? "" : "s"} due for review`
-              }
-              secondary={
-                predictionsDue === 0
-                  ? "All recent predictions still in window"
-                  : `"SAML unlocks 3 deals" — 3 weeks old`
-              }
-              cta={predictionsDue === 0 ? "Open audit" : "Review"}
-              accent={false}
-              hydrated={hydrated}
-            />
+            {/* Queue — remaining items as compact rows */}
+            {queue.length > 0 && (
+              <div className="mt-4 space-y-1">
+                <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>
+                  Next up
+                </p>
+                {queue.map((row, idx) => (
+                  <QueueRow key={row.data.id} row={row} index={idx} />
+                ))}
+                {overflowCount > 0 && (
+                  <p className="pl-7 pt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+                    + {overflowCount} more
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Secondary path — full swipe deck for bulk triage */}
+            <div className="mt-5">
+              <Link
+                href="/inbox/triage/"
+                className="inline-flex items-center gap-1 text-[12px] transition hover:underline"
+                style={{ color: "var(--color-tertiary)" }}
+              >
+                Bulk triage
+                <ArrowRight size={11} />
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* ─────────── Ready to place ─────────── */}
+        {hydrated && promotedItems.length > 0 && (
+          <>
+            <SectionEyebrow label="Ready to place" count={promotedItems.length} fresh={0} hydrated />
+            <div className="mt-4 space-y-1">
+              {promotedItems.slice(0, 4).map((i, idx) => (
+                <PromotedRow key={i.id} initiative={i} index={idx} />
+              ))}
+              {promotedItems.length > 4 && (
+                <p className="pl-7 pt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+                  + {promotedItems.length - 4} more promoted
+                </p>
+              )}
+              <div className="mt-5">
+                <Link
+                  href="/calendar/"
+                  className="inline-flex h-9 items-center gap-1.5 rounded-md px-4 text-[13px] font-medium transition"
+                  style={{
+                    background: "var(--color-elevated)",
+                    border: "1px solid var(--color-accent)",
+                    color: "var(--color-accent)",
+                  }}
+                >
+                  Open Calendar
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ─────────── Predictions due ─────────── */}
+        {hydrated && predictionsDue > 0 && (
+          <>
+            <SectionEyebrow label="Predictions due" count={predictionsDue} fresh={0} hydrated />
+            <div className="mt-4">
+              <Link
+                href="/audit/#predictions"
+                className="group flex items-center justify-between rounded-lg px-4 py-3 transition hover:bg-[var(--color-card-hover)]"
+                style={{ background: "transparent" }}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span
+                    aria-hidden
+                    className="inline-flex h-1.5 w-1.5 rounded-full shrink-0"
+                    style={{ background: "var(--color-warning)" }}
+                  />
+                  <p className="text-[14px]" style={{ color: "var(--color-primary)" }}>
+                    "SAML unlocks 3 deals" — 3 weeks old
+                  </p>
+                </div>
+                <span
+                  className="inline-flex items-center gap-1 text-[12.5px] shrink-0 transition-transform group-hover:translate-x-0.5"
+                  style={{ color: "var(--color-tertiary)" }}
+                >
+                  Review
+                  <ArrowRight size={12} />
+                </span>
+              </Link>
+            </div>
+          </>
+        )}
 
         <div className="mt-20 flex items-center gap-2 text-[11px]" style={{ color: "var(--color-tertiary)" }}>
           <span aria-hidden style={{ color: "var(--color-accent)" }}>◆</span>
@@ -154,6 +303,25 @@ function DateEyebrow() {
     >
       {text || "—"}
     </p>
+  );
+}
+
+function CaptureButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[12.5px] font-medium transition hover:bg-[var(--color-card-hover)]"
+      style={{
+        background: "var(--color-elevated)",
+        border: "1px solid var(--color-border)",
+        color: "var(--color-secondary)",
+      }}
+      aria-label="Capture an ask"
+    >
+      <Plus size={13} />
+      <span>Capture</span>
+      <ShortcutKbd letter="N" subtle />
+    </button>
   );
 }
 
@@ -237,12 +405,10 @@ function NSMHero() {
 function ProgressBar({ achieved, elapsed }: { achieved: number; elapsed: number }) {
   return (
     <div className="relative">
-      {/* Track */}
       <div
         className="h-1.5 rounded-full"
         style={{ background: "var(--color-border)" }}
       />
-      {/* Achieved fill */}
       <motion.div
         initial={{ width: 0 }}
         animate={{ width: `${achieved}%` }}
@@ -250,7 +416,6 @@ function ProgressBar({ achieved, elapsed }: { achieved: number; elapsed: number 
         className="absolute top-0 left-0 h-1.5 rounded-full"
         style={{ background: "var(--color-accent)" }}
       />
-      {/* Elapsed marker */}
       <motion.div
         initial={{ left: 0, opacity: 0 }}
         animate={{ left: `${elapsed}%`, opacity: 1 }}
@@ -263,71 +428,334 @@ function ProgressBar({ achieved, elapsed }: { achieved: number; elapsed: number 
   );
 }
 
-function DoTodayCard({
-  index,
-  href,
-  primary,
-  secondary,
-  cta,
-  accent,
+function SectionEyebrow({
+  label,
+  count,
+  fresh,
   hydrated,
 }: {
-  index: number;
-  href: string;
-  primary: string;
-  secondary: string;
-  cta: string;
-  accent: boolean;
+  label: string;
+  count: number;
+  fresh: number;
   hydrated: boolean;
 }) {
   return (
+    <div className="mt-12 flex items-baseline gap-2">
+      <p className="eyebrow">{label}</p>
+      {hydrated && count > 0 && (
+        <>
+          <span className="font-numeric text-[11px]" style={{ color: "var(--color-tertiary)" }}>
+            {count}
+          </span>
+          {fresh > 0 && (
+            <span
+              className="rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
+              style={{
+                background: "var(--color-accent-soft)",
+                color: "var(--color-accent)",
+              }}
+            >
+              {fresh} new
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ─── Inline Triage Card (top of "To triage") ─── */
+
+function InlineTriageCard({
+  row,
+  onDecide,
+}: {
+  row: Row;
+  onDecide: (action: TriageAction) => void;
+}) {
+  const isInitiative = row.kind === "initiative";
+  const meta = isInitiative
+    ? {
+        time: formatRelative(row.minAgo),
+        source: getSourceLabel(row.data),
+        channel: getChannelLabel(row.data),
+      }
+    : {
+        time: formatRelative(row.minAgo),
+        source: row.data.source,
+        channel: row.data.channel,
+      };
+  const title = isInitiative ? row.data.title : row.data.text;
+  const signalKind = signalToKind(
+    isInitiative ? row.data.signal_type : row.data.signal,
+  );
+  const arr = isInitiative ? row.data.arr_exposure_usd : undefined;
+  const predicted = isInitiative ? row.data.ai_recommendation.predicted_outcome : null;
+  const score = isInitiative
+    ? getScoring(row.data.ai_recommendation.framework, row.data)
+    : null;
+  const clusterSources = isInitiative ? row.data.cluster_sources : undefined;
+
+  return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: hydrated ? 1 : 0, y: hydrated ? 0 : 8 }}
-      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1], delay: 0.1 + index * 0.06 }}
+      initial={{ opacity: 0, y: 8, scale: 0.99 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.99 }}
+      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+      className="rounded-2xl"
+      style={{
+        background: "var(--color-elevated)",
+        border: "1px solid var(--color-border)",
+        boxShadow: "var(--shadow-md)",
+      }}
     >
-      <Link
-        href={href}
-        className="group flex items-center justify-between rounded-xl px-6 py-5 transition-all"
+      <div className="px-5 pt-5 pb-4">
+        {/* Meta */}
+        <div className="flex items-center gap-1.5 text-[11.5px]" style={{ color: "var(--color-tertiary)" }}>
+          <span className="font-numeric">{meta.time}</span>
+          <span style={{ color: "var(--color-muted)" }}>·</span>
+          <span>{meta.source}</span>
+          <span style={{ color: "var(--color-muted)" }}>·</span>
+          <span>{meta.channel}</span>
+          {row.kind === "capture" && (
+            <span
+              className="ml-1 rounded px-1 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
+              style={{
+                background: "var(--color-accent-soft)",
+                color: "var(--color-accent)",
+              }}
+            >
+              New
+            </span>
+          )}
+        </div>
+
+        {/* Title */}
+        <h3
+          className="mt-2.5 text-[17px] leading-snug tracking-tight"
+          style={{ color: "var(--color-primary)", fontWeight: 500 }}
+        >
+          {title}
+        </h3>
+
+        {/* Chips row */}
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px]">
+          <SignalChip kind={signalKind} />
+          {arr ? (
+            <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
+              ${(arr / 1000).toFixed(0)}k ARR
+            </span>
+          ) : null}
+          {score && (
+            <>
+              <span style={{ color: "var(--color-muted)" }}>·</span>
+              <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
+                {score.total.label} {score.total.value}
+              </span>
+            </>
+          )}
+          {clusterSources && clusterSources.length >= 2 && (
+            <ClusterChip sources={clusterSources} size="sm" />
+          )}
+        </div>
+
+        {/* Predicted outcome */}
+        {predicted && (
+          <div
+            className="mt-3 flex items-start gap-2 rounded-md px-3 py-2"
+            style={{ background: "var(--color-accent-soft)" }}
+          >
+            <Sparkles size={11} className="mt-0.5 shrink-0" style={{ color: "var(--color-accent)" }} />
+            <span className="text-[12.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+              <span style={{ color: "var(--color-tertiary)" }}>If we ship —</span>{" "}
+              <span style={{ color: "var(--color-primary)" }}>{predicted}</span>
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Action row */}
+      <div
+        className="flex items-center justify-between gap-2 border-t px-4 py-3"
+        style={{ borderColor: "var(--color-border)", background: "var(--color-surface-sunken)" }}
+      >
+        <div className="flex items-center gap-2">
+          <ActionPill kind="defer" onClick={() => onDecide("defer")} />
+          <ActionPill kind="route" onClick={() => onDecide("route")} />
+          <ActionPill kind="promote" onClick={() => onDecide("promote")} />
+        </div>
+        <Link
+          href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
+          className="text-[11.5px] transition hover:underline"
+          style={{ color: "var(--color-tertiary)" }}
+        >
+          Why this →
+        </Link>
+      </div>
+    </motion.div>
+  );
+}
+
+function ActionPill({ kind, onClick }: { kind: TriageAction; onClick: () => void }) {
+  const isPromote = kind === "promote";
+  const isDefer = kind === "defer";
+  const Icon = isPromote ? ArrowRight : isDefer ? ArrowLeft : ArrowUpRight;
+  const key = isPromote ? "P" : isDefer ? "D" : "R";
+  const label = isPromote ? "Promote" : isDefer ? "Defer" : "Route";
+  const tone = isPromote
+    ? "var(--color-success)"
+    : isDefer
+      ? "var(--color-danger)"
+      : "var(--color-tertiary)";
+
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      className="group inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium transition hover:bg-[var(--color-card-hover)]"
+      style={{
+        background: "var(--color-elevated)",
+        border: `1px solid ${tone}`,
+        color: tone,
+      }}
+    >
+      <Icon size={13} />
+      <span>{label}</span>
+      <kbd
+        className="ml-0.5 rounded border px-1 py-0.5 font-mono text-[9.5px]"
         style={{
-          background: "var(--color-elevated)",
-          border: "1px solid var(--color-border)",
-          boxShadow: "var(--shadow-sm)",
+          borderColor: "var(--color-border)",
+          background: "var(--color-page)",
+          color: "var(--color-tertiary)",
         }}
       >
-        <div className="flex items-center gap-4 min-w-0">
-          <span
-            aria-hidden
-            className="h-8 w-8 rounded-md flex items-center justify-center shrink-0"
-            style={{
-              background: accent ? "var(--color-accent-soft)" : "var(--color-surface-sunken)",
-              color: accent ? "var(--color-accent)" : "var(--color-tertiary)",
-            }}
-          >
-            <span className="font-numeric text-[12px] font-semibold">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-          </span>
-          <div className="min-w-0">
-            <p
-              className="text-[14.5px] font-medium truncate"
-              style={{ color: "var(--color-primary)" }}
-            >
-              {primary}
-            </p>
-            <p className="mt-0.5 text-[13px] truncate" style={{ color: "var(--color-tertiary)" }}>
-              {secondary}
-            </p>
-          </div>
-        </div>
+        {key}
+      </kbd>
+    </button>
+  );
+}
+
+/* ─── Queue row (compact, below the top card) ─── */
+
+function QueueRow({ row, index }: { row: Row; index: number }) {
+  const sourceLabel = row.kind === "initiative" ? getSourceLabel(row.data) : row.data.source;
+  const title = row.kind === "initiative" ? row.data.title : row.data.text;
+  const signalKind = signalToKind(
+    row.kind === "initiative" ? row.data.signal_type : row.data.signal,
+  );
+  const fresh = row.minAgo <= JUST_LANDED_CUTOFF_MIN;
+  const clusterCount =
+    row.kind === "initiative" ? row.data.cluster_sources?.length ?? 0 : 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.24, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <Link
+        href="/inbox/triage/"
+        className="group flex items-center gap-3 rounded-md px-3 py-2 transition hover:bg-[var(--color-card-hover)]"
+      >
         <span
-          className="inline-flex items-center gap-1 text-[13px] font-medium shrink-0 transition-colors"
-          style={{ color: accent ? "var(--color-accent)" : "var(--color-secondary)" }}
-        >
-          {cta}
-          <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+          className="inline-flex h-1.5 w-1.5 rounded-full shrink-0"
+          style={{ background: fresh ? "var(--color-accent)" : "var(--color-muted)" }}
+        />
+        <p className="flex-1 min-w-0 truncate text-[13px]" style={{ color: "var(--color-secondary)" }}>
+          {title}
+        </p>
+        {clusterCount >= 2 && (
+          <span
+            className="hidden sm:inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-medium shrink-0"
+            style={{
+              background: "var(--color-accent-soft)",
+              color: "var(--color-accent)",
+            }}
+            title={`Merged from ${clusterCount} sources`}
+          >
+            ⊕{clusterCount}
+          </span>
+        )}
+        <SignalChip kind={signalKind} />
+        <span className="text-[11px] font-numeric shrink-0" style={{ color: "var(--color-tertiary)" }}>
+          {formatRelative(row.minAgo)}
+        </span>
+        <span className="hidden sm:inline text-[11px] shrink-0" style={{ color: "var(--color-muted)" }}>
+          {sourceLabel}
         </span>
       </Link>
     </motion.div>
   );
 }
+
+function PromotedRow({ initiative, index }: { initiative: Initiative; index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <Link
+        href={`/initiative/${initiative.id}/`}
+        className="group flex items-center justify-between rounded-lg px-4 py-2.5 transition hover:bg-[var(--color-card-hover)]"
+        style={{ background: "transparent" }}
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          <span
+            aria-hidden
+            className="inline-flex h-1.5 w-1.5 rounded-full shrink-0"
+            style={{ background: "var(--color-accent)" }}
+          />
+          <p
+            className="text-[14px] truncate"
+            style={{ color: "var(--color-primary)" }}
+          >
+            {initiative.title}
+          </p>
+        </div>
+        <span
+          className="inline-flex items-center gap-1 text-[12.5px] shrink-0 transition-transform group-hover:translate-x-0.5"
+          style={{ color: "var(--color-accent)" }}
+        >
+          Place
+          <ArrowRight size={12} />
+        </span>
+      </Link>
+    </motion.div>
+  );
+}
+
+function SignalChip({ kind }: { kind: "revenue" | "deals" | "support" | "deadline" | "strategic" }) {
+  const bgVar = `var(--color-chip-${kind}-bg)`;
+  const fgVar = `var(--color-chip-${kind}-text)`;
+  return (
+    <span
+      className="inline-flex items-center rounded px-1.5 py-0.5 text-[10.5px] font-medium"
+      style={{ background: bgVar, color: fgVar }}
+    >
+      {kind}
+    </span>
+  );
+}
+
+function EmptyState({ message, sub }: { message: string; sub: React.ReactNode }) {
+  return (
+    <div
+      className="mt-6 rounded-xl p-8 text-center"
+      style={{
+        background: "var(--color-elevated)",
+        border: "1px solid var(--color-border)",
+        boxShadow: "var(--shadow-sm)",
+      }}
+    >
+      <div className="font-display text-[24px]" style={{ color: "var(--color-accent)" }}>◆</div>
+      <p className="mt-2 text-[14.5px] font-medium" style={{ color: "var(--color-primary)" }}>
+        {message}
+      </p>
+      <p className="mt-1 text-[13px]" style={{ color: "var(--color-secondary)" }}>
+        {sub}
+      </p>
+    </div>
+  );
+}
+

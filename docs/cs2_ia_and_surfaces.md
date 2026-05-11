@@ -1,20 +1,64 @@
 # CS2 v2 — IA + Surface Map
 
-**Status:** draft for review (2026-05-08). Built downstream of `cs2_jbtd_and_pov.md` and `cs2_design_system_v2.md`. This locks the surface skeleton and route map before any component code is written.
+**Status:** v2 spec drafted 2026-05-08, shipped 2026-05-09. **v3 flow optimization shipped 2026-05-11** (see v3 delta below). This document locks the v2 surface skeleton + route map. The v3 update layers on top, preserving the v2 design narrative as historical context.
 
 ---
 
-## 1. Six surfaces, one loop
+## v3 delta — flow optimization (2026-05-11)
 
-The seven JBTDs map to six surfaces — **Now** is the home that aggregates the loop, the other five are the loop itself.
+Three flow moves applied on top of the v2 IA below. Read this first to understand what's live now; the v2 sections that follow document the intent the v3 edits inherit.
+
+### Surface count: 6 → 5 destination surfaces
+
+- **Inbox folded into Now.** Inbox is no longer a destination surface — it's been merged into the Now home (NSM hero + capture button + inline triage rows + `Start triage →` CTA). `/inbox/` stays as a transparent client redirect to `/` so any external deep-link still resolves.
+- **Top nav: 5 items → 4.** `Now · Calendar · Stakeholders · Audit`. The Inbox item is removed. Active-page match for `/` was widened to also catch `/inbox` and `/initiative` so navigation underline behaves correctly during the redirect bounce.
+
+### Calendar — silent auto-reflow → explicit 3-strategy trade-off
+
+The v2 spec assumed the engine would auto-reflow lower-priority items on overflow and surface the result via a post-commit toast. v3 makes the trade-off visible *before* commit:
+
+- On drag, every sprint shows a live `current → predicted` load chip (e.g. `12 → 20/12p`). Sprints that would overflow shift to amber border + bar.
+- On hover over an over-capacity sprint, a `TradeOffPanel` slides in inline below the sprint's items, with three named AI strategies as separate drop targets:
+  - **A · Minimise score loss** — push lowest-RICE items downstream (the v2 default behaviour, now explicit).
+  - **B · Minimise deadline risk** — protect items with `signal_type === "deadline" || "compliance"`; push everything else first.
+  - **C · Defer to next quarter** — don't reflow within Q3 at all; displaced items become deferred decisions.
+- Each card shows the rationale + the pushes that would happen + a `score_impact` value (sage when best, amber when worst).
+- On commit, items use `motion.div layoutId={initiative.id}` for shared-layout transitions — reflowed items *slide* between sprints over ~420ms rather than snap-disappearing.
+
+This collapses the brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) onto a single interaction.
+
+### Stakeholders — hub → master/detail
+
+The v2 spec was a 4-card hub that drilled into `/stakeholders/[audience]/`. v3 unifies:
+
+- `/stakeholders/` is now a master/detail layout (`grid-cols-[260px_1fr]` on md+). Persistent left rail with 4 audience cards. Right pane is the artifact.
+- URL syncs to `?audience=sales|exec|customer|eng` via `useSearchParams` + `router.replace`. Default = sales. Suspense boundary wraps the params reader for static export.
+- `<StakeholderArtifact key={audience} embedded />` — the `key` prop forces remount on every audience switch so the materialize stagger re-fires, not just on first mount. New `embedded` prop on the component skips Header + outer wrapper + back-link.
+- Legacy `/stakeholders/[audience]/` paths kept static-exportable but bounce to the unified URL via a `redirect-client.tsx` helper.
+
+### Click-count consequence
+
+```
+Land → first triage card:        v2 = 2 clicks  →  v3 = 1 click
+Switch stakeholder audience:     v2 = 2 clicks  →  v3 = 1 click
+See trade-off space before commit: v2 = 0 clicks (invisible)  →  v3 = 0 clicks (visible inline)
+```
+
+The v2 IA below remains the design-intent record. The route map in §2 still describes intent; the live URL behaviour after v3 differs as documented above (Inbox redirects, `/stakeholders/[audience]` redirects).
+
+---
+
+## 1. Six surfaces, one loop (v2 design intent)
+
+The seven JBTDs map to six surfaces — **Now** is the home that aggregates the loop, the other five are the loop itself. *(v3 update: Inbox no longer a destination surface; folded into Now. The other five are unchanged in role, two changed in interaction model — see v3 delta above.)*
 
 | # | Surface       | Route               | Owns JBTD(s)        | Purpose statement                                                  |
 |---|---------------|---------------------|---------------------|--------------------------------------------------------------------|
-| 1 | Now           | `/`                 | aggregator (1-7)    | Where Maya lands. Calm overview of NSM, what's waiting, what's next. |
-| 2 | Inbox         | `/inbox`            | JBTD-1, JBTD-2      | Capture + triage. Deck-of-cards triage flow. Front-door of the loop. |
+| 1 | Now           | `/`                 | aggregator (1-7)    | Where Maya lands. Calm overview of NSM, what's waiting, what's next. *(v3: also owns JBTD-1, JBTD-2 — capture + the front of triage)* |
+| 2 | ~~Inbox~~     | ~~`/inbox`~~        | ~~JBTD-1, JBTD-2~~  | *v3: folded into Now. `/inbox/` redirects to `/`.* |
 | 3 | Prioritize    | `/prioritize/[id]`  | JBTD-3, JBTD-4      | Single-item depth — framework, scorecard, trade-offs, commit.        |
-| 4 | Calendar      | `/calendar`         | JBTD-5              | The missing surface today. Sprint-by-sprint plan, drag-resequence.   |
-| 5 | Stakeholders  | `/stakeholders`     | JBTD-6              | Generated artifacts per audience. Copy-paste-ready.                  |
+| 4 | Calendar      | `/calendar`         | JBTD-5              | The missing surface today. Sprint-by-sprint plan, drag-resequence. *(v3: trade-off space visible during drag, 3-strategy AI choice)* |
+| 5 | Stakeholders  | `/stakeholders`     | JBTD-6              | Generated artifacts per audience. Copy-paste-ready. *(v3: master/detail, 1-click audience switch, `?audience=` query)* |
 | 6 | Audit         | `/audit`            | JBTD-7              | Decision log + prediction-vs-actual learning loop.                   |
 | – | Architecture  | `/architecture`     | (case-study artifact) | Reviewer-facing only. Shows the AI capability stack.               |
 

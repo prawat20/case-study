@@ -20,7 +20,19 @@ import {
 
 const allInitiatives = initiativesJson as Initiative[];
 
-export function StakeholderArtifact({ audience }: { audience: AudienceKey }) {
+export function StakeholderArtifact({
+  audience,
+  embedded = false,
+}: {
+  audience: AudienceKey;
+  /**
+   * When `embedded`, renders just the artifact body (copy buttons +
+   * eyebrow + article + footnote), without the Header / outer wrapper /
+   * back-link. Used by the v3 master/detail Stakeholders surface where
+   * the Header + page chrome are owned by the parent.
+   */
+  embedded?: boolean;
+}) {
   const meta = AUDIENCES.find((a) => a.key === audience);
   const { decisions } = useDecisions();
   const { assignments } = useCalendarState();
@@ -36,10 +48,17 @@ export function StakeholderArtifact({ audience }: { audience: AudienceKey }) {
   }, [audience, meta, decisions, assignments]);
 
   if (!meta) {
+    if (embedded) {
+      return (
+        <div className="px-2 py-4 text-[13px]" style={{ color: "var(--color-tertiary)" }}>
+          Audience not found.
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen text-primary" style={{ background: "var(--color-page)" }}>
         <Header />
-        <main className="mx-auto max-w-[720px] px-6 py-16">
+        <main className="mx-auto max-w-[720px] px-4 sm:px-6 py-10 sm:py-16">
           <h1>Audience not found</h1>
         </main>
       </div>
@@ -53,11 +72,62 @@ export function StakeholderArtifact({ audience }: { audience: AudienceKey }) {
     setTimeout(() => setCopied(null), 1800);
   }
 
+  // Embedded body — used inside the master/detail surface.
+  if (embedded) {
+    return (
+      <div>
+        <div className="flex items-center justify-between">
+          <p className="eyebrow">For {meta.label}</p>
+          <div className="flex items-center gap-2">
+            <CopyButton
+              icon={<MessageSquare size={13} />}
+              label={copied === "slack" ? "Copied" : "Copy as Slack"}
+              onClick={() => copyAs("slack")}
+              copied={copied === "slack"}
+            />
+            <CopyButton
+              icon={<Mail size={13} />}
+              label={copied === "email" ? "Copied" : "Copy as email"}
+              onClick={() => copyAs("email")}
+              copied={copied === "email"}
+            />
+          </div>
+        </div>
+
+        <article
+          className="mt-3 rounded-xl px-7 py-7"
+          style={{
+            background: "var(--color-elevated)",
+            border: "1px solid var(--color-border)",
+            boxShadow: "var(--shadow-sm)",
+          }}
+        >
+          {lines.map((line, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1], delay: idx * 0.05 }}
+            >
+              <LineRenderer line={line} />
+            </motion.div>
+          ))}
+        </article>
+
+        <p className="mt-4 text-[11.5px]" style={{ color: "var(--color-muted)" }}>
+          <FileDown size={11} className="mr-1 inline-block" />
+          Synthesized from your committed plan + sprint assignments. Re-renders when either changes.
+        </p>
+      </div>
+    );
+  }
+
+  // Standalone full-page version (used at /stakeholders/[audience]/).
   return (
     <div className="min-h-screen text-primary" style={{ background: "var(--color-page)" }}>
       <Header />
 
-      <main className="mx-auto max-w-[720px] px-6 pt-8 pb-24">
+      <main className="mx-auto max-w-[720px] px-4 sm:px-6 pt-6 sm:pt-8 pb-24">
         <div className="flex items-center justify-between">
           <Link
             href="/stakeholders/"
@@ -85,7 +155,6 @@ export function StakeholderArtifact({ audience }: { audience: AudienceKey }) {
 
         <p className="eyebrow mt-8">For {meta.label}</p>
 
-        {/* Artifact */}
         <article
           className="mt-3 rounded-xl px-7 py-7"
           style={{

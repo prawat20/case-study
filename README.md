@@ -1,10 +1,10 @@
 # Case Study
 
-> Product case study for a Director of Product application.
-> An AI-native decision orchestration workspace for product managers.
-> Built in Claude Code. Deployed on Cloudflare Pages.
+> Two product case studies for a Director of Product application.
+> **CS1** (Growth Hacking) is a written submission — Caselet 1 Revolut Primacy + Caselet 2 Plottwyst pitch.
+> **CS2** (Quarterly Planning) is an AI-native decision orchestration workspace for product managers, built in Claude Code and deployed on Cloudflare Pages.
 
-**Live demo:** https://case-study-iud.pages.dev/
+**CS2 live demo:** https://case-study-iud.pages.dev/
 **Source:** this repo
 
 ---
@@ -13,22 +13,54 @@
 
 ```
 Case Study/
-├── README.md                       ← you are here
-├── docs/                           Public work artifacts
-│   ├── cs2_jbtd_and_pov.md         v2 — Persona, 7 JBTDs, POV per JBTD
-│   ├── cs2_design_system_v2.md     v2 — Palette, type, motion, sound
-│   ├── cs2_ia_and_surfaces.md      v2 — Surface map + design intent
-│   ├── cs2_product_pov.md          v1 product POV (historical)
-│   ├── cs2_supporting_writeup.md   Brief deliverables — NSM + 5 events + interview bank
-│   ├── cs2_wireframes.md           v1 build spec (historical)
-│   ├── cs2_build_log.md            Running log — current state, iteration history
-│   └── research_pm_pain_points.md  Validated PM pain research
-└── quarterly-planning/             The Next.js app
-    ├── app/                        Routes (Now / Inbox / Triage / Calendar / Stakeholders / Audit / Architecture / Prioritize)
-    ├── components/                 UI components
-    ├── data/                       Mocked initiatives + types
-    └── lib/                        State stores, helpers, framework scoring, sprint-conflict math
+├── README.md                              ← you are here
+├── docs/                                  Public work artifacts
+│   │
+│   │   ── CS1 (Growth Hacking) ──
+│   ├── cs1_revolut_research.md            Stage 1 — desk research with Reddit primary source
+│   ├── cs1_revolut_painkiller_vitamin.md  Stage 2 — 5×5 macro synthesis + PLG actionability filter
+│   ├── cs1_revolut_ideation.md            Stage 3 — 17 ideas, 4-axis scoring, narrowed to 2
+│   ├── cs1_caselet1_revolut.md            Stage 4 — Caselet 1 submission (Revolut Primacy)
+│   ├── cs1_build_log.md                   Running log — what was built and why
+│   │
+│   │   ── CS2 (Quarterly Planning) ──
+│   ├── cs2_jbtd_and_pov.md                v2 — Persona, 7 JBTDs, POV per JBTD
+│   ├── cs2_design_system_v2.md            v2 — Palette, type, motion, sound
+│   ├── cs2_ia_and_surfaces.md             v2 — Surface map + design intent
+│   ├── cs2_product_pov.md                 v1 product POV (historical)
+│   ├── cs2_supporting_writeup.md          Brief deliverables — NSM + 5 events + interview bank
+│   ├── cs2_wireframes.md                  v1 build spec (historical)
+│   ├── cs2_build_log.md                   Running log — current state, iteration history
+│   └── research_pm_pain_points.md         CS2 — Validated PM pain research
+│
+└── quarterly-planning/                    The Next.js app (CS2)
+    ├── app/                               Routes (Now / Inbox / Triage / Calendar / Stakeholders / Audit / Architecture / Prioritize)
+    ├── components/                        UI components
+    ├── data/                              Mocked initiatives + types
+    └── lib/                               State stores, helpers, framework scoring, sprint-conflict math
 ```
+
+---
+
+## CS1 status (2026-05-11)
+
+- **Caselet 1 (Revolut Primacy) — submission shipped.** Final deliverable at [`docs/cs1_caselet1_revolut.md`](docs/cs1_caselet1_revolut.md). 592 lines, structured verbatim per brief. Built via 4-stage research-first discipline mirroring CS2: research → macro synthesis → ideation+scoring → submission.
+- Two ideas picked: **Confidence Period** (Open-Banking parallel-run + Salary Guarantee — push, migration de-risk) and **Locked Insights** (data-envy-driven salary-aware intelligence — pull, only-on-primary value). Push-pull pair targeting C3+C4 cohorts. Conservative impact model: 8-10pp UK primacy lift Year 1.
+- **Caselet 2 (Plottwyst pitch) — outstanding.** Brief sections 1:1: Persona+Problem · Proposition · MVP · Revenue · TAM. Source assets: Plottwyst investor deck. Will be self-contained — no cross-reference to other projects in this machine.
+
+---
+
+## CS2 status (2026-05-11 — v3 flow optimization deployed)
+
+CS2 v3 is live at `case-study-iud.pages.dev`. Three flow moves applied on top of the v2 redesign:
+
+- **Surface consolidation.** Now + Inbox merged into a single home surface. Top nav reduced from 5 → 4 items. Inbox rows render inline under the NSM hero with `Start triage →` CTA + visible keyboard hints. `/inbox/` kept as a transparent redirect.
+- **Calendar = puzzle.** Drag-to-full-sprint now reveals a live capacity preview + 3-strategy AI trade-off panel (Minimise score loss · Minimise deadline risk · Defer to next quarter) before commit. Each strategy is a drop target with its own rationale + score impact. Reflowed items animate between sprints via Framer Motion `layoutId` shared transitions.
+- **Stakeholders master/detail.** Hub replaced with a master/detail layout — persistent left rail (4 audience cards) + right pane with materialize stagger re-firing on every audience switch. URL syncs via `?audience=` query. Legacy `/stakeholders/[audience]/` deep-links redirect to the unified URL.
+
+See [`docs/cs2_build_log.md`](docs/cs2_build_log.md) `Round 9` for the full implementation log + click-count delta. Source-of-truth IA at [`docs/cs2_ia_and_surfaces.md`](docs/cs2_ia_and_surfaces.md) (v3 delta preamble at top).
+
+**Important:** the v3 build was deployed via wrangler only — **not pushed to GitHub**. The local working tree carries v3 changes + CS1 Caselet 1 docs uncommitted, intentionally, so the Caselet 1 submission stays off the public repo until manual submission.
 
 ---
 
