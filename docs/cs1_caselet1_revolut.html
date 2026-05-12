@@ -1,0 +1,1965 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>CS1 · Caselet 1 · Revolut Primacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@page {
+  size: A4;
+  margin: 22mm 18mm 22mm 18mm;
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-size: 9pt;
+    color: #8a8a8a;
+  }
+  @bottom-left {
+    content: "Pravesh Rawat  ·  CS1  ·  Caselet 1  ·  Revolut Primacy";
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.5pt;
+    color: #8a8a8a;
+  }
+}
+@page :first {
+  margin: 0;
+  @bottom-center { content: none; }
+  @bottom-left { content: none; }
+}
+
+:root {
+  --ink: #181818;
+  --muted: #5a5a5a;
+  --soft: #8a8a8a;
+  --rule: #d8d2c7;
+  --bg-soft: #f7f4ee;
+  --bg-code: #f4efe6;
+  --accent: #142a4f;
+  --accent-2: #6b2d2d;
+}
+
+html, body { background: white; color: var(--ink); }
+body {
+  font-family: "Source Serif Pro", "Source Serif 4", "Charter", Georgia, "Times New Roman", serif;
+  font-size: 10.5pt;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+/* ---------- Cover ---------- */
+.cover {
+  page-break-after: always;
+  height: 297mm;
+  width: 210mm;
+  margin: 0;
+  padding: 32mm 22mm;
+  box-sizing: border-box;
+  position: relative;
+  background:
+    linear-gradient(180deg, #fafaf7 0%, #f1ece2 100%);
+  display: flex;
+  flex-direction: column;
+}
+.cover .eyebrow {
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5pt;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 24mm;
+}
+.cover h1 {
+  font-family: "Source Serif Pro", "Source Serif 4", "Charter", Georgia, serif;
+  font-weight: 600;
+  font-size: 42pt;
+  line-height: 1.08;
+  color: var(--ink);
+  margin: 0 0 4mm 0;
+}
+.cover h1 em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 500;
+}
+.cover .subtitle {
+  font-family: "Source Serif Pro", "Charter", Georgia, serif;
+  font-style: italic;
+  font-size: 14pt;
+  color: var(--muted);
+  max-width: 130mm;
+  margin: 0 0 18mm 0;
+  line-height: 1.4;
+}
+.cover .rule {
+  width: 40mm;
+  border-top: 1.5px solid var(--accent-2);
+  margin: 0 0 10mm 0;
+}
+.cover .meta {
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10pt;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.cover .meta b { color: var(--ink); font-weight: 600; }
+
+.cover .footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-family: "Inter", sans-serif;
+  font-size: 9pt;
+  color: var(--soft);
+  letter-spacing: 0.04em;
+}
+.cover .footer .tag {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+/* ---------- Body typography ---------- */
+main {
+  max-width: 170mm;
+  margin: 0 auto;
+  padding: 0;
+}
+h1, h2, h3, h4 {
+  font-family: "Source Serif Pro", "Source Serif 4", "Charter", Georgia, serif;
+  color: var(--ink);
+  page-break-after: avoid;
+}
+h2.section {
+  font-size: 22pt;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  border-top: 1px solid var(--rule);
+  padding-top: 8mm;
+  margin-top: 10mm;
+  margin-bottom: 5mm;
+  page-break-before: always;
+}
+h2.section:first-of-type {
+  page-break-before: auto;
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+h3 {
+  font-size: 14pt;
+  font-weight: 600;
+  margin-top: 8mm;
+  margin-bottom: 2mm;
+  color: var(--accent);
+}
+h4 {
+  font-size: 11.5pt;
+  font-weight: 600;
+  margin-top: 5mm;
+  margin-bottom: 1.5mm;
+  color: var(--ink);
+}
+p { margin: 0 0 3.5mm 0; orphans: 3; widows: 3; }
+
+strong { color: var(--ink); font-weight: 700; }
+em { color: #2a2a2a; }
+
+a { color: var(--accent); text-decoration: none; border-bottom: 0.5px solid rgba(20,42,79,0.3); }
+
+ul, ol { margin: 0 0 4mm 0; padding-left: 6mm; }
+li { margin-bottom: 1.5mm; }
+li > p { margin: 0; }
+
+blockquote {
+  margin: 4mm 0 4mm 0;
+  padding: 2mm 5mm;
+  border-left: 2px solid var(--accent-2);
+  color: var(--muted);
+  font-style: italic;
+  font-size: 10.5pt;
+  background: linear-gradient(90deg, rgba(107,45,45,0.04), transparent 90%);
+}
+blockquote p { margin-bottom: 2mm; }
+blockquote p:last-child { margin-bottom: 0; }
+
+hr { border: none; border-top: 1px solid var(--rule); margin: 8mm 0; }
+
+/* ---------- Code blocks (ASCII mockups) ---------- */
+pre {
+  background: var(--bg-code);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 4mm 5mm;
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
+  font-size: 8.5pt;
+  line-height: 1.45;
+  color: #2a2a2a;
+  page-break-inside: avoid;
+  white-space: pre;
+  overflow: visible;
+  margin: 4mm 0;
+}
+pre code { font: inherit; }
+code {
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  font-size: 9.5pt;
+  background: rgba(107,45,45,0.06);
+  padding: 0.5pt 3pt;
+  border-radius: 2px;
+  color: var(--accent-2);
+}
+pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+
+/* ---------- Tables ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4mm 0 5mm 0;
+  font-size: 9.5pt;
+  page-break-inside: avoid;
+}
+thead th {
+  background: var(--bg-soft);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  text-align: left;
+  padding: 2.5mm 3mm;
+  border-bottom: 1px solid var(--rule);
+  font-size: 9pt;
+  letter-spacing: 0.01em;
+}
+tbody td {
+  padding: 2.5mm 3mm;
+  border-bottom: 0.5px solid #e8e3d8;
+  vertical-align: top;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { font-weight: 600; color: var(--ink); }
+table strong { font-weight: 700; }
+
+/* ---------- Misc ---------- */
+.intro-quote {
+  font-style: italic;
+  color: var(--muted);
+  border-left: none;
+  font-size: 11pt;
+  margin: 0 0 8mm 0;
+  padding: 0;
+}
+
+/* Pair-table (the comparison) — slightly stronger emphasis */
+table:has(th:nth-child(3):last-child) tbody td:nth-child(2),
+table:has(th:nth-child(3):last-child) tbody td:nth-child(3) {
+  font-weight: normal;
+}
+
+/* Footnote-style appendix */
+h2#appendix-evidence-sources + p { font-size: 10pt; color: var(--muted); }
+
+/* ---------- Executive summary panel ---------- */
+/* The Executive Summary section gets a subtle accent rule + tighter typography
+   so it visually reads as a self-contained briefing card. */
+h2#executive-summary {
+  color: var(--accent);
+}
+h2#executive-summary + p em,
+h2#executive-summary + p {
+  font-size: 10pt;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 6mm;
+}
+h2#executive-summary ~ p strong:first-child,
+h2#executive-summary ~ p > strong:first-of-type {
+  color: var(--accent);
+}
+h2#executive-summary ~ table {
+  font-size: 9pt;
+  margin: 3mm 0 4mm 0;
+}
+h2#executive-summary ~ table th,
+h2#executive-summary ~ table td {
+  padding: 1.8mm 2.5mm;
+  line-height: 1.4;
+}
+h2#executive-summary ~ table th { background: #efeae0; }
+h2#executive-summary ~ table td:first-child { background: #f7f4ee; }
+
+/* Tighten paragraph spacing within the exec summary so it fits one page */
+h2#executive-summary ~ p {
+  margin-bottom: 3mm;
+}
+
+/* ---------- Data-vintage callout ---------- */
+.data-vintage {
+  background: #f7f4ee;
+  border-left: 2px solid var(--accent);
+  padding: 3mm 5mm;
+  margin: 6mm 0 2mm 0;
+  font-size: 9pt;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.data-vintage p { margin: 0; }
+.data-vintage strong { color: var(--ink); }
+
+/* ---------- Cohort glossary callout ---------- */
+.glossary {
+  background: #f4efe6;
+  border-left: 2px solid var(--accent-2);
+  padding: 3mm 5mm;
+  margin: 4mm 0 5mm 0;
+  font-size: 9.5pt;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.glossary p { margin: 0; }
+.glossary strong { color: var(--accent-2); }
+
+/* ---------- High-fidelity mobile screen mockups ---------- */
+.screens-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6mm 8mm;
+  margin: 5mm 0 6mm 0;
+  page-break-inside: avoid;
+}
+.screen-cell { page-break-inside: avoid; }
+.screen-cell .caption {
+  text-align: center;
+  font-size: 9pt;
+  color: var(--muted);
+  font-style: italic;
+  margin: 2.5mm 4mm 0 4mm;
+  line-height: 1.35;
+  font-family: "Source Serif Pro", serif;
+}
+
+.phone {
+  width: 64mm;
+  background: linear-gradient(160deg, #1a1a1f 0%, #0c0c10 100%);
+  border-radius: 7mm;
+  padding: 1mm;
+  box-shadow: 0 0.8mm 2.6mm rgba(0,0,0,0.18), 0 0 0 0.2mm rgba(0,0,0,0.4);
+  margin: 0 auto;
+}
+.phone-inner {
+  background: #ffffff;
+  border-radius: 6mm;
+  overflow: hidden;
+  aspect-ratio: 360 / 760;
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", "Helvetica Neue", sans-serif;
+  color: #0a0c12;
+  position: relative;
+}
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.2mm 4.5mm 0.5mm 4.5mm;
+  font-size: 5.5pt;
+  font-weight: 600;
+  color: #0a0c12;
+}
+.status-bar .right { display: flex; gap: 1.4mm; align-items: center; }
+.status-bar .battery {
+  display: inline-block; width: 4mm; height: 1.8mm;
+  border: 0.3mm solid #0a0c12; border-radius: 0.4mm;
+  position: relative;
+}
+.status-bar .battery::after {
+  content: ""; position: absolute;
+  top: 0.2mm; left: 0.2mm; bottom: 0.2mm; width: 86%;
+  background: #0a0c12; border-radius: 0.2mm;
+}
+.nav-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 2mm 4.5mm 2mm 4.5mm;
+}
+.nav-bar .back { font-size: 9pt; color: #0a0c12; line-height: 1; }
+.nav-bar .title { font-weight: 700; font-size: 7pt; letter-spacing: -0.01em; }
+.nav-bar .more { font-size: 9pt; color: #5d5d6b; line-height: 1; }
+
+.screen-body {
+  flex: 1; padding: 0 4.5mm 4mm 4.5mm;
+  font-size: 6pt; line-height: 1.45;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.sb-h1 { font-size: 11pt; font-weight: 700; letter-spacing: -0.015em; margin: 1mm 0 1.5mm 0; line-height: 1.15; }
+.sb-h2 { font-size: 8.5pt; font-weight: 600; margin: 0 0 1.5mm 0; line-height: 1.2; }
+.sb-sub { font-size: 6pt; color: #5d5d6b; margin: 0 0 3mm 0; line-height: 1.4; }
+.sb-section-label {
+  font-size: 5pt; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #87878f; font-weight: 600; margin: 2mm 0 1.2mm 0;
+}
+
+.card {
+  background: #fbfbfd; border: 0.25mm solid #e8e8ee;
+  border-radius: 2mm; padding: 2.5mm 2.8mm;
+  margin-bottom: 2mm;
+  position: relative;
+}
+.card.locked { background: #faf7ef; border-color: #ece5d2; }
+.card.live { background: #f4fbf6; border-color: #c8e8d4; }
+.card.warn { background: #fff8ea; border-color: #f0d99a; }
+.card-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 2mm; }
+.card-icon { font-size: 9pt; line-height: 1; }
+.card-lock { color: #b59647; font-size: 6.5pt; line-height: 1; }
+.card-title { font-weight: 700; font-size: 7.5pt; letter-spacing: -0.01em; line-height: 1.2; margin-bottom: 0.6mm; }
+.card-body { font-size: 6pt; color: #3a3a44; line-height: 1.35; }
+.card-cta { margin-top: 1.5mm; font-size: 5.5pt; color: #0066ff; font-weight: 600; }
+
+.blur {
+  filter: blur(1.6px);
+  -webkit-filter: blur(1.6px);
+  display: inline-block;
+  color: #0a0c12;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.cta-primary {
+  background: #0a0c12; color: #fff;
+  text-align: center; padding: 2.4mm;
+  border-radius: 1.8mm;
+  font-weight: 600; font-size: 7pt;
+  margin-top: auto;
+}
+.cta-secondary {
+  text-align: center; padding: 1.8mm;
+  font-size: 6.5pt; color: #5d5d6b;
+  margin-top: 1mm;
+}
+
+.amount-pill {
+  display: inline-block;
+  font-weight: 800; font-size: 8pt;
+  letter-spacing: -0.01em;
+}
+.success-pill {
+  display: inline-block; background: #e7f7ec; color: #0a7a3e;
+  padding: 0.6mm 1.5mm; border-radius: 1mm;
+  font-size: 5pt; font-weight: 600; letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.warn-pill {
+  display: inline-block; background: #fff0d4; color: #a05f00;
+  padding: 0.6mm 1.5mm; border-radius: 1mm;
+  font-size: 5pt; font-weight: 600; letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.toast {
+  background: #0a0c12; color: #fff;
+  border-radius: 2mm; padding: 2.5mm 3mm;
+  font-size: 6pt; line-height: 1.4;
+  margin: 1.5mm 0;
+}
+.toast .toast-title { font-weight: 700; font-size: 6.8pt; margin-bottom: 0.5mm; }
+.toast.success { background: #0a7a3e; }
+.toast.warn { background: #a05f00; }
+
+.slider {
+  margin: 1.5mm 0 3mm 0;
+}
+.slider .track {
+  height: 0.8mm; background: #ececf0; border-radius: 0.4mm;
+  position: relative;
+}
+.slider .fill {
+  position: absolute; top: 0; bottom: 0; left: 0;
+  background: #0a0c12; border-radius: 0.4mm;
+}
+.slider .knob {
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  width: 2.8mm; height: 2.8mm; border-radius: 50%;
+  background: #fff; border: 0.6mm solid #0a0c12;
+  box-shadow: 0 0.2mm 0.6mm rgba(0,0,0,0.15);
+}
+.slider .labels {
+  display: flex; justify-content: space-between;
+  margin-top: 1mm; font-size: 5pt; color: #87878f;
+}
+
+.toggle-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.8mm 0; border-top: 0.2mm solid #ececf0;
+}
+.toggle-row:first-child { border-top: none; }
+.toggle-row .label { font-size: 6.5pt; font-weight: 600; }
+.toggle-row .sub { font-size: 5.5pt; color: #87878f; }
+.toggle {
+  width: 5.5mm; height: 3mm; border-radius: 1.5mm;
+  background: #0a0c12; position: relative;
+}
+.toggle::after {
+  content: ""; position: absolute; top: 0.4mm; right: 0.4mm;
+  width: 2.2mm; height: 2.2mm; border-radius: 50%; background: #fff;
+}
+.toggle.off { background: #d8d8de; }
+.toggle.off::after { right: auto; left: 0.4mm; }
+
+/* Banner / inbox-style hook surface for the entry mock */
+.home-card {
+  background: linear-gradient(135deg, #0a0c12 0%, #1d2238 100%);
+  color: #fff; border-radius: 2.5mm;
+  padding: 3mm 3.2mm; margin-bottom: 2mm;
+}
+.home-card .kicker {
+  font-size: 5pt; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #b8c4e6; font-weight: 600; margin-bottom: 1mm;
+}
+.home-card .head { font-size: 8.5pt; font-weight: 700; line-height: 1.2; margin-bottom: 1.2mm; }
+.home-card .body { font-size: 5.8pt; color: #cdd5ed; line-height: 1.4; margin-bottom: 2mm; }
+.home-card .pill-cta {
+  display: inline-block; background: #fff; color: #0a0c12;
+  padding: 1.2mm 2.5mm; border-radius: 5mm;
+  font-size: 5.5pt; font-weight: 700;
+}
+
+/* ---------- Inline SVG icons (replace emojis 2026-05-12) ---------- */
+.ico {
+  display: inline-block;
+  width: 1em; height: 1em;
+  vertical-align: -0.18em;
+  color: inherit;
+  stroke: currentColor;
+  fill: none;
+}
+.card-icon .ico { width: 1em; height: 1em; }
+.yir-icon .ico { color: #0a0c12; }
+.action-icon .ico { color: #b88a3a; }
+
+/* ---------- New screen classes (2026-05-12 — CP screens 1-7, LI screens 2-4) ---------- */
+.provider-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.4mm; margin: 1.5mm 0 2mm 0;
+}
+.provider {
+  background: #fbfbfd; border: 0.25mm solid #e8e8ee;
+  border-radius: 1.5mm; padding: 1.8mm 1.5mm;
+  font-size: 5.4pt; font-weight: 600;
+  text-align: center; color: #0a0c12; line-height: 1.1;
+}
+
+.kv-row {
+  display: flex; justify-content: space-between;
+  padding: 1mm 0; font-size: 6pt;
+  border-top: 0.2mm solid #ece5d2;
+}
+.kv-row:first-child { border-top: none; }
+.kv-key { color: #5d5d6b; font-weight: 500; }
+.kv-val { font-weight: 700; color: #0a0c12; display: flex; gap: 1.2mm; align-items: center; }
+.kv-meta { font-weight: 400; color: #87878f; font-size: 5.2pt; font-style: italic; }
+
+.check-row {
+  display: flex; align-items: center; gap: 1.5mm;
+  padding: 1.2mm 0; font-size: 6pt;
+  border-top: 0.2mm solid #ececf0;
+}
+.check-row:first-of-type { border-top: none; }
+.check {
+  width: 2.4mm; height: 2.4mm; border: 0.3mm solid #87878f;
+  border-radius: 0.5mm; display: inline-block; flex-shrink: 0;
+}
+.check-label { color: #3a3a44; }
+
+.letter-card {
+  background: #f7f4ee; border: 0.25mm solid #ece5d2;
+  border-radius: 1.5mm; padding: 2.2mm 2.5mm;
+  font-size: 5.6pt; line-height: 1.4;
+  margin: 1mm 0 2mm 0;
+}
+.letter-to { font-weight: 700; margin-bottom: 1mm; color: #0a0c12; font-size: 5.8pt; }
+.letter-body { color: #3a3a44; margin-bottom: 1.5mm; }
+.letter-fields > div {
+  display: flex; justify-content: space-between;
+  padding: 0.4mm 0;
+}
+.letter-key { color: #87878f; font-size: 5.2pt; }
+.letter-val {
+  font-weight: 700; color: #0a0c12;
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  font-size: 5.4pt; letter-spacing: -0.01em;
+}
+
+.action-row {
+  display: flex; align-items: center; gap: 2mm;
+  padding: 1.8mm 0;
+  border-top: 0.2mm solid #ececf0;
+  font-size: 6.2pt;
+}
+.action-row:first-of-type { border-top: none; }
+.action-row.alt { background: #f7f4ee; border-radius: 1.5mm; padding-left: 2mm; padding-right: 2mm; margin-top: 1mm; border-top: none; }
+.action-icon { font-size: 7.5pt; width: 4mm; color: #0a0c12; }
+.action-label { font-weight: 600; color: #0a0c12; flex: 1; font-size: 6pt; }
+.action-row.alt .action-icon { color: #b88a3a; }
+.action-meta { color: #87878f; font-weight: 400; font-size: 5.2pt; margin-left: 0.8mm; font-style: italic; }
+
+.seg-control {
+  display: flex; margin: 0 0 3mm 0;
+  border: 0.3mm solid #d8d8de; border-radius: 1.5mm;
+  overflow: hidden;
+}
+.seg {
+  flex: 1; text-align: center;
+  padding: 1.8mm 0; font-size: 7pt; font-weight: 600;
+  color: #87878f; background: #fff;
+  border-right: 0.2mm solid #ececf0;
+}
+.seg:last-child { border-right: none; }
+.seg.active { background: #0a0c12; color: #fff; }
+
+.slider .labels .value { font-weight: 700; color: #0a0c12; font-size: 5.5pt; }
+.slider .labels .rec { font-weight: 400; color: #87878f; font-style: italic; font-size: 5pt; margin-left: 0.5mm; }
+
+.disclosure {
+  font-size: 5.2pt; color: #87878f; font-style: italic;
+  text-align: center; margin: 1.5mm 0 1.2mm 0;
+  padding: 1.2mm 0 0 0; border-top: 0.2mm solid #ececf0;
+  line-height: 1.4;
+}
+
+.dd-row {
+  display: flex; align-items: center; gap: 1.8mm;
+  padding: 1.2mm 0; font-size: 6pt;
+  border-bottom: 0.2mm solid #ececf0;
+}
+.dd-row:last-of-type { border-bottom: none; }
+.dd-check {
+  width: 2.6mm; height: 2.6mm; border: 0.3mm solid #87878f;
+  border-radius: 0.5mm; display: inline-flex;
+  align-items: center; justify-content: center;
+  font-size: 4.8pt; color: transparent; flex-shrink: 0;
+}
+.dd-check.on { background: #0a0c12; color: #fff; border-color: #0a0c12; font-weight: 800; }
+.dd-check.lock {
+  background: transparent; color: #b88a3a; border-color: transparent;
+  font-size: 6pt; line-height: 1;
+}
+.dd-name { flex: 1; color: #0a0c12; font-weight: 500; font-size: 6pt; }
+.dd-amt {
+  color: #3a3a44; font-weight: 700; font-size: 5.6pt;
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+}
+.dd-row.locked .dd-name { color: #87878f; font-weight: 400; }
+.dd-row.locked .dd-amt { color: #87878f; font-weight: 500; }
+
+.summary-card {
+  background: #fbfbfd; border: 0.25mm solid #e8e8ee;
+  border-radius: 2mm; padding: 2.5mm 2.8mm;
+  margin: 1mm 0 2mm 0;
+}
+.sum-row {
+  display: flex; justify-content: space-between;
+  padding: 1.3mm 0; font-size: 6pt;
+  border-top: 0.2mm solid #ececf0;
+  align-items: center;
+}
+.sum-row:first-child { border-top: none; }
+.sum-key { color: #5d5d6b; }
+.sum-val { font-weight: 700; color: #0a0c12; }
+
+.cta-secondary.alt {
+  text-align: center; padding: 1.6mm 2.5mm;
+  background: #fbfbfd; border: 0.25mm solid #e8e8ee;
+  border-radius: 1.8mm; color: #0a0c12; font-weight: 600;
+  margin-top: 1.2mm; font-size: 6.2pt;
+}
+
+.balance-block {
+  text-align: center; margin: 1mm 0 1.5mm 0;
+  padding: 1.5mm 0;
+}
+.balance-block.guarantee { padding: 1mm 0 1.5mm 0; }
+.balance-label {
+  font-size: 5pt; color: #87878f; letter-spacing: 0.08em;
+  text-transform: uppercase; font-weight: 600;
+}
+.balance-amt {
+  font-size: 13pt; font-weight: 800;
+  letter-spacing: -0.025em; color: #0a0c12;
+  margin-top: 0.4mm; line-height: 1.1;
+}
+.balance-sub {
+  font-size: 5.2pt; color: #5d5d6b; margin-top: 0.8mm;
+  padding: 0 3mm; line-height: 1.4;
+}
+
+.ledger-row {
+  display: flex; align-items: center; gap: 1.8mm;
+  padding: 0.9mm 0; font-size: 5.4pt;
+  border-top: 0.2mm solid #ececf0;
+}
+.ledger-row:first-of-type { border-top: none; }
+.ledger-time {
+  color: #87878f; width: 14mm;
+  font-family: "JetBrains Mono", "SF Mono", monospace; font-size: 5pt;
+}
+.ledger-label { flex: 1; color: #0a0c12; font-weight: 500; }
+.ledger-amt {
+  font-weight: 700; color: #0a0c12;
+  font-family: "JetBrains Mono", "SF Mono", monospace; font-size: 5.4pt;
+}
+.ledger-amt.muted { color: #87878f; font-weight: 500; }
+
+.celebration {
+  text-align: center; padding: 2.5mm 0 1.5mm 0;
+  margin-bottom: 1.5mm;
+}
+.celebration-burst {
+  font-size: 16pt; color: #b88a3a;
+  margin-bottom: 1.2mm; line-height: 1;
+}
+.celebration .sb-h1 { margin: 0 0 1.5mm 0; }
+
+.sample-banner {
+  background: #fff8ea; border: 0.25mm solid #f0d99a;
+  border-radius: 1.5mm; padding: 1.6mm 2mm;
+  font-size: 5.4pt; color: #6b4f1a;
+  text-align: center; line-height: 1.35;
+  margin: 1mm 0 2mm 0;
+}
+
+.sub-list { margin: 1.4mm 0 1mm 0; }
+.sub-row {
+  display: flex; justify-content: space-between;
+  padding: 0.7mm 0; font-size: 5.4pt;
+  border-top: 0.2mm solid #ececf0;
+}
+.sub-row:first-child { border-top: none; }
+.sub-name { color: #0a0c12; font-weight: 500; }
+.sub-meta { color: #87878f; font-style: italic; font-size: 5pt; }
+
+.card-cta-row {
+  display: flex; gap: 1.2mm; margin-top: 1.5mm;
+  flex-wrap: wrap;
+}
+.mini-cta {
+  background: #0a0c12; color: #fff;
+  padding: 1.1mm 2.2mm; border-radius: 1.2mm;
+  font-size: 5.2pt; font-weight: 700; letter-spacing: 0.01em;
+}
+.mini-cta.alt {
+  background: transparent; color: #0a4ad8;
+  border: 0.25mm solid #cfd8ec;
+}
+
+.yir-hero {
+  text-align: center;
+  padding: 2.8mm 0 2mm 0;
+  background: linear-gradient(160deg, #0a0c12 0%, #1d2238 100%);
+  color: #fff; border-radius: 2mm;
+  margin-bottom: 2mm;
+}
+.yir-label {
+  font-size: 5pt; color: #b8c4e6;
+  letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+}
+.yir-amt {
+  font-size: 18pt; font-weight: 800;
+  letter-spacing: -0.025em; margin: 0.4mm 0; line-height: 1.05;
+}
+.yir-sub { font-size: 5.6pt; color: #cdd5ed; padding: 0 4mm; line-height: 1.35; }
+
+.yir-row {
+  display: flex; align-items: center; gap: 1.8mm;
+  padding: 1.1mm 0; font-size: 6pt;
+  border-top: 0.2mm solid #ececf0;
+}
+.yir-row:first-of-type { border-top: none; }
+.yir-icon { font-size: 7pt; width: 4mm; line-height: 1; }
+.yir-name { flex: 1; color: #0a0c12; font-weight: 500; }
+.yir-amt-sm {
+  font-weight: 700; color: #0a0c12; font-size: 6pt;
+  font-family: "JetBrains Mono", "SF Mono", monospace;
+}
+
+/* ---------- Risks / open-questions callout ---------- */
+.risks {
+  background: #f7f4ee;
+  border-left: 2px solid #b88a3a;
+  padding: 4mm 5mm 4mm 5mm;
+  margin: 4mm 0 4mm 0;
+  font-size: 9.5pt;
+  line-height: 1.5;
+  page-break-inside: avoid;
+}
+.risks ul { margin: 0; padding-left: 5mm; }
+.risks li { margin-bottom: 2mm; }
+.risks li:last-child { margin-bottom: 0; }
+.risks strong { color: var(--ink); }
+.risks em { color: #6b4f1a; }
+
+/* Avoid orphan headings */
+h2, h3, h4 { break-after: avoid-page; }
+pre, table, blockquote { break-inside: avoid-page; }
+
+/* Tighter spacing for the macro-category H3s under section 1 + 2 */
+h3 { break-after: avoid-page; }
+
+/* Make the first paragraph after the cover (wedge-insight intro) feel like a lede */
+main > h3:first-of-type {
+  font-size: 16pt;
+  color: var(--accent);
+  margin-top: 0;
+}
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="eyebrow">Case Study · Growth Hacking · Caselet 1</div>
+  <h1>Revolut <em>Primacy</em></h1>
+  <p class="subtitle">Why Revolut users don't make it primary — and two growth-hacking
+  ideas, sized to compound, that move the dial without paying for the salary.</p>
+  <div class="rule"></div>
+  <div class="meta">
+    <div><b>Author</b> &nbsp; Pravesh Rawat</div>
+    <div><b>Date</b> &nbsp; May 2026</div>
+    <div><b>Length</b> &nbsp; Caselet 1 of 2 · standalone deliverable</div>
+  </div>
+  <div class="footer">
+    <span class="tag">Submission deliverable</span>
+    <span>Push &nbsp;·&nbsp; Pull</span>
+  </div>
+</section>
+
+<main>
+<h2 class="section" id="executive-summary">Executive summary</h2>
+<p><em>One-page distillation. The body that follows is the working-out — read it if you want to stress-test the reasoning, the screens, or the metrics.</em></p>
+<p><strong>Thesis.</strong> Revolut&rsquo;s primacy gap is not an acquisition problem — 52M global / 13M UK users and Trustpilot 4.5/5 prove the love is there. It&rsquo;s a <em>salary-mandate</em> problem: average UK consumer deposit is <strong>£575/mo at Revolut vs £811 at Monzo and £2,944 at Starling</strong>, and the 2024 Annual Report dodges the absolute primacy number, disclosing only 59% YoY growth. The wedge: users have rationally settled into a <strong>two-bank cohabitation</strong> — Revolut for spending + FX + crypto, high-street for the salary. Primacy will only move when the cohabitation deal is broken.</p>
+<p><strong>The asymmetry in the pain space.</strong> Of the five macro pains, <strong>two have no current vitamin counter</strong> in the live product — P1 <em>perceived operational risk</em> (the AML-hold-on-payday fear; Reddit&rsquo;s highest-engagement primacy thread is <em>&ldquo;Can&rsquo;t access my salary. I am suing.&rdquo;</em>, 1,006 upvotes) and P5 <em>primacy-hostile product surface</em> (Home is optimised for cross-sell, salary-aware components like Pockets and Payday exist but aren&rsquo;t merchandised). The other three pains are either structural (bank licence, branch, lock-in products) or partly mistargeted. <strong>That asymmetry IS the strategic idea space.</strong></p>
+<p><strong>The two ideas — a push-pull pair, neither pays for primacy:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Idea 1 · Confidence Period</strong></th>
+<th><strong>Idea 2 · Locked Insights</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Type</strong></td>
+<td>Push — migration de-risk</td>
+<td>Pull — only-on-primary value</td>
+</tr>
+<tr>
+<td><strong>Mechanic</strong></td>
+<td>3-salary-cycle parallel-run via Open Banking + auto-mirror % back to the old bank + <strong>Salary Guarantee</strong> (any AML hold &gt; 60 min → instant interest-free advance up to the salary amount)</td>
+<td>Visible-but-locked Insights surface — real cards with blurred numbers + a one-time sample peek with example data; primary unlocks subscription audit, cashflow forecast, DD payday optimisation, anomaly detection</td>
+</tr>
+<tr>
+<td><strong>Attacks pain</strong></td>
+<td>P1 + P4</td>
+<td>P5 + V2 mistarget</td>
+</tr>
+<tr>
+<td><strong>Build</strong></td>
+<td>6 – 9 months</td>
+<td>4 – 6 months</td>
+</tr>
+<tr>
+<td><strong>Y1 impact</strong></td>
+<td>5pp UK primacy lift (≈500k incremental primary users)</td>
+<td>2–3pp standalone · 5pp paired with Idea 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Combined Year-1 impact: 8 – 10pp net UK primacy lift.</strong> The two compound — Locked Insights&rsquo; sample peek is the conversion CTA into Confidence Period setup; Confidence Period users watch Insights populate with real numbers as cycles complete. Differentiation on Idea 2 is <em>structural</em> (Monzo, Starling, and Chase cannot match it without the same full-income visibility), not skin-deep. Failure modes are explicitly named (&gt;20% cycle-1 reversal; &lt;5% insight action rate). Detail at the screen, hook, comms, and metric level follows in the body.</p>
+<hr />
+<h2 class="section" id="the-wedge-insight">The wedge insight</h2>
+<p>Revolut today has roughly <strong>52M global active users and 13M in the UK</strong>, yet <em>&ldquo;primary users grew 59% YoY&rdquo;</em> is the strongest disclosure the 2024 Annual Report makes — the absolute number is omitted. Public deposit data tells the missing story: <strong>average UK consumer deposit ≈ £575/mo at Revolut · £811 at Monzo · £2,944 at Starling</strong> (Sacra / Sifted). The gap isn&rsquo;t acquisition (Trustpilot 4.5/5 over 200,000 reviews; the love is there). The gap is <strong>the salary mandate</strong> — the binary monthly act of routing payroll into the account.</p>
+<p>The dominant primary-source pattern across 17 high-engagement Reddit threads + Trustpilot + MSE + Askaboutmoney is unanimous:</p>
+<blockquote>
+<p><em>&ldquo;Revolut is great for transfers but can&rsquo;t be trusted for banking.&rdquo;</em>
+— r/Revolut, thread title verbatim (95 upvotes)</p>
+<p><em>&ldquo;Yes [there&rsquo;s reason to consider alternatives]. Revolut isn&rsquo;t a bank. It doesn&rsquo;t have a banking licence. It doesn&rsquo;t have FSCS protection.&rdquo;</em>
+— r/UKPersonalFinance, top reply (255 upvotes) on the &ldquo;Monzo vs Revolut vs Starling&rdquo; thread</p>
+<p><em>&ldquo;I see Revolut as a travel / back up card. I would never send my salary to a bank without a branch I could walk into and speak to a manager.&rdquo;</em>
+— r/Revolut comment, 54 upvotes</p>
+</blockquote>
+<p>The point isn&rsquo;t that users don&rsquo;t love Revolut. The point is that <strong>two banks is the rational user equilibrium</strong> — Revolut for spending + FX + crypto, high-street for the salary mandate — and the equilibrium is cheap to maintain. Primacy will only move when Revolut breaks the cohabitation deal: either by removing the <em>fear</em> that anchors it (operational risk at the salary-deposit moment) or by creating <em>pull</em> that only primacy unlocks.</p>
+<p>This caselet attacks both — one push idea, one pull idea, sized to compound.</p>
+<div class="data-vintage">
+<p><strong>Data vintage.</strong> Revolut headline figures (52M / 13M UK; 59% YoY primary growth) are from the <strong>2024 Annual Report</strong> — the most recent published; the 2025 annual is not expected before Q3 2026. All market-context data points — PRA mobilisation lift, UK Bank launch, Joint Savings AER, switching-incentive comparator, cash-deposit discontinuation, Storonsky / Bloomberg positioning — are anchored to <strong>May 2026</strong>. The Sacra / Sifted deposit comparator and the Trustpilot review count are as last published (typical 6 – 12 month lag). Monzo Salary Sorter and partial-switch onramp references (Sept 2019 / Jan 2020) are deliberately historical — their age is part of the argument.</p>
+</div>
+<hr />
+<h2 class="section" id="section-1-macro-pain-categories">Section 1 — Macro pain categories</h2>
+<blockquote>
+<p>Why a Revolut user does <em>not</em> exhibit primacy behaviour today. Five macro categories. Each anchored to the strongest single signal.</p>
+</blockquote>
+<h3 id="p1-perceived-operational-risk-the-salary-deposit-fear">P1. <strong>Perceived operational risk</strong> — the salary-deposit fear</h3>
+<p>Users don&rsquo;t fear Revolut going bankrupt. They fear that a routine AML/fraud trigger freezes their account <em>on the day rent is due</em>, with no human escalation, only AI-bot loops with copy-paste replies. The risk is <strong>narrative-amplified</strong> — reading other users&rsquo; freeze stories alone is enough to start rationing balances (the &ldquo;demote funnel&rdquo;).</p>
+<ul>
+<li>Reddit&rsquo;s highest-engagement primacy thread is <em>&ldquo;Can&rsquo;t access my salary. I am suing.&rdquo;</em> (1,006 upvotes). A bigger-than-usual salary cycle including commission tripped a review; the user was locked out for days.</li>
+<li>The single meme phrase recurring across r/Revolut: <em>&ldquo;Revolut is great until it is not.&rdquo;</em></li>
+<li><strong>£756 APP-scam losses per £1M of transactions vs Barclays £67</strong> (Allegiant.co.uk citing UK Finance + Action Fraud). Volume is real.</li>
+<li>Direct evidence of <em>narrative-driven</em> primacy abandonment: <em>&ldquo;This is scary. I was about to entrust them with being my primary source for depositing my income. Won&rsquo;t be doing that after reading all these posts.&rdquo;</em></li>
+</ul>
+<p><strong>Severity:</strong> Highest single deterrent. No current vitamin counter inside Revolut&rsquo;s live product surface.</p>
+<h3 id="p2-structural-trust-deficit-institutional-credibility-gap">P2. <strong>Structural trust deficit</strong> — institutional credibility gap</h3>
+<p>No branch to walk into. No phone number to call. Historical e-money-not-bank framing, and most existing UK customers still hold e-money accounts as of May 2026 — migration to the new bank entity rolls in batches over months. Lender ecosystem treats Revolut statements as auxiliary, not primary.</p>
+<ul>
+<li><em>&ldquo;My golden rule is to never use banks with no physical branches as my primary bank.&rdquo;</em> — r/Revolut (t10 c31).</li>
+<li>MoneySavingExpert mortgage-broker thread: Revolut treated as &ldquo;spending bank account&rdquo; in mortgage packaging, not the primary statement source.</li>
+</ul>
+<p><strong>Severity:</strong> Structural. Solving requires the bank-licence rollout, lender partnerships, branch presence — none of which are PLG-shaped. Assumed in this case as table-stakes-coming.</p>
+<h3 id="p3-missing-primacy-lock-in-products">P3. <strong>Missing primacy lock-in products</strong></h3>
+<p>Incumbents make primacy sticky via overdraft + credit card + mortgage — <em>attached</em> to the salary-deposit account. Revolut UK has none in market as of May 2026 (PRA only lifted mobilisation restrictions in March 2026; track record is zero). Even successfully-converted primacy users keep a high-street second account for local tax-wrappers (Livret A, LDD, PEA, ISA) — i.e. <strong>even success-case primacy is partial</strong>.</p>
+<ul>
+<li><em>&ldquo;I&rsquo;m French, so I still have another traditional bank for my Livret A, LDD, and PEA, but my day-to-day banking is fully on Revolut.&rdquo;</em> — r/Revolut, the 2-year-Ultra-primary user (t01).</li>
+<li><em>Cash deposits discontinued 13 February 2026</em> — primacy <em>regression</em> mid-flight.</li>
+</ul>
+<p><strong>Severity:</strong> Structural. Assumed table-stakes-coming. Not a PLG wedge.</p>
+<h3 id="p4-switching-friction-amp-incentive-gap">P4. <strong>Switching friction &amp; incentive gap</strong></h3>
+<p>The mechanical chore of moving the salary mandate + DDs + payees, combined with an economic disincentive: high street pays £150-£750 to switch in (HSBC Premier £750, NatWest Premier £250); Revolut pays a £20 referral. <strong>Existing primacy users get nothing</strong> — the 12-month-Metal promo targets only new conversions.</p>
+<ul>
+<li><em>&ldquo;I moved my salary to Revolut and didnt get shit.&rdquo;</em> — r/Revolut (t17 c26) re: 12-months-free Metal promo.</li>
+<li><em>Monzo blog, January 2020:</em> <em>&ldquo;Switch to Monzo without closing your old account.&rdquo;</em> — Monzo&rsquo;s partial-switch onramp. Revolut has no equivalent prominent path.</li>
+<li><em>Revolut is </em><em>not</em><em> on the May 2026 &ldquo;best switching offers&rdquo; list</em> (Be Clever With Your Cash).</li>
+</ul>
+<p><strong>Severity:</strong> Moderate. Pure PLG surface — no licensing dependency.</p>
+<h3 id="p5-primacy-hostile-product-surface">P5. <strong>Primacy-hostile product surface</strong></h3>
+<p>Revolut&rsquo;s home is optimised for <em>cross-sell</em> (crypto · stocks · commodities · hotels · lifestyle · eSIM · gold), not for the primary-account daily ritual: balance + recent transactions + bill-pay + reassurance. Salary-aware features (Pockets, Payday, instant transfers, real-time categorisation) <em>exist</em> but aren&rsquo;t merchandised as the primacy hook. The same multi-product density that wins acquisition fights primacy.</p>
+<ul>
+<li><em>&ldquo;The app feels cluttered with crypto, stocks, hotel bookings, and dozens of other features&rdquo;</em> vs Monzo&rsquo;s simplicity. — Chyshkala 2026.</li>
+<li><em>Monzo&rsquo;s Salary Sorter + Bills Pots (Sept 2019)</em> is <em>the</em> explicit primary-account product surface in the UK challenger set. Revolut has parity components but no equivalent merchandising.</li>
+</ul>
+<p><strong>Severity:</strong> Moderate-high. Pure PLG surface — components already built.</p>
+<hr />
+<h2 class="section" id="section-2-macro-benefit-categories">Section 2 — Macro benefit categories</h2>
+<blockquote>
+<p>What would make a user consider switching. Five macro categories.</p>
+</blockquote>
+<h3 id="v1-cross-border-life-completeness">V1. <strong>Cross-border life completeness</strong></h3>
+<p>Multi-currency wallets, mid-rate FX, IBANs in 30+ countries, joint accounts + joint savings for international couples. For the cross-border-earner cohort, Revolut is the <em>only</em> sane primary because the high street can&rsquo;t do this without 3% FX margin per transaction.</p>
+<ul>
+<li><em>&ldquo;I earn money in CZK but spend most of that in AED. The fees for international transfers and the exchange rates are a life saver.&rdquo;</em> — r/Revolut, 4-year-primary user (t01 c29).</li>
+<li><em>Revolut Joint Savings launch coverage, Oct 2025:</em> &ldquo;Revolut&rsquo;s most-requested feature by existing customers.&rdquo;</li>
+</ul>
+<p><strong>Reach.</strong> ≤15-20% of UK base. Forcing function for cross-border earners; doesn&rsquo;t bite for the domestic-only majority.</p>
+<h3 id="v2-salary-aware-intelligence-latent-components-exist-not-merchandised">V2. <strong>Salary-aware intelligence</strong> <em>(latent — components exist, not merchandised)</em></h3>
+<p>Features that <em>can only function with full-income visibility</em>. Salary-Sorter-style automatic distribution into spending + bills + savings, payday-aligned cashflow nudges, proactive subscription audit, debt-cycle smoothing. Pockets and Payday already ship; the product hasn&rsquo;t assembled them into a primacy-conversion surface.</p>
+<p><strong>Status.</strong> Most under-leveraged vitamin in the current product. Revolut HAS the components — it has not connected them into something only the salary-mandate user gets.</p>
+<h3 id="v3-primacy-only-economics">V3. <strong>Primacy-only economics</strong></h3>
+<p>Asymmetric reward layer: the more your salary mandate is here, the more you earn. Higher savings APR, free Metal/Ultra months, FX-spend bonuses, cashback rate boosts, fee waivers.</p>
+<ul>
+<li><em>Joint Savings 4.5% AER</em> (May 2026) vs Chase 3% / Monzo Instant 3.6% — competitive but not headline-grabbing.</li>
+<li><em>Architecture exists</em> (tier system) — re-pointing it at primacy is a comms/policy move, not an eng project.</li>
+</ul>
+<h3 id="v4-wallet-share-gravity">V4. <strong>Wallet-share gravity</strong></h3>
+<p>Stocks · ETFs · crypto · commodities · lifestyle cashback · eSIM · lounge access — all on the same balance. For the engaged 30-45 cohort, switching out is high-friction because it means rebuilding investing accounts, not just bank accounts. Revolut&rsquo;s interchange (63% of revenue) depends on this engagement loop.</p>
+<p><strong>Limit.</strong> Wallet-share creates <em>engagement</em> primacy (logging in daily) but doesn&rsquo;t always translate to <em>salary-deposit</em> primacy.</p>
+<h3 id="v5-app-polish-ux-reliability">V5. <strong>App polish + UX reliability</strong></h3>
+<p>Best-in-class app, instant transfers, real-time spend notifications, frictionless P2P (Revolut handles), virtual cards on demand, fraud freeze in 1 tap. Trustpilot 4.5/5 across 200k+ reviews.</p>
+<p><strong>Limit.</strong> Generic. Every challenger has it. A hygiene factor that doesn&rsquo;t move primacy on its own.</p>
+<hr />
+<h3 id="pain-benefit-asymmetry-the-idea-space">Pain × Benefit asymmetry — the idea space</h3>
+<p>Two pains have <strong>no current vitamin counter</strong> in the live product surface (P1 perceived operational risk; parts of P4 + P5 mistargeted/unmerchandised). The other three pains are structural and out of PLG scope. <strong>That asymmetry IS the strategic idea space.</strong> The two ideas below are designed to occupy it.</p>
+<hr />
+<h2 class="section" id="section-3-the-two-growth-hacking-ideas">Section 3 — The two growth-hacking ideas</h2>
+<blockquote>
+<p>Both ideas attack the C3 + C4 cohorts — the strategic target population where acquisition cost is already sunk and primacy conversion is marginal-cost.</p>
+<p>They are deliberately a <strong>push-pull pair</strong>: one removes the friction of converting, the other creates the pull-reason for wanting to. Neither is a feature bundle; each is one focused mechanic. Neither pays for primacy directly.</p>
+</blockquote>
+<div class="glossary">
+<p><strong>Cohort glossary.</strong> &nbsp; <strong>C1</strong> = users already primary on Revolut (the protect-and-extend cohort). &nbsp; <strong>C2</strong> = aware, actively considering primacy. &nbsp; <strong>C3</strong> = considered primacy but didn&rsquo;t switch (rejected at the decision moment). &nbsp; <strong>C4</strong> = switched primacy and reverted (the &ldquo;demote funnel&rdquo;). &nbsp; C3 + C4 carry the highest leverage because acquisition cost is already sunk — they&rsquo;re users Revolut already has, just not on the load-bearing salary mandate.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Idea 1</th>
+<th>Idea 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>Confidence Period</td>
+<td>Locked Insights</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Push — migration de-risk</td>
+<td>Pull — only-on-primary value</td>
+</tr>
+<tr>
+<td><strong>Attacks pain</strong></td>
+<td>P1 (operational risk) + P4 (switching friction)</td>
+<td>P5 (hostile surface) + V2 mistarget</td>
+</tr>
+<tr>
+<td><strong>Cohort focus</strong></td>
+<td>C3 + C4</td>
+<td>C2 + C3</td>
+</tr>
+<tr>
+<td><strong>Wedge mechanic</strong></td>
+<td>Open-Banking parallel-run + Salary Guarantee during the trust period</td>
+<td>Visible-but-locked intelligence surface; data envy as conversion driver</td>
+</tr>
+<tr>
+<td><strong>Brief constraint</strong></td>
+<td>Not paying for primacy — Revolut absorbs operational risk via Open-Banking + advance mechanism</td>
+<td>Not paying for primacy — value comes from intelligence only Revolut can produce</td>
+</tr>
+<tr>
+<td><strong>PLG feasibility</strong></td>
+<td>6-9 months: Open-Banking integration + advance product + cycle-state machine</td>
+<td>4-6 months: insight catalog + locked/unlocked surface state + populated rules</td>
+</tr>
+<tr>
+<td><strong>Estimated impact</strong></td>
+<td>5pp UK primacy lift Y1 (5% of C3 ≈ 500k users converted)</td>
+<td>2-3pp standalone; 5pp paired with #1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 class="section" id="section-4-idea-1-confidence-period">Section 4 — Idea 1: <strong>Confidence Period</strong></h2>
+<h3 id="what-it-is">What it is</h3>
+<p>A 3-salary-cycle parallel-run that lets a user move their salary mandate to Revolut <strong>without committing to single-bank primacy</strong>. The system uses Open Banking to read the user&rsquo;s existing primary bank, automatically auto-mirror a percentage of each Revolut-received salary back to the old account, and bundles a <strong>Salary Guarantee</strong> — if Revolut ever holds the deposit for AML review beyond 60 minutes, the user receives an interest-free advance up to their salary amount, instantly.</p>
+<p>After 3 successful cycles the auto-mirror fades. The user has <em>lived</em> primacy without the fear, and the second-bank cohabitation has been quietly dissolved instead of confronted.</p>
+<h3 id="why-this-attacks-the-deepest-pain">Why this attacks the deepest pain</h3>
+<p>Confidence Period directly addresses the highest-leverage uncovered pain in Stage 2&rsquo;s matrix:</p>
+<ul>
+<li><strong>P1 (Perceived operational risk):</strong> the Salary Guarantee mechanism converts the AML-hold from an existential threat (&ldquo;can&rsquo;t pay rent&rdquo;) to a manageable inconvenience (&ldquo;held but advanced&rdquo;). It doesn&rsquo;t promise no holds — that&rsquo;s not credible — it promises <em>no consequences</em>.</li>
+<li><strong>P4 (Switching friction):</strong> the parallel-run formally acknowledges the two-bank cohabitation deal users have rationally settled into, and uses it as a bridge rather than a competitor. <em>Revolut becomes primary while you keep the old bank running.</em></li>
+<li><strong>P11 (Demote funnel):</strong> each successful cycle is <em>lived evidence</em> that primacy works. The user accumulates trust, not just commitments.</li>
+</ul>
+<h3 id="a-step-by-step-ux-flow">a) Step-by-step UX flow</h3>
+<p><strong>Pre-flow context.</strong> The flow can be entered from any of the 8 awareness hooks listed in section (b). For exposition we trace the canonical entry: an Open Banking-detected user who hit the &ldquo;Confidence Period available&rdquo; home banner.</p>
+<h4>Screens 1 &amp; 2 — Entry → Open Banking connect</h4>
+<div class="screens-grid">
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Confidence Period</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">Make Revolut<br/>your primary —<br/>with a net.</div>
+    <div class="sb-sub">Move your salary here. We'll keep your old bank as backup for 3 cycles.</div>
+    <div class="card">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z"/></svg></span></div>
+      <div class="card-title">Salary Guarantee</div>
+      <div class="card-body">If we ever hold your deposit, we advance you instantly — interest-free.</div>
+    </div>
+    <div class="card">
+      <div class="card-row"><span class="card-icon">↔︎</span></div>
+      <div class="card-title">Auto-Mirror</div>
+      <div class="card-body">A percentage of each salary flows back to your old bank automatically.</div>
+    </div>
+    <div class="card">
+      <div class="card-row"><span class="card-icon">⏪</span></div>
+      <div class="card-title">Easy reverse</div>
+      <div class="card-body">Change your mind any time. One-tap return to your old bank.</div>
+    </div>
+    <div class="cta-primary">Start setup</div>
+    <div class="cta-secondary">How it works</div>
+  </div>
+</div></div>
+<div class="caption">Screen 1 — entry. Three trust mechanisms framed as a net, not a pitch. Reverse offered as openly as forward.</div>
+</div>
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Connect your bank</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">Connect the<br/>bank your salary<br/>lands in.</div>
+    <div class="sb-sub">We use Open Banking to detect your employer, salary, and direct debits.</div>
+    <div class="provider-grid">
+      <div class="provider">Barclays</div>
+      <div class="provider">Lloyds</div>
+      <div class="provider">HSBC</div>
+      <div class="provider">NatWest</div>
+      <div class="provider">Santander</div>
+      <div class="provider">Nationwide</div>
+      <div class="provider">First Direct</div>
+      <div class="provider">Chase</div>
+      <div class="provider">Halifax</div>
+    </div>
+    <div class="sb-section-label">Privacy</div>
+    <div class="card-body" style="font-size: 5.6pt; color: #5d5d6b;">Read-only access. We can see, not move. Used only for salary detection and direct-debit mapping. You can revoke any time.</div>
+    <div class="cta-secondary" style="margin-top: 1.5mm;">Search 40+ more banks</div>
+  </div>
+</div></div>
+<div class="caption">Screen 2 — provider grid. Detection-led onboarding replaces every form field with a single confirmation.</div>
+</div>
+</div>
+
+<p>Why detection-first: Open Banking gives Revolut everything it needs — employer pattern, salary amount, recurring DDs — without asking the user to type any of it. Every form field is replaced with a verification = lower drop-off.</p>
+<h4>Screens 3 &amp; 4 — Confirm salary pattern → HR payroll-change letter</h4>
+<div class="screens-grid">
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Step 2 of 6</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">We found this.<br/>Right?</div>
+    <div class="sb-sub">Detected from 5 cleared cycles on your Lloyds account.</div>
+    <div class="card live">
+      <div class="kv-row"><span class="kv-key">Employer</span><span class="kv-val">KPMG LLP</span></div>
+      <div class="kv-row"><span class="kv-key">Amount</span><span class="kv-val">£3,247 <span class="kv-meta">avg of last 3</span></span></div>
+      <div class="kv-row"><span class="kv-key">Payday</span><span class="kv-val">28th of the month</span></div>
+      <div class="kv-row"><span class="kv-key">Cycles seen</span><span class="kv-val">5 confirmed <span class="success-pill">verified</span></span></div>
+    </div>
+    <div class="sb-section-label">Anything irregular?</div>
+    <div class="check-row"><span class="check"></span><span class="check-label">Variable bonuses / commissions</span></div>
+    <div class="check-row"><span class="check"></span><span class="check-label">Multi-source income</span></div>
+    <div class="check-row"><span class="check"></span><span class="check-label">Recently changed employer</span></div>
+    <div class="cta-primary">Yes, that's right</div>
+    <div class="cta-secondary">Edit details</div>
+  </div>
+</div></div>
+<div class="caption">Screen 3 — confirm, don't fill. Irregular-income checkboxes pre-flag edge cases for AML so the first cycle won't trip on bonus variance.</div>
+</div>
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Tell your payroll</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">We've drafted<br/>the letter.</div>
+    <div class="sb-sub">Pre-filled for your HR team. Edit anything before sending.</div>
+    <div class="letter-card">
+      <div class="letter-to">To: KPMG Payroll</div>
+      <div class="letter-body">Effective from <b>28 June 2026</b>, please direct all future salary payments to:</div>
+      <div class="letter-fields">
+        <div><span class="letter-key">Sort code</span><span class="letter-val">04-00-04</span></div>
+        <div><span class="letter-key">Account no</span><span class="letter-val">•••• 7298</span></div>
+        <div><span class="letter-key">Name on a/c</span><span class="letter-val">A. Patel</span></div>
+      </div>
+    </div>
+    <div class="action-row"><span class="action-icon">✉︎</span><span class="action-label">Send via Gmail / Outlook</span></div>
+    <div class="action-row"><span class="action-icon">⤓</span><span class="action-label">Email the PDF to me</span></div>
+    <div class="action-row"><span class="action-icon">⎙</span><span class="action-label">Print</span></div>
+    <div class="action-row alt"><span class="action-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span><span class="action-label">Pay.UK direct switch <span class="action-meta">eligible employers</span></span></div>
+  </div>
+</div></div>
+<div class="caption">Screen 4 — the HR letter is the comms artifact. Stakeholder comms extend beyond the user; nobody else automates this.</div>
+</div>
+</div>
+
+<h4>Screens 5 &amp; 6 — Mirror + cycle setup → Direct debit migration</h4>
+<div class="screens-grid">
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Confidence Period</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">How much<br/>safety net?</div>
+    <div class="sb-section-label">Mirror to Lloyds each cycle</div>
+    <div class="slider">
+      <div class="track"><div class="fill" style="width: 60%;"></div><div class="knob" style="left: 60%;"></div></div>
+      <div class="labels"><span>0%</span><span class="value">30% <span class="rec">recommended</span></span><span>50%</span></div>
+    </div>
+    <div class="sb-section-label">For how many cycles?</div>
+    <div class="seg-control">
+      <div class="seg active">3</div>
+      <div class="seg">4</div>
+      <div class="seg">5</div>
+    </div>
+    <div class="toggle-row">
+      <div>
+        <div class="label">Salary Guarantee</div>
+        <div class="sub">If we hold your deposit &gt;60 min, we advance you instantly — interest-free.</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+    <div class="disclosure">Auto-ends after 3 cycles. Extend, change, or stop any time.</div>
+    <div class="cta-primary">Continue</div>
+  </div>
+</div></div>
+<div class="caption">Screen 5 — the load-bearing screen. 30% mirror covers rent + essentials at most incomes; 3 cycles is the minimum loop to prove trust without dragging the period out.</div>
+</div>
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Recurring payments</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">Choose what<br/>moves, when.</div>
+    <div class="sb-sub">Detected from your Lloyds direct debits.</div>
+    <div class="sb-section-label">Move now · Cycle 1</div>
+    <div class="dd-row"><span class="dd-check on">✓</span><span class="dd-name">Spotify</span><span class="dd-amt">£10.99</span></div>
+    <div class="dd-row"><span class="dd-check on">✓</span><span class="dd-name">Netflix</span><span class="dd-amt">£15.99</span></div>
+    <div class="dd-row"><span class="dd-check"></span><span class="dd-name">Gym</span><span class="dd-amt">£42.00</span></div>
+    <div class="sb-section-label">Cycle 2</div>
+    <div class="dd-row"><span class="dd-check"></span><span class="dd-name">Mobile (EE)</span><span class="dd-amt">£28.00</span></div>
+    <div class="dd-row"><span class="dd-check"></span><span class="dd-name">Energy (Octopus)</span><span class="dd-amt">~£120</span></div>
+    <div class="sb-section-label">Cycle 3 · recommended for rent</div>
+    <div class="dd-row"><span class="dd-check"></span><span class="dd-name">Rent</span><span class="dd-amt">£1,400</span></div>
+    <div class="sb-section-label">Stay on Lloyds</div>
+    <div class="dd-row locked"><span class="dd-check on lock">🔒</span><span class="dd-name">ISA contributions</span><span class="dd-amt">£200</span></div>
+    <div class="dd-row locked"><span class="dd-check on lock">🔒</span><span class="dd-name">Mortgage</span><span class="dd-amt">£890</span></div>
+  </div>
+</div></div>
+<div class="caption">Screen 6 — granular cycle pacing. Low-stakes subs move first, rent last, and lender-tied accounts stay put (the P3 partial-primacy reality).</div>
+</div>
+</div>
+
+<h4>Screen 7 &amp; post-activation — Confirm → cycle-1 payday lands</h4>
+<div class="screens-grid">
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Ready to activate</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">All set.<br/>Confirm to start.</div>
+    <div class="summary-card">
+      <div class="sum-row"><span class="sum-key">Salary destination</span><span class="sum-val">Revolut</span></div>
+      <div class="sum-row"><span class="sum-key">Mirror to Lloyds</span><span class="sum-val">30% per cycle</span></div>
+      <div class="sum-row"><span class="sum-key">Cycles</span><span class="sum-val">3</span></div>
+      <div class="sum-row"><span class="sum-key">Salary Guarantee</span><span class="sum-val"><span class="success-pill">on</span></span></div>
+      <div class="sum-row"><span class="sum-key">First payday</span><span class="sum-val">28 June 2026</span></div>
+      <div class="sum-row"><span class="sum-key">DDs moving cycle 1</span><span class="sum-val">2 of 6</span></div>
+    </div>
+    <div class="disclosure">Reversible any time from Settings → Confidence Period.</div>
+    <div class="cta-primary">Activate Confidence Period</div>
+    <div class="cta-secondary">Go back</div>
+  </div>
+</div></div>
+<div class="caption">Screen 7 — single CTA recap. Reverse path mentioned in copy, not buried in a menu.</div>
+</div>
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Home</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="balance-block">
+      <div class="balance-label">Current balance</div>
+      <div class="balance-amt">£3,547.21</div>
+    </div>
+    <div class="toast success">
+      <div class="toast-title">Salary landed · £3,247</div>
+      £974 auto-mirrored to Lloyds · cleared in 0s ✓
+    </div>
+    <div class="home-card">
+      <div class="kicker">Confidence Period · cycle 1 of 3</div>
+      <div class="head">Cycle 1: clear.<br/>2 to go.</div>
+      <div class="body">Next payday 28 July. We'll send a heads-up on rent DD options at +7 days.</div>
+    </div>
+    <div class="card live">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V14M12 20V10M18 20V4"/></svg></span><span class="success-pill">on track</span></div>
+      <div class="card-title">Bills are running clean</div>
+      <div class="card-body">No holds, no AML triggers, all 2 cycle-1 DDs cleared.</div>
+      <div class="card-cta">See cashflow forecast →</div>
+    </div>
+  </div>
+</div></div>
+<div class="caption">Cycle 1 payday — push toast within 60s, then a home card framing progress (1 of 3). Loops back to Locked Insights as the data populates.</div>
+</div>
+</div>
+
+<h4>If AML hold occurs — the Salary Guarantee path</h4>
+<div class="screens-grid">
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Salary Guarantee</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="toast warn">
+      <div class="toast-title">We need to verify a transaction</div>
+      Until we clear, here's an instant advance — interest-free.
+    </div>
+    <div class="balance-block guarantee">
+      <div class="balance-label">Advance issued</div>
+      <div class="balance-amt">£3,247.00</div>
+      <div class="balance-sub">Clears automatically when your salary releases.</div>
+    </div>
+    <div class="card warn">
+      <div class="card-row"><span class="card-icon">⚠︎</span><span class="warn-pill">hold</span></div>
+      <div class="card-title">Estimated clearance · 2-4 hours</div>
+      <div class="card-body">Hold reason: bonus variance exceeded usual £3,000 pattern. KPMG payroll verified.</div>
+      <div class="card-cta">Talk to a human now →</div>
+    </div>
+    <div class="sb-section-label">Advance ledger</div>
+    <div class="ledger-row"><span class="ledger-time">09:41</span><span class="ledger-label">Advance issued</span><span class="ledger-amt">+£3,247</span></div>
+    <div class="ledger-row"><span class="ledger-time">est. 13:00</span><span class="ledger-label">Salary released</span><span class="ledger-amt muted">+£3,247</span></div>
+    <div class="ledger-row"><span class="ledger-time">est. 13:00</span><span class="ledger-label">Advance settled</span><span class="ledger-amt muted">−£3,247</span></div>
+  </div>
+</div></div>
+<div class="caption">The load-bearing moment. The user's worst-case — <em>"I can't pay rent"</em> — never materialises. Priority human-line replaces the AI-bolted support that's currently the #1 primacy blocker.</div>
+</div>
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Cycle 3 complete</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="celebration">
+      <div class="celebration-burst">✦</div>
+      <div class="sb-h1">Welcome to<br/>Revolut Primary.</div>
+      <div class="sb-sub">3 cycles cleared. Your salary's been here for 92 days.</div>
+    </div>
+    <div class="card live">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7l-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg></span><span class="success-pill">unlocked</span></div>
+      <div class="card-title">Savings APR · +0.5pp</div>
+      <div class="card-body">Permanent uplift on your default savings vault. Effective immediately.</div>
+    </div>
+    <div class="card live">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z"/></svg></span></div>
+      <div class="card-title">Salary Guarantee · stays on</div>
+      <div class="card-body">As long as your salary lands here.</div>
+    </div>
+    <div class="sb-section-label">What about auto-mirror?</div>
+    <div class="cta-secondary alt">Keep it on indefinitely</div>
+    <div class="cta-secondary alt">Pause it</div>
+    <div class="cta-secondary alt">Let it stop</div>
+  </div>
+</div></div>
+<div class="caption">Cycle 3 close. Celebration is quantified (savings APR, Guarantee continuity), not vague. Three buttons for auto-mirror — no default forced.</div>
+</div>
+</div>
+
+<p><strong>Cycle 2 — payday lands.</strong>
+Same shape. Locked Insights (Idea 2) start populating with real data this week — pull-synergy kicks in.</p>
+<p><strong>Cycle 3 — confidence period closes.</strong></p>
+<p>Day -7 (one week before): Push — <em>&ldquo;Cycle 3 finishes [date]. You&rsquo;ve completed primacy.&rdquo;</em></p>
+<p>Day 0: In-app celebration moment — <em>&ldquo;Welcome to Revolut Primary.&rdquo;</em></p>
+<ul>
+<li>Reward unlock: savings APR +0.5pp permanent; existing Metal users get +12 months; <em>&ldquo;Salary Guarantee remains active for as long as your salary is here.&rdquo;</em></li>
+<li>Auto-mirror winds down: <em>&ldquo;Your auto-mirror is fading. Keep it on indefinitely? Pause it? Let it stop?&rdquo;</em> — three buttons, no defaults forced.</li>
+</ul>
+<h4>Reverse flow (if the user changes their mind)</h4>
+<p>Cmd-K equivalent / Settings → <em>&ldquo;Reverse Confidence Period&rdquo;</em> → one-screen CASS-equivalent flow back to the old bank. No friction. No retention pitch. One question survey on the way out: <em>&ldquo;Why are you reversing? It helps us build better.&rdquo;</em></p>
+<h3 id="b-contextual-hooks-to-create-awareness">b) Contextual hooks to create awareness</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Hook</th>
+<th>Surface</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>&ldquo;Confidence Period available&rdquo; home banner</td>
+<td>Home top-card</td>
+<td>Open Banking detects regular external salary deposit landing at another bank, OR user is in C2/C3 cohort signal cluster</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Salary-widget upsell</td>
+<td>Home Insights tile</td>
+<td>Locked-Insights cards stack tap → CTA back into Confidence Period setup</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Post-tier-upgrade banner</td>
+<td>Account / Plans</td>
+<td>After Metal/Ultra signup: <em>&ldquo;You&rsquo;re upgraded. Want to make us primary too? Try our 3-cycle confidence period.&rdquo;</em></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Windfall-detected banner</td>
+<td>Activity feed</td>
+<td>2nd large external deposit detected — natural psychology moment for primacy decision</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Onboarding (new user, last step)</td>
+<td>Sign-up flow</td>
+<td>After account creation: <em>&ldquo;Want to receive your salary here? We&rsquo;ve built a safety net for that.&rdquo;</em></td>
+</tr>
+<tr>
+<td>6</td>
+<td>High-engagement-but-no-salary email</td>
+<td>Email</td>
+<td>Triggered after 90 days of high in-app engagement without salary deposit detected</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Referral copy (existing primary users)</td>
+<td>Sharing modal</td>
+<td><em>&ldquo;I started a Confidence Period and 3 cycles in I&rsquo;m primary&rdquo;</em> — primary-user testimonial-driven referral</td>
+</tr>
+<tr>
+<td>8</td>
+<td>App store + paid acquisition landing page</td>
+<td>External</td>
+<td>Featured prominently as the marquee onboarding experience</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-notifications-amp-communications-lifecycle">c) Notifications &amp; communications lifecycle</h3>
+<p><strong>User comms.</strong> Detailed in the cycle UX above. Cadence summary: setup confirmation email, per-cycle landing push + cycle-summary card, mid-cycle health check email, AML hold push (within 60s), cycle-close push + celebration, reverse-flow comms if invoked.</p>
+<p><strong>Employer / HR comms.</strong> The HR payroll-change letter is the artifact. Format options: emailable PDF (auto-fills To: from Open Banking employer signal), Gmail/Outlook direct send, printable, or Pay.UK direct switch when eligible. Future iteration: B2B partnership track with major UK payroll providers (Sage, ADP, Workday) for one-click switch from inside Revolut.</p>
+<p><strong>Stakeholder comms (internal to Revolut).</strong></p>
+<table>
+<thead>
+<tr>
+<th>Stakeholder</th>
+<th>What they see</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fraud / AML team</strong></td>
+<td>Confidence Period users flagged in the case management system; pre-cleared payroll signal in the user record</td>
+<td>AML rules can run permissively on verified-employer salary deposits, dramatically lowering hold rate during the trust period</td>
+</tr>
+<tr>
+<td><strong>Customer support</strong></td>
+<td>&ldquo;Confidence Period in progress&rdquo; badge on user profile; priority queue for users currently in a Guarantee event</td>
+<td>Prevents AI-loop responses to users in active Guarantee state — the support team picks up these tickets first</td>
+</tr>
+<tr>
+<td><strong>Product analytics</strong></td>
+<td>Real-time funnel: activation → cycle 1 → cycle 2 → cycle 3 → flip; reversal cohort tracking</td>
+<td>Each cycle is a distinct conversion event; reversal at cycle 1 vs cycle 3 has different root causes</td>
+</tr>
+<tr>
+<td><strong>Treasury</strong></td>
+<td>Mirror cost float report (Revolut effectively co-funds the old-bank balance during parallel run); Salary Guarantee advance ledger</td>
+<td>Both are quantifiable capital costs — need to be modeled and bounded</td>
+</tr>
+</tbody>
+</table>
+<p><strong>External-stakeholder comms.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Stakeholder</th>
+<th>What they see</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Old bank</strong></td>
+<td>Nothing automated. The CASS mechanism is invoked only if user picks the formal CASS path for DD migration</td>
+<td>Revolut deliberately doesn&rsquo;t compete head-on; the cohabitation is a feature</td>
+</tr>
+<tr>
+<td><strong>Major UK payroll providers</strong></td>
+<td>Future B2B integration target. Discussions around direct payroll-mandate API</td>
+<td>Eliminates the HR-letter friction entirely for users at integrated employers</td>
+</tr>
+<tr>
+<td><strong>PRA / FCA</strong></td>
+<td>Regulatory disclosure that the Salary Guarantee mechanism is a contingent-credit product; bounded exposure (max 1 salary per user, 7-day expected clearance)</td>
+<td>Pre-cleared with regulator at design stage rather than after launch</td>
+</tr>
+</tbody>
+</table>
+<h3 id="d-metrics-adoption-usage">d) Metrics — adoption + usage</h3>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Metric</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>North Star</strong></td>
+<td>UK primacy %</td>
+<td>The single goal</td>
+</tr>
+<tr>
+<td><strong>Primary leading</strong></td>
+<td>Confidence Period activation rate (% of eligible users who start)</td>
+<td>Conversion of intent to action</td>
+</tr>
+<tr>
+<td></td>
+<td>Cycle completion rate: cycle 1 / cycle 2 / cycle 3 (funnel)</td>
+<td>Where users drop — cycle 1 dropout signals different root cause than cycle 3 dropout</td>
+</tr>
+<tr>
+<td></td>
+<td>Time-to-flip from activation</td>
+<td>Migration speed</td>
+</tr>
+<tr>
+<td></td>
+<td>Reversal rate by cycle</td>
+<td>Reverse signal — high reversal at cycle 1 means we mis-detected eligibility; at cycle 3 means our value prop is weak</td>
+</tr>
+<tr>
+<td><strong>Salary Guarantee</strong></td>
+<td>Hold-rate during Confidence Period (target: &lt;1% — pre-clearance works)</td>
+<td>The Guarantee should fire rarely; if it fires often, pre-clearance is broken</td>
+</tr>
+<tr>
+<td></td>
+<td>Guarantee invocation rate (frequency × £ dispensed)</td>
+<td>Capital exposure</td>
+</tr>
+<tr>
+<td></td>
+<td>Post-Guarantee retention (do users stay after their Guarantee was invoked?)</td>
+<td>The most expensive single signal — proves the Guarantee converts a &ldquo;freeze incident&rdquo; from churn-event into trust-event</td>
+</tr>
+<tr>
+<td><strong>Secondary leading</strong></td>
+<td>Mirror-% distribution chosen by users</td>
+<td>If most pick 50%, our default is wrong; if most pick 0%, the feature was never the bottleneck</td>
+</tr>
+<tr>
+<td></td>
+<td>Existing-user activation rate (users who already had salary here pre-launch)</td>
+<td>Closes the t17 gap — existing primacy users finally getting visible reward</td>
+</tr>
+<tr>
+<td></td>
+<td>DD migration pacing (cycle 1 / cycle 2 / cycle 3 breakdown)</td>
+<td>Risk pacing — rent in cycle 3 vs cycle 1</td>
+</tr>
+<tr>
+<td><strong>Lagging</strong></td>
+<td>Net primacy uplift (Y1, Y2)</td>
+<td>The bet</td>
+</tr>
+<tr>
+<td></td>
+<td>Demote-funnel reversal rate (% of users moving DDs back to old bank within 6 months)</td>
+<td>The hidden churn signal</td>
+</tr>
+<tr>
+<td></td>
+<td>NPS for users 3 months post-flip</td>
+<td>Did primacy stick? Are they happier?</td>
+</tr>
+<tr>
+<td><strong>Internal health</strong></td>
+<td>Mirror float cost (basis points)</td>
+<td>Bounded capital cost</td>
+</tr>
+<tr>
+<td></td>
+<td>Guarantee advance-vs-collect ratio</td>
+<td>Repayment latency</td>
+</tr>
+<tr>
+<td></td>
+<td>AML false-positive rate on Confidence Period users (vs. control)</td>
+<td>Validates the pre-clearance hypothesis</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Success threshold for Year 1:</strong> 5pp net UK primacy uplift attributed to Confidence Period (≈500k incremental primary users at 10M UK base). Failure threshold: &lt;1pp net, and/or &gt;20% cycle-1 reversal rate — both indicate the mental model is wrong.</p>
+<h3 id="e-risks-amp-open-questions">e) Risks &amp; open questions</h3>
+<div class="risks">
+<ul>
+<li><strong>Salary Guarantee abuse</strong> — a user invokes the Guarantee, withdraws the advance, then de-primacies before the held salary clears. <em>Hedge:</em> the advance is contingent-credit with a 30-day clawback right tied to the salary deposit; max one invocation per 90 days; pre-clearance via verified-employer signal pushes hold rate below 1%, so abuse-eligible events are rare by design.</li>
+<li><strong>Mirror float capital cost</strong> — Revolut effectively co-funds the old-bank balance during the parallel run. <em>Hedge:</em> the 30% default keeps capital exposure bounded; treasury models mirror float at &lt;50bps of monthly active-salary throughput, recoverable as primacy compounds.</li>
+<li><strong>Open Banking coverage gaps</strong> — not every UK bank exposes the granular salary-and-DD signal Confidence Period needs. <em>Hedge:</em> MVP supports the top-10 UK banks (covers ~85% of consumer salary mandates); manual self-declared fallback for the remainder.</li>
+<li><strong>AML pre-clearance assumption</strong> — the model depends on Confidence Period users seeing a lower hold rate than control. <em>Open question:</em> if pre-clearance only lowers hold rate by ~30% (not the ~70% modelled), the Guarantee fires more often and the unit economics compress. Mitigated by a shadow-mode pilot before public launch.</li>
+</ul>
+</div>
+<hr />
+<h2 class="section" id="section-5-idea-2-locked-insights">Section 5 — Idea 2: <strong>Locked Insights</strong></h2>
+<h3 id="what-it-is">What it is</h3>
+<p>A salary-aware intelligence surface that <strong>only functions with the user&rsquo;s full income visible</strong>. Non-primary users see the <em>shapes</em> of insights — real cards in the Insights tab with blurred numbers — with a single CTA to unlock by making Revolut primary. Primary users see fully populated cards updating in real time: subscription audits, payday-cashflow nudges, DD-payday optimisation, projected-shortfall auto-vault-pull, bill anomalies.</p>
+<p>The conversion driver is <strong>data envy</strong>. The user sees what they&rsquo;re missing <em>in their own currency, on their own data</em>.</p>
+<h3 id="why-this-attacks-the-deepest-under-served-vitamin">Why this attacks the deepest under-served vitamin</h3>
+<ul>
+<li><strong>V2 (Salary-aware intelligence)</strong> is the most under-leveraged existing vitamin in the live product. Pockets · Payday · instant transfers · real-time categorisation — Revolut has every component already shipped. The product hasn&rsquo;t <em>assembled</em> them into a primacy-conversion surface.</li>
+<li><strong>P5 (Primacy-hostile surface)</strong> — Locked Insights is the antidote. The Home tab today is optimised for cross-sell; Locked Insights gives it a daily-ritual reason to open that depends <em>specifically</em> on primacy.</li>
+<li><strong>Structural defensibility.</strong> Insights are derived from cross-product signal across the full income stream — exactly the kind of correlation only Revolut&rsquo;s all-in-one balance can do. Monzo can&rsquo;t match this; Starling can&rsquo;t; Chase can&rsquo;t. Differentiation is structural, not skin-deep.</li>
+</ul>
+<h3 id="a-step-by-step-ux-flow">a) Step-by-step UX flow</h3>
+<h4>Screens 1 &amp; 2 — Locked state → Sample peek</h4>
+<div class="screens-grid">
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Insights</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">Things we<br/>could tell you</div>
+    <div class="sb-sub">…if we could see your full income.</div>
+    <div class="card locked">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/></svg></span><span class="card-lock">🔒</span></div>
+      <div class="card-title"><span class="amount-pill">£<span class="blur">42</span></span> / month</div>
+      <div class="card-body">on <span class="blur">3</span> subscriptions you haven't used in 90 days</div>
+      <div class="card-cta">Unlock with full income →</div>
+    </div>
+    <div class="card locked">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></span><span class="card-lock">🔒</span></div>
+      <div class="card-title">Day <span class="blur">25</span> · you'll be £<span class="blur">180</span> short</div>
+      <div class="card-body">Auto-vault-pull recommended before payday</div>
+      <div class="card-cta">Unlock with full income →</div>
+    </div>
+    <div class="card locked">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></span><span class="card-lock">🔒</span></div>
+      <div class="card-title">Move <span class="blur">1</span> DD to payday +<span class="blur">2</span></div>
+      <div class="card-body">Save £<span class="blur">36</span>/yr in overdraft risk</div>
+      <div class="card-cta">Unlock with full income →</div>
+    </div>
+    <div class="cta-primary">Unlock all · Make Revolut primary</div>
+    <div class="cta-secondary">Try a sample · no commitment</div>
+  </div>
+</div></div>
+<div class="caption">Screen 1 — locked state. Real cards with CSS-blurred numbers, so the absence is concrete (3-digit money field, a date, a count) rather than abstract.</div>
+</div>
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Sample insight</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sample-banner">This is an example. Real cards would use your actual transactions.</div>
+    <div class="card live">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/></svg></span><span class="success-pill">sample</span></div>
+      <div class="card-title">£37 / month on 3 unused subs</div>
+      <div class="sub-list">
+        <div class="sub-row"><span class="sub-name">Apple Arcade</span><span class="sub-meta">last used 142d ago</span></div>
+        <div class="sub-row"><span class="sub-name">LinkedIn Premium</span><span class="sub-meta">last used 87d ago</span></div>
+        <div class="sub-row"><span class="sub-name">NYT Cooking</span><span class="sub-meta">last used 121d ago</span></div>
+      </div>
+      <div class="card-cta-row">
+        <span class="mini-cta">Cancel all</span>
+        <span class="mini-cta alt">Review individually</span>
+      </div>
+    </div>
+    <div class="sb-sub" style="margin-top: 2mm;">We can give you cards like this — for your numbers.</div>
+    <div class="cta-primary">I want this for my data</div>
+    <div class="cta-secondary">Maybe later</div>
+  </div>
+</div></div>
+<div class="caption">Screen 2 — sample peek. The abstract becomes concrete. <em>"I want this for my data"</em> flows straight into Confidence Period setup — the push and pull synergise here.</div>
+</div>
+</div>
+
+<p>Notes on craft:</p>
+<ul>
+<li><strong>Blurred, not replaced.</strong> Numbers use a real CSS blur, not <code>???</code> placeholders — so the absence is concrete in the user&rsquo;s own currency.</li>
+<li><strong>&ldquo;Full income&rdquo; not &ldquo;salary.&rdquo;</strong> The unlock CTA emphasises <em>seeing your money</em> — never &ldquo;upgrade.&rdquo; Locked-state copy avoids paywall mental models.</li>
+<li><strong>Sample-peek = load-bearing conversion lever.</strong> Users not ready to commit get the <em>shape</em> of the unlocked state with fictional data. The CTA on Screen 2 is the cleanest known handoff into the push idea.</li>
+</ul>
+<h4>Screens 3 &amp; 4 — Live state → Catalogue / Year-in-Review</h4>
+<div class="screens-grid">
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Insights</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="sb-h1">What your<br/>income tells us</div>
+    <div class="sb-sub">3 new this week · £463 saved this year</div>
+    <div class="card live">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/></svg></span><span class="success-pill">new</span></div>
+      <div class="card-title">£42.97/mo on 3 unused subs</div>
+      <div class="card-body">Apple Arcade · LinkedIn Premium · NYT Cooking — none used in 90+ days.</div>
+      <div class="card-cta-row">
+        <span class="mini-cta">Cancel all</span>
+        <span class="mini-cta alt">Review each</span>
+      </div>
+    </div>
+    <div class="card warn">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></span><span class="warn-pill">forecast</span></div>
+      <div class="card-title">Day 25 · £180 short</div>
+      <div class="card-body">Auto-pull from your Savings Vault before payday?</div>
+      <div class="card-cta-row">
+        <span class="mini-cta">Yes</span>
+        <span class="mini-cta alt">Schedule</span>
+        <span class="mini-cta alt">Adjust</span>
+      </div>
+    </div>
+    <div class="card live">
+      <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></span></div>
+      <div class="card-title">Move gym DD to payday +2</div>
+      <div class="card-body">Currently lands 27th — 1 day before payday. Caused 3 overdraft-risk days last year.</div>
+      <div class="card-cta-row">
+        <span class="mini-cta">Move it</span>
+        <span class="mini-cta alt">Why</span>
+        <span class="mini-cta alt">Dismiss</span>
+      </div>
+    </div>
+  </div>
+</div></div>
+<div class="caption">Screen 3 — live state. Same card shape as locked, now populated with real numbers + 1-tap actions per insight. Cards cadence: subs monthly, cashflow daily, DD quarterly, anomalies one-off.</div>
+</div>
+<div class="screen-cell">
+<div class="phone"><div class="phone-inner">
+  <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Year in Review · 2026</span><span class="more">⋯</span></div>
+  <div class="screen-body">
+    <div class="yir-hero">
+      <div class="yir-label">We saved you</div>
+      <div class="yir-amt">£463</div>
+      <div class="yir-sub">across 23 insights you acted on this year.</div>
+    </div>
+    <div class="sb-section-label">Where it came from</div>
+    <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/></svg></span><span class="yir-name">Subscription audit</span><span class="yir-amt-sm">£217</span></div>
+    <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></span><span class="yir-name">Cashflow forecast</span><span class="yir-amt-sm">£94</span></div>
+    <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></span><span class="yir-name">DD payday optimisation</span><span class="yir-amt-sm">£72</span></div>
+    <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span><span class="yir-name">Bill anomalies</span><span class="yir-amt-sm">£48</span></div>
+    <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7l-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg></span><span class="yir-name">Salary-aware investing</span><span class="yir-amt-sm">£32</span></div>
+    <div class="sb-section-label">Manage your insight types</div>
+    <div class="cta-secondary alt">Tune cadence · mute · turn off</div>
+  </div>
+</div></div>
+<div class="caption">Screen 4 — annual Year-in-Review. Reframes Insights from feature → quantified outcome. The tier-renewal hook + the retention asset live here.</div>
+</div>
+</div>
+
+<h3 id="b-contextual-hooks-to-create-awareness">b) Contextual hooks to create awareness</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Hook</th>
+<th>Surface</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Insights tab persistent</td>
+<td>Always present in bottom nav, locked-state by default</td>
+<td>Every session, regardless of primacy state</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Post-spend &ldquo;we could have told you&rdquo;</td>
+<td>Transaction confirmation screen</td>
+<td>After any debit-card spend &gt; £20 — <em>&ldquo;🔒 You spent £42 at Tesco. We might&rsquo;ve told you you&rsquo;d hit your weekly budget — unlock to see&rdquo;</em></td>
+</tr>
+<tr>
+<td>3</td>
+<td>End-of-month digest</td>
+<td>Email</td>
+<td>First Friday of each month — <em>&ldquo;What we saw this month — unlock to see&rdquo;</em> with 1 blurred sample card</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Pockets / cashflow page</td>
+<td>Locked preview card embedded</td>
+<td>When user opens Pockets → top card is locked Insight preview</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Onboarding tour</td>
+<td>New user flow</td>
+<td>Step 4 of 6 onboarding: <em>&ldquo;Here&rsquo;s where you&rsquo;d see what your income tells us&rdquo;</em></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Post-Metal/Ultra upgrade</td>
+<td>Plans page</td>
+<td><em>&ldquo;Your tier is upgraded. Insights only work when your salary lands here. Connect your full income to fully unlock.&rdquo;</em></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Referral copy</td>
+<td>Sharing modal</td>
+<td>Pre-filled message: <em>&ldquo;I just unlocked Revolut Insights — it caught £37/mo of dead subs&rdquo;</em> — primary-user testimonial</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Sample peek</td>
+<td>One-time per user</td>
+<td>Surfaces 24h after first session if user is non-primary</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Confidence Period synergy</td>
+<td>Mid-Confidence-Period</td>
+<td>First insights populate in real time as the user goes through cycles — pull-feature reinforces push-feature</td>
+</tr>
+</tbody>
+</table>
+<h3 id="c-notifications-amp-communications-lifecycle">c) Notifications &amp; communications lifecycle</h3>
+<p><strong>User comms.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Channel</th>
+<th>Cadence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New insight detected</td>
+<td>In-app notification</td>
+<td>Real-time</td>
+</tr>
+<tr>
+<td>Weekly insight digest</td>
+<td>Push or email (user preference)</td>
+<td>Weekly</td>
+</tr>
+<tr>
+<td>Monthly &ldquo;we saved you&rdquo; summary</td>
+<td>Email</td>
+<td>First of each month</td>
+</tr>
+<tr>
+<td>Annual Year-in-Review</td>
+<td>Email + in-app modal</td>
+<td>January</td>
+</tr>
+<tr>
+<td>Locked card sample peek</td>
+<td>Push</td>
+<td>One-time, 24h post-signup</td>
+</tr>
+<tr>
+<td>End-of-month locked digest</td>
+<td>Email</td>
+<td>Non-primary users only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Stakeholder comms (internal).</strong></p>
+<table>
+<thead>
+<tr>
+<th>Stakeholder</th>
+<th>What they see</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data / insights team</strong></td>
+<td>Insight-detection catalogue: which signal fires which insight; per-insight precision/recall</td>
+<td>Quality of the insight engine is the product</td>
+</tr>
+<tr>
+<td><strong>Product team</strong></td>
+<td>Insight performance dashboard: impressions → taps → actions taken</td>
+<td>An insight that drives 0 action is dead weight and should be retired</td>
+</tr>
+<tr>
+<td><strong>Compliance / GDPR</strong></td>
+<td>Insight pipeline review: any new insight involving third-party data (e.g. subscription cancellation through merchant) needs sign-off</td>
+<td>Subscription audit touches data-sharing assumptions</td>
+</tr>
+<tr>
+<td><strong>Support team</strong></td>
+<td>When user contacts support, recent insights visible in the case context</td>
+<td>Lets human support reference relevant primacy-friction-points</td>
+</tr>
+</tbody>
+</table>
+<p><strong>External stakeholder comms.</strong></p>
+<p>Generally not surface-facing externally — Insights is an internal correlation product, not a B2B integration. The exception: the subscription-cancellation action depends on merchant SDKs / direct cancel APIs where possible. Some merchants need to be partnered with for clean cancel; otherwise the action falls back to &ldquo;guide me through cancel&rdquo; (deeplink).</p>
+<h3 id="d-metrics-adoption-usage">d) Metrics — adoption + usage</h3>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Metric</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>North Star</strong></td>
+<td>Locked-Insights-attributed Primacy conversions (locked-tap → setup → flip)</td>
+<td>The KPI</td>
+</tr>
+<tr>
+<td><strong>Primary leading</strong></td>
+<td>Locked insight impressions per user per session</td>
+<td>Surface visibility</td>
+</tr>
+<tr>
+<td></td>
+<td>Locked card tap-rate</td>
+<td>The first qualifying behavior</td>
+</tr>
+<tr>
+<td></td>
+<td>Tap-rate by insight type</td>
+<td>Which insight categories drive conversion?</td>
+</tr>
+<tr>
+<td></td>
+<td>Sample peek engagement rate</td>
+<td>Sample is the highest-intent intermediate signal</td>
+</tr>
+<tr>
+<td></td>
+<td>Sample → Confidence Period start rate</td>
+<td>The handoff conversion</td>
+</tr>
+<tr>
+<td><strong>Post-unlock</strong></td>
+<td>Insight unlock rate (% of new primary users with insights live within 7 days)</td>
+<td>Speed-to-value</td>
+</tr>
+<tr>
+<td></td>
+<td>Insight action-take rate (per category)</td>
+<td>Quality of insight catalogue — an insight that drives 0 action is dead weight</td>
+</tr>
+<tr>
+<td></td>
+<td>Per-insight £ value delivered (saved / earned)</td>
+<td>Quantifies &ldquo;we saved you £X&rdquo;</td>
+</tr>
+<tr>
+<td></td>
+<td>Insight dismiss rate</td>
+<td>Tunes which insights are noise</td>
+</tr>
+<tr>
+<td><strong>Synergy</strong></td>
+<td>Confidence Period users who also act on Locked Insights cycle 1</td>
+<td>Push-pull compounding signal — co-activation is the strongest leading indicator</td>
+</tr>
+<tr>
+<td><strong>Lagging</strong></td>
+<td>Insight-driven primacy retention (do users who act on insights churn less?)</td>
+<td>The unique-defensibility check</td>
+</tr>
+<tr>
+<td></td>
+<td>Referral mentions of &ldquo;Insights&rdquo; in shared content</td>
+<td>Verbatim signal of breakthrough</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Success threshold Year 1:</strong> 2-3pp standalone primacy lift; 5pp paired with Confidence Period (compounding via the sample-peek → activation path).</p>
+<h3 id="e-de-primacy-flow-what-happens-if-the-salary-leaves">e) De-primacy flow (what happens if the salary leaves)</h3>
+<p>If the salary signal disappears for two consecutive cycles (or drops below 50% of historical norm), Insights gracefully degrades: real cards lock again, but the <strong>Year-in-Review snapshot is preserved as a sealed historical record</strong> the user can keep returning to. A one-question survey fires once on de-primacy (&ldquo;What changed?&rdquo;) to differentiate temporary gaps (between jobs, parental leave, sabbatical) from active churn — temporary gaps suppress the locked re-prompt for 90 days, churn signals route to retention. Crucially, the preserved Year-in-Review is the hook back: <em>&ldquo;You saved £463 last year with Insights. Route your salary here again to keep them live.&rdquo;</em> The history <em>is</em> the retention asset.</p>
+<h3 id="f-risks-amp-open-questions">f) Risks &amp; open questions</h3>
+<div class="risks">
+<ul>
+<li><strong>Insight precision drift</strong> — a single false-positive on a &ldquo;wasted subscription&rdquo; damages trust faster than a missed insight builds it. <em>Hedge:</em> precision-first catalogue policy — only ship an insight type after shadow-mode precision &gt;90% across a representative cohort; per-insight user mute; quarterly audit retires any insight with action-rate &lt;5%.</li>
+<li><strong>Sample-peek &ldquo;burn&rdquo;</strong> — the one-time fictional sample loses impact if shown to the wrong cohort or at the wrong session. <em>Hedge:</em> gate the sample peek behind 7+ in-app sessions to ensure the user already values the surface; generate sample numbers fresh per user (not templated) so it reads as plausible rather than canned.</li>
+<li><strong>&ldquo;Locked&rdquo; framing as friction</strong> — some users may read blurred numbers as paywall and bounce. <em>Hedge:</em> sample peek IS the free-tier value moment, so the &ldquo;locked&rdquo; copy emphasises <em>&ldquo;we just can&rsquo;t see your full income yet&rdquo;</em> — never &ldquo;upgrade.&rdquo; Locked-state copy is A/B tested in the first 90 days for bounce vs activation.</li>
+<li><strong>Compliance perimeter</strong> — subscription audit + cancel-from-Revolut depends on merchant APIs and data-sharing assumptions. <em>Open question:</em> which merchants partner; which fall back to deeplink-guided cancel? <em>Hedge:</em> MVP scope = top-20 UK consumer subscriptions (~70% of category volume); deeplink fallback for the rest.</li>
+</ul>
+</div>
+<hr />
+<h2 class="section" id="section-6-why-these-two-ideas-together">Section 6 — Why these two ideas, together</h2>
+<p>A short closing on why this is the pair, viewed across the dimensions that matter for a primacy bet of this size:</p>
+<p><strong>Originality of mechanic.</strong> Two ideas that <strong>neither pay for primacy nor copy Monzo&rsquo;s playbook</strong>. Confidence Period acknowledges the two-bank cohabitation deal that every Reddit thread reveals as the rational user equilibrium, and uses it as a bridge rather than a competitor. Locked Insights reframes primacy from a sacrifice (&ldquo;give us your salary&rdquo;) to a key (&ldquo;see what your salary tells us&rdquo;). Both mechanics are unique implementations rather than feature combinations.</p>
+<p><strong>Depth of implementation.</strong> Each idea is <em>one mechanic</em>, not 5 features bundled. Confidence Period = parallel-run + Salary Guarantee + cycle state machine. Locked Insights = locked surface + insight engine + sample peek. Both are defended end-to-end at the screen, hook, comms, and metric level — see sections 4 and 5.</p>
+<p><strong>Strength of reasoning.</strong> The trail is auditable: primary research surfaced 11 pains, clustered into 5 macro categories with 2 uncovered by any current vitamin; the ideation pool was scored on four axes and the two picks emerged with full pair-defensibility (push-pull, complementary cohorts, no redundant mechanism). Runner-ups are explicitly named and explicitly rejected.</p>
+<p><strong>Sized impact.</strong> Conservative model: Confidence Period at 5pp UK primacy lift Year 1 (5% conversion of C3 cohort ≈ 500k users); Locked Insights at 2-3pp standalone, 5pp paired via the sample-peek funnel. Together: <strong>8-10pp net UK primacy lift Year 1</strong> — a meaningful step on a sub-20% global baseline. Failure modes are explicitly named (cycle 1 reversal &gt; 20%; insight action-rate &lt; 5%).</p>
+<p>The two ideas are designed to be <strong>defensible end-to-end</strong>, not just plausible at first read. Every load-bearing claim is anchored: every quote is sourced, every number is cited, every cohort sizing is built up from primary research.</p>
+<hr />
+<h2 class="section" id="appendix-evidence-sources">Appendix — Evidence sources</h2>
+<p>Full Stage 1 research at <code>cs1_revolut_research.md</code> (v2, 275 lines). Full Stage 2 synthesis at <code>cs1_revolut_painkiller_vitamin.md</code>. Full Stage 3 ideation + scoring at <code>cs1_revolut_ideation.md</code>.</p>
+<p>Primary signals lifted in this submission:</p>
+<ul>
+<li>Revolut Annual Report 2024 — &ldquo;primary users grew 59% YoY&rdquo; (absolute undisclosed)</li>
+<li>Sacra / Sifted — deposit comparator (£575 / £811 / £2,944)</li>
+<li>Allegiant.co.uk citing UK Finance + Action Fraud — fraud volume comparator</li>
+<li>Reddit r/Revolut + r/UKPersonalFinance — 17 threads, 1,000+ comments synthesised (see appendix bibliography in <code>cs1_revolut_research.md</code>)</li>
+<li>Monzo blog (Sept 2019, Jan 2020) — Salary Sorter + partial-switch onramp</li>
+<li>Be Clever With Your Cash (May 2026) — incentive comparator</li>
+<li>Storonsky / Bloomberg (April 2026) — strategic positioning</li>
+<li>Revolut UK Bank launch announcement (11 March 2026) — regulatory state</li>
+</ul>
+</main>
+</body>
+</html>
