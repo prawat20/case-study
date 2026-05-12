@@ -177,8 +177,11 @@ The 2026-05-11 ship was a defensible markdown deliverable but read like a workin
 | Screen mockups | All 10 ASCII-boxed screens (Confidence Period 1-7 + post-activation, Locked Insights 1-4) converted to high-fidelity HTML phone mockups in 2-up grids: slider · segment control · toggle · DD checklist · letter-card · summary-card · ledger · YIR hero · sample-banner · mini-CTAs | ~240 markdown lines, ~200 CSS lines | 14 phone mockups across 7 grids — every flow visualised, not described |
 | Orphan fix | Converted bold-paragraph "If AML hold occurs" header to `h4` so the existing `break-after: avoid-page` rule pulls it onto the same page as its phones | 1 line | Page 13/14 spread reads cleanly |
 | Icon swap | Replaced 15 emoji occurrences (💸 📅 🪙 ⚡ 📈 📊 🛡) with single-line inline SVGs using `currentColor` + 1em sizing. Lucide-style stroked icons across LI Screens 1-4 + Cycle 3 close | ~10 CSS lines | Cards now read as a real iOS Insights surface, not an emoji dump |
+| Bezel halo cleanup | Dropped the `.phone` `box-shadow` entirely after noticing the soft drop-shadow read asymmetrically against A4 page margins — left-column phones had their left-side shadow clipped by the left margin while right-column phones had their right-side shadow fully visible against empty margin. Read as a "grey outline only on the second column." | 1 line | Both grid columns now render identically |
 
-**Doc grew 592 → 831 lines (+40%). PDF: 27 pages, ~2.5MB.**
+**Doc grew 592 → 831 lines (+40%). PDF: 27 pages, ~2.3MB.**
+
+**Git trail.** Three commits on `github.com/prawat20/case-study`: `954468b` (CS2 v3→v3.3) → `76cf8ff` (CS1 Caselet 1 + PDF pipeline + 27-page submission) → `42f685b` (box-shadow cleanup).
 
 ### Process lessons (validated this round)
 
@@ -188,6 +191,7 @@ The 2026-05-11 ship was a defensible markdown deliverable but read like a workin
 - **Emoji-in-PDF is a craft tax.** Chrome's emoji rasterizer is inconsistent (some glyphs render colorful + sharp, some muted/faint). For a doc that needs to feel craft-precise to a Director-of-Product reader, swap to inline SVG with `currentColor` so icons match the card's text color and ink density.
 - **Avoid orphan headers without thinking through page breaks.** A bold-paragraph subheader without `break-after: avoid-page` (or being an actual heading) is one of the easier breaks for a paginated document. Default to `h4` for any subheader that introduces a graphic block.
 - **`md_in_html` extension is load-bearing.** Lets you embed `<div class="screens-grid">…<div class="phone">…</div>…</div>` inside markdown without the parser eating the structure. Without it, you'd need a separate templating layer.
+- **Soft drop-shadows read asymmetrically against page margins.** A `box-shadow` halo that looks symmetric in a browser viewport can render differently in print when one side has empty page-margin to bloom into and the other is clipped. If you want depth in a paginated doc, either keep both columns symmetric to the page centerline, use `inset` shadows, or skip shadow entirely.
 
 ### Build script — extension points
 

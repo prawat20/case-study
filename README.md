@@ -42,15 +42,15 @@ Case Study/
 
 ---
 
-## CS1 status (2026-05-11)
+## CS1 status (2026-05-12)
 
-- **Caselet 1 (Revolut Primacy) — submission shipped.** Final deliverable at [`docs/cs1_caselet1_revolut.md`](docs/cs1_caselet1_revolut.md). 592 lines, structured verbatim per brief. Built via 4-stage research-first discipline mirroring CS2: research → macro synthesis → ideation+scoring → submission.
+- **Caselet 1 (Revolut Primacy) — shipped as a print-ready 27-page PDF.** Source at [`docs/cs1_caselet1_revolut.md`](docs/cs1_caselet1_revolut.md) (831 lines, structured verbatim per brief). Built via 4-stage research-first discipline mirroring CS2: research → macro synthesis → ideation+scoring → submission. Polish round 2026-05-12 added a markdown→PDF build pipeline ([`docs/_build_pdf.py`](docs/_build_pdf.py)), 14 high-fidelity HTML phone mockups across 7 two-up grids, and an inline-SVG icon set. Rendered deliverable: [`CS1_Caselet1_Revolut_Primacy.pdf`](CS1_Caselet1_Revolut_Primacy.pdf).
 - Two ideas picked: **Confidence Period** (Open-Banking parallel-run + Salary Guarantee — push, migration de-risk) and **Locked Insights** (data-envy-driven salary-aware intelligence — pull, only-on-primary value). Push-pull pair targeting C3+C4 cohorts. Conservative impact model: 8-10pp UK primacy lift Year 1.
 - **Caselet 2 (Plottwyst pitch) — outstanding.** Brief sections 1:1: Persona+Problem · Proposition · MVP · Revenue · TAM. Source assets: Plottwyst investor deck. Will be self-contained — no cross-reference to other projects in this machine.
 
 ---
 
-## CS2 status (2026-05-11 — v3 flow optimization deployed)
+## CS2 status (2026-05-12 — v3.3 deployed)
 
 CS2 v3 is live at `case-study-iud.pages.dev`. Three flow moves applied on top of the v2 redesign:
 
@@ -60,7 +60,7 @@ CS2 v3 is live at `case-study-iud.pages.dev`. Three flow moves applied on top of
 
 See [`docs/cs2_build_log.md`](docs/cs2_build_log.md) `Round 9` for the full implementation log + click-count delta. Source-of-truth IA at [`docs/cs2_ia_and_surfaces.md`](docs/cs2_ia_and_surfaces.md) (v3 delta preamble at top).
 
-**Important:** the v3 build was deployed via wrangler only — **not pushed to GitHub**. The local working tree carries v3 changes + CS1 Caselet 1 docs uncommitted, intentionally, so the Caselet 1 submission stays off the public repo until manual submission.
+**Repo state (2026-05-12).** CS2 (`954468b`) and CS1 Caselet 1 (`76cf8ff` + `42f685b` follow-up) both pushed to GitHub. Only Caselet 2 (Plottwyst pitch) source files remain uncommitted — they'll be added once that submission is ready. `_private/` (interview briefs) stays gitignored.
 
 ---
 
