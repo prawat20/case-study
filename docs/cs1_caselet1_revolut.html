@@ -307,6 +307,31 @@ h2#executive-summary ~ p {
 .data-vintage p { margin: 0; }
 .data-vintage strong { color: var(--ink); }
 
+/* ---------- TL;DR callout (section-level skim anchor) ---------- */
+.tldr {
+  background: linear-gradient(90deg, rgba(20,42,79,0.05), rgba(20,42,79,0.01) 95%);
+  border-left: 2.5px solid var(--accent);
+  padding: 3.5mm 5mm 3.5mm 5mm;
+  margin: 3mm 0 7mm 0;
+  font-size: 10pt;
+  line-height: 1.55;
+  color: var(--ink);
+  page-break-inside: avoid;
+}
+.tldr p { margin: 0; }
+.tldr .tldr-label {
+  display: inline-block;
+  font-family: "Inter", "Helvetica Neue", sans-serif;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-right: 2.5mm;
+  vertical-align: 0.5pt;
+}
+.tldr strong { color: var(--ink); font-weight: 700; }
+
 /* ---------- Cohort glossary callout ---------- */
 .glossary {
   background: #f4efe6;
@@ -898,6 +923,9 @@ main > h3:first-of-type {
 <blockquote>
 <p>Why a Revolut user does <em>not</em> exhibit primacy behaviour today. Five macro categories. Each anchored to the strongest single signal.</p>
 </blockquote>
+<div class="tldr">
+<p><span class="tldr-label">TL;DR</span> Five pains. Three are structural — bank licence, branch presence, lock-in products — and outside product&rsquo;s reach. Two are not: <strong>P1 perceived operational risk</strong> and <strong>P5 primacy-hostile product surface</strong>. Neither has a counter in the live product today. That&rsquo;s the surface this case attacks.</p>
+</div>
 <h3 id="p1-perceived-operational-risk-the-salary-deposit-fear">P1. <strong>Perceived operational risk</strong> — the salary-deposit fear</h3>
 <p>Users don&rsquo;t fear Revolut going bankrupt. They fear that a routine AML/fraud trigger freezes their account <em>on the day rent is due</em>, with no human escalation, only AI-bot loops with copy-paste replies. The risk is <strong>narrative-amplified</strong> — reading other users&rsquo; freeze stories alone is enough to start rationing balances (the &ldquo;demote funnel&rdquo;).</p>
 <ul>
@@ -941,6 +969,9 @@ main > h3:first-of-type {
 <blockquote>
 <p>What would make a user consider switching. Five macro categories.</p>
 </blockquote>
+<div class="tldr">
+<p><span class="tldr-label">TL;DR</span> Five vitamins. <strong>V2 salary-aware intelligence</strong> is the most under-leveraged — Pockets, Payday, real-time categorisation are all shipped, none merchandised into a primacy moment. <strong>V3 primacy-only economics</strong> is mistargeted at perks rather than salary value. The first finding sets up Idea 2; the second is why neither idea pays for primacy.</p>
+</div>
 <h3 id="v1-cross-border-life-completeness">V1. <strong>Cross-border life completeness</strong></h3>
 <p>Multi-currency wallets, mid-rate FX, IBANs in 30+ countries, joint accounts + joint savings for international couples. For the cross-border-earner cohort, Revolut is the <em>only</em> sane primary because the high street can&rsquo;t do this without 3% FX margin per transaction.</p>
 <ul>
@@ -1028,6 +1059,9 @@ main > h3:first-of-type {
 </table>
 <hr />
 <h2 class="section" id="section-4-idea-1-confidence-period">Section 4 — Idea 1: <strong>Confidence Period</strong></h2>
+<div class="tldr">
+<p><span class="tldr-label">TL;DR</span> The push idea — migration de-risk. Three salary cycles run in parallel via Open Banking, with a percentage auto-mirrored back to the old bank. A <strong>Salary Guarantee</strong> turns the AML-freeze fear into a covered event: any hold over 60 minutes triggers an instant interest-free advance up to the salary amount. Closes P1 and P4. <strong>6-9 months to build · ~5pp UK primacy lift Year 1 (~500k incremental primary users).</strong></p>
+</div>
 <h3 id="what-it-is">What it is</h3>
 <p>A 3-salary-cycle parallel-run that lets a user move their salary mandate to Revolut <strong>without committing to single-bank primacy</strong>. The system uses Open Banking to read the user&rsquo;s existing primary bank, automatically auto-mirror a percentage of each Revolut-received salary back to the old account, and bundles a <strong>Salary Guarantee</strong> — if Revolut ever holds the deposit for AML review beyond 60 minutes, the user receives an interest-free advance up to their salary amount, instantly.</p>
 <p>After 3 successful cycles the auto-mirror fades. The user has <em>lived</em> primacy without the fear, and the second-bank cohabitation has been quietly dissolved instead of confronted.</p>
@@ -1562,6 +1596,9 @@ Same shape. Locked Insights (Idea 2) start populating with real data this week �
 </div>
 <hr />
 <h2 class="section" id="section-5-idea-2-locked-insights">Section 5 — Idea 2: <strong>Locked Insights</strong></h2>
+<div class="tldr">
+<p><span class="tldr-label">TL;DR</span> The pull idea — only-on-primary value. Insights sits in the bottom nav for every user. Non-primary sees real cards with blurred numbers and a one-time sample peek; primary unlocks subscription audits, cashflow forecasts, DD optimisation, anomaly detection. Structural moat: only Revolut&rsquo;s full-income visibility produces these insights — Monzo, Starling, Chase can&rsquo;t match it. Closes P5 and activates V2. <strong>4-6 months to build · 2-3pp standalone Year 1 · 5pp paired with Idea 1.</strong></p>
+</div>
 <h3 id="what-it-is">What it is</h3>
 <p>A salary-aware intelligence surface that <strong>only functions with the user&rsquo;s full income visible</strong>. Non-primary users see the <em>shapes</em> of insights — real cards in the Insights tab with blurred numbers — with a single CTA to unlock by making Revolut primary. Primary users see fully populated cards updating in real time: subscription audits, payday-cashflow nudges, DD-payday optimisation, projected-shortfall auto-vault-pull, bill anomalies.</p>
 <p>The conversion driver is <strong>data envy</strong>. The user sees what they&rsquo;re missing <em>in their own currency, on their own data</em>.</p>

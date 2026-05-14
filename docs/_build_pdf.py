@@ -377,6 +377,31 @@ h2#executive-summary ~ p {
 .data-vintage p { margin: 0; }
 .data-vintage strong { color: var(--ink); }
 
+/* ---------- TL;DR callout (section-level skim anchor) ---------- */
+.tldr {
+  background: linear-gradient(90deg, rgba(20,42,79,0.05), rgba(20,42,79,0.01) 95%);
+  border-left: 2.5px solid var(--accent);
+  padding: 3.5mm 5mm 3.5mm 5mm;
+  margin: 3mm 0 7mm 0;
+  font-size: 10pt;
+  line-height: 1.55;
+  color: var(--ink);
+  page-break-inside: avoid;
+}
+.tldr p { margin: 0; }
+.tldr .tldr-label {
+  display: inline-block;
+  font-family: "Inter", "Helvetica Neue", sans-serif;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-right: 2.5mm;
+  vertical-align: 0.5pt;
+}
+.tldr strong { color: var(--ink); font-weight: 700; }
+
 /* ---------- Cohort glossary callout ---------- */
 .glossary {
   background: #f4efe6;
