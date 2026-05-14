@@ -178,10 +178,11 @@ The 2026-05-11 ship was a defensible markdown deliverable but read like a workin
 | Orphan fix | Converted bold-paragraph "If AML hold occurs" header to `h4` so the existing `break-after: avoid-page` rule pulls it onto the same page as its phones | 1 line | Page 13/14 spread reads cleanly |
 | Icon swap | Replaced 15 emoji occurrences (💸 📅 🪙 ⚡ 📈 📊 🛡) with single-line inline SVGs using `currentColor` + 1em sizing. Lucide-style stroked icons across LI Screens 1-4 + Cycle 3 close | ~10 CSS lines | Cards now read as a real iOS Insights surface, not an emoji dump |
 | Bezel halo cleanup | Dropped the `.phone` `box-shadow` entirely after noticing the soft drop-shadow read asymmetrically against A4 page margins — left-column phones had their left-side shadow clipped by the left margin while right-column phones had their right-side shadow fully visible against empty margin. Read as a "grey outline only on the second column." | 1 line | Both grid columns now render identically |
+| Section TL;DRs | Added a `.tldr` callout at the top of each major section (§1 pain space, §2 vitamin space, §4 Confidence Period, §5 Locked Insights). Accent-blue border-left, subtle gradient bg, Inter caps label, declarative body. Pre-flight read for the doc: a senior reader extracts the full thesis in ~90 seconds; depth below stays available as proof, not required reading. Language tightened to operating-leader voice — "closes P1 + P4" over "directly attacks P1 + P4"; cost/payoff anchor at the close of each. | ~25 lines markdown + ~20 lines CSS | Skim path 10× stronger; substance unchanged |
 
-**Doc grew 592 → 831 lines (+40%). PDF: 27 pages, ~2.3MB.**
+**Doc grew 592 → 858 lines (+45%). PDF: 28 pages, ~2.4MB.**
 
-**Git trail.** Three commits on `github.com/prawat20/case-study`: `954468b` (CS2 v3→v3.3) → `76cf8ff` (CS1 Caselet 1 + PDF pipeline + 27-page submission) → `42f685b` (box-shadow cleanup).
+**Git trail.** Four commits on `github.com/prawat20/case-study`: `954468b` (CS2 v3→v3.3) → `76cf8ff` (CS1 Caselet 1 + PDF pipeline + 27-page submission) → `42f685b` (box-shadow cleanup) → `357203f` (section-level TL;DR callouts).
 
 ### Process lessons (validated this round)
 
@@ -192,6 +193,8 @@ The 2026-05-11 ship was a defensible markdown deliverable but read like a workin
 - **Avoid orphan headers without thinking through page breaks.** A bold-paragraph subheader without `break-after: avoid-page` (or being an actual heading) is one of the easier breaks for a paginated document. Default to `h4` for any subheader that introduces a graphic block.
 - **`md_in_html` extension is load-bearing.** Lets you embed `<div class="screens-grid">…<div class="phone">…</div>…</div>` inside markdown without the parser eating the structure. Without it, you'd need a separate templating layer.
 - **Soft drop-shadows read asymmetrically against page margins.** A `box-shadow` halo that looks symmetric in a browser viewport can render differently in print when one side has empty page-margin to bloom into and the other is clipped. If you want depth in a paginated doc, either keep both columns symmetric to the page centerline, use `inset` shadows, or skip shadow entirely.
+- **For a 25+ page deliverable, section TL;DRs are not optional.** An exec summary at the doc level isn't enough — a senior reader scans, doesn't read linearly, and needs scan anchors at every section. The TL;DR callout pattern (accent border-left + caps label + 1-paragraph declarative body) gives the skimmer 4-5 stopping points without forcing them to extract the thesis from prose. Place after any scope-setting blockquote, before the first H3. The depth below now reads as proof of the TL;DR claim, not as required reading.
+- **Operating-leader voice ≠ first-pass voice.** First pass tends to write "directly attacks P1," "load-bearing," "the asymmetry IS the strategic idea space." Senior-PM revision strips connective tissue and replaces hedged verbs with operating verbs: *closes*, *sets up*, *sidesteps*, *activates*. Each TL;DR closes with a cost/payoff anchor (build window + Y1 impact + cohort size) — not with a connective summary line. Three rewrites per TL;DR before it lands.
 
 ### Build script — extension points
 
