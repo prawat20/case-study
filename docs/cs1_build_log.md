@@ -1,13 +1,95 @@
 # CS1 Build Log
 
 > Running record of CS1 (Growth Hacking) work. What got built, why, what didn't.
-> Started 2026-05-11. Most recent entry 2026-05-12.
+> Started 2026-05-11. Most recent entry **2026-05-19** (v2 — growth-hacking scope correction + CEE expansion).
 
 ---
 
-## Current state (2026-05-12)
+## 2026-05-19 — Caselet 1 v2 (pre-submission revision)
 
-**Status:** Caselet 1 (Revolut Primacy) shipped as a polished print-ready PDF. Caselet 2 (Plottwyst pitch) outstanding.
+Two critiques surfaced during pre-submission review that required restructuring rather than just an addendum. The user had not yet submitted, so the right move was to rewrite the PDF rather than ship v1 + a separate apology doc.
+
+### Critique 1 — Growth-hacking scope discipline
+
+**Finding.** v1's Idea 1 (Confidence Period) bundled four components — Open Banking parallel-run, auto-mirror, HR letter generator, and **Salary Guarantee** (instant interest-free advance up to the salary amount on any AML hold > 60 min). The first three add up to ~3 months of build. **Salary Guarantee alone took it to 6-9 months** — because it's a *lending product* with credit-risk underwriting, FCA notification for new consumer credit, advance-disbursement infrastructure, and operational support flows.
+
+The brief explicitly asked for **growth-hacking ideas**. A 6-9 month build with a new financial product is strategic infrastructure, not growth-hacking. Bhavin would read that and conclude *"this person solved a different brief than the one I asked."*
+
+**Fix.** Stripped Salary Guarantee. Replaced with three pure-UX reassurance mechanics:
+
+1. **Real-time "Salary cleared in N minutes ✓" push** — fires the instant AML completes, with elapsed time. The fear is the *uncertainty*; this removes it.
+2. **24h pre-payday confidence reminder** — soft notification the evening before predicted payday: *"Your salary is expected within X hours of your employer paying it. Anything off, our priority support line is in the app."*
+3. **Public historical AML-clearance stats card on profile** — *"Last 30 days: 99.7% cleared within 8 min · 0.2% within 1 hour · 0.1% required review."* Anchors fear in actual statistics, not anecdote.
+
+Named the new layer **Live Clearance** (kept "Confidence Period" as the umbrella idea name — brand-stable).
+
+**Rationale (load-bearing for interview discussion).** The fear is the bottleneck, not the actual hold rate. The demote funnel is driven by *narrative anxiety* — *"what if today is the day my salary is held?"* — not by the actual hold rate, which is already near zero. **Fear is fixed by reassurance, not by insurance.** Salary Guarantee was the strongest cognitive anchor in v1, but it tests stronger in a focus group than it would in production — most users would never hit a 60-min hold and the lending product was an expensive solve for a rare event.
+
+**Impact on numbers.**
+- Idea 1 build: 6-9 months → **~3 months**
+- Idea 1 Y1 impact: 5pp → **~4pp** (small downward revision — the visceral focus-group anchor is weaker, but the actual mechanism is honest)
+- Idea 2 build: 4-6 months → **~2-3 months** (existing Revolut Analytics already ships subscription detection + spending categorisation; the new build is the locked-state UI + sample peek, not the analytics backbone)
+- Combined Y1: 8-10pp → **7-9pp** UK lift
+
+**Optional Phase 2.** If post-launch user research shows the reassurance signal underperforms vs. the original insurance framing, Salary Guarantee can be re-added as a separate strategic build (out of growth-hacking scope). Documented in §4 risks + open questions.
+
+### Critique 2 — Czech-Republic primary signal + CEE geographic scope
+
+**Finding.** During ideation review, a user from the Czech Republic surfaced two friction points that didn't fit cleanly into v1's 5-pain framing:
+
+1. *"My current company can't transfer salary to Revolut — they don't have a tie-up."* — employer-side payroll system structurally cannot send to Revolut.
+2. *"Local banks give a lot of other benefits — health insurance, better rates."* — local bank bundles benefits conditional on salary primacy with them.
+
+Neither mapped to v1's P3 ("Revolut LACKS sticky products") or P4 ("user-side switching chore + £750 incentive gap"). Both expose blind spots — geographic + structural — that the UK-anchored research had missed.
+
+**Fix.** Expanded P3 and P4 with sub-axes rather than adding new pains:
+
+- **P3 — split into 3a + 3b.** 3a unchanged (Revolut LACKS sticky products). 3b new: *local banks BUNDLE benefits conditional on salary primacy* — health-insurance discounts, mortgage-rate preferentials, salary-account fee waivers. Critically: **the incumbent is paying the user to NOT switch** via bundled-benefit discounts rather than cash incentives — which violates the brief's "can't pay for primacy" constraint from the *competitor* side but is the reality.
+- **P4 — split into 4a + 4b.** 4a unchanged (user-side chore + incentive gap). 4b new: *employer-side payroll restrictions* — payroll provider's payment rail doesn't include Revolut, or HR policy restricts salary destinations to an approved-bank list. The user can't override this even if motivated. **That's not "friction" — it's a hard wall.**
+
+**Added an explicit geographic-scope statement to the executive summary:**
+
+> This analysis is UK-anchored — deposit comparator (Sacra / Sifted), 13M UK Annual Report users, Reddit/Trustpilot/MSE primary sources. CEE/EU markets carry additional structural barriers that PLG alone cannot solve — employer-side payroll restrictions and salary-gated bundled benefits at local banks. The 7-9pp lift applies to the UK addressable cohort; pan-EU extrapolation would over-state impact. CEE primacy is a separate B2B-partnership initiative, out of growth-hacking scope.
+
+**Why not just add Czech findings as a footnote?** The CEE structural barriers materially change what *kind* of intervention can move primacy in those markets. Honest scoping is stronger than glossing over the limitation — a reviewer asking *"would your analysis hold for EU?"* now gets a confident *"only UK, and here's why CEE is a different problem with a different intervention"* rather than a hedge.
+
+### What changed in the document
+
+- Executive summary table: build estimates revised, Y1 impact revised, "growth-hacks" qualifier added to the headline, new geographic-scope callout.
+- §1 P3: split into 3a (Revolut lacks) + 3b (incumbents bundle). Czech primary signal cited.
+- §1 P4: split into 4a (user-side) + 4b (employer-side). Czech primary signal cited. Severity stratified by market.
+- §1 TL;DR rewritten to reflect the two-axis pain framing.
+- §3 ideas-overview table: build estimates revised; wedge mechanic updated for Idea 1.
+- §4 Idea 1 — TL;DR, "What it is," "Why this attacks the deepest pain" all revised. New "Why no Salary Guarantee?" explanatory paragraph. Phone mockup screens (Live Clearance card, settings summary, "If AML processing runs long" path) all updated. Treasury / PRA / Risk sections revised to reflect no lending exposure. Success threshold revised. Risks rewritten (notification fatigue replaces Salary Guarantee abuse; stats-card honesty risk added).
+- §5 Idea 2 — TL;DR updated for ~2-3 month build. New "Why ~2-3 months and not longer" paragraph explaining the existing-analytics base.
+- §6 wrap-up — added "Growth-hack discipline" paragraph; "Sized impact" paragraph revised to 7-9pp; Czech signal acknowledged as folded-into rather than ignored.
+
+PDF rebuilt — 31 pages (v1 was 28). Three pages of net new content (expanded P3 + P4 + geographic-scope callout + Live Clearance explanatory section + Phase 2 note).
+
+### Lessons (validated, keep for future)
+
+- **Pre-submission self-critique is cheaper than post-submission addenda.** v2 took ~2 hours to restructure; the equivalent recovery in an interview would cost a lot more credibility.
+- **Test idea-build estimates against the brief vocabulary, not just feasibility.** "PLG-actionable" is a weaker filter than "growth-hack-shaped" — both can pass for a 4-6 month build, but "growth-hack" implies a quarter or less. Bundling a financial product into a PLG idea is a common trap; check explicitly that no component requires new licensing, credit risk, or regulatory approval.
+- **Fear-driven user pains are usually addressable by transparency cheaper than by insurance.** Most operational-risk pains in fintech don't actually fire — the modal user never hits a hold, never invokes a guarantee. The intervention should target the *anxiety mechanism*, not the actual event distribution. Insurance is correct only when the event has both high impact *and* non-trivial frequency.
+- **Geographic bias in research is invisible until challenged.** UK-only Reddit research could have been reframed as "EU primacy analysis" without anyone noticing the gap. The Czech signal landed only because the user happened to know a CZ user and asked directly. Treat single high-signal user conversations as primary research events; fold them in even when they break the analysis.
+- **Acknowledging scope honestly is stronger than overclaiming.** "7-9pp UK lift; CEE has a different problem with a different intervention" reads as confident scoping. "8-10pp pan-EU lift" would not have survived a thoughtful diligence question. Right answer found by being asked twice.
+
+---
+
+## Current state (2026-05-19 post-v2)
+
+**Status:** Caselet 1 (Revolut Primacy) **v2 ready for submission** — 31-page PDF, all known critiques folded in. Caselet 2 (Plottwyst pitch) shipped 2026-05-18 (separate work; see commit `f3e7ea5` + slug deck at plottwyst.app/deck/momentum).
+
+**v2 deliverables:**
+- Source — [`cs1_caselet1_revolut.md`](cs1_caselet1_revolut.md) (now ~920 lines)
+- Build script — [`_build_pdf.py`](_build_pdf.py) (unchanged from v1)
+- Rendered — [`cs1_caselet1_revolut.html`](cs1_caselet1_revolut.html) + [`../CS1_Caselet1_Revolut_Primacy.pdf`](../CS1_Caselet1_Revolut_Primacy.pdf) (31 pages, ~2.5MB)
+
+---
+
+## 2026-05-12 — Caselet 1 v1 (original submission build)
+
+**Status at v1:** Caselet 1 (Revolut Primacy) shipped as a polished print-ready PDF. Caselet 2 (Plottwyst pitch) outstanding (now also shipped).
 
 **Final submission:**
 - Source — [`cs1_caselet1_revolut.md`](cs1_caselet1_revolut.md) (831 lines, ~64KB)

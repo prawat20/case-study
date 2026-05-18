@@ -13,17 +13,19 @@
 
 **The asymmetry in the pain space.** Of the five macro pains, **two have no current vitamin counter** in the live product — P1 *perceived operational risk* (the AML-hold-on-payday fear; Reddit's highest-engagement primacy thread is *"Can't access my salary. I am suing."*, 1,006 upvotes) and P5 *primacy-hostile product surface* (Home is optimised for cross-sell, salary-aware components like Pockets and Payday exist but aren't merchandised). The other three pains are either structural (bank licence, branch, lock-in products) or partly mistargeted. **That asymmetry IS the strategic idea space.**
 
-**The two ideas — a push-pull pair, neither pays for primacy:**
+**The two ideas — a push-pull pair, both true growth-hacks (no new financial products, no licensing dependency), neither pays for primacy:**
 
 |  | **Idea 1 · Confidence Period** | **Idea 2 · Locked Insights** |
 |---|---|---|
 | **Type** | Push — migration de-risk | Pull — only-on-primary value |
-| **Mechanic** | 3-salary-cycle parallel-run via Open Banking + auto-mirror % back to the old bank + **Salary Guarantee** (any AML hold > 60 min → instant interest-free advance up to the salary amount) | Visible-but-locked Insights surface — real cards with blurred numbers + a one-time sample peek with example data; primary unlocks subscription audit, cashflow forecast, DD payday optimisation, anomaly detection |
+| **Mechanic** | 3-salary-cycle parallel-run via Open Banking + auto-mirror % back to the old bank + **Live Clearance** reassurance layer (real-time "Salary cleared in N minutes" push the instant AML completes, 24h pre-payday confidence reminder, public historical AML-clearance stats card on profile) | Visible-but-locked Insights surface — real cards with blurred numbers + a one-time sample peek with example data; primary unlocks subscription audit, cashflow forecast, DD payday optimisation, anomaly detection. Built on Revolut's existing Analytics infrastructure (subscription detection, spending categorisation already live) — only the locked-state UI + sample peek + Open Banking population for non-primary peek is new |
 | **Attacks pain** | P1 + P4 | P5 + V2 mistarget |
-| **Build** | 6 – 9 months | 4 – 6 months |
-| **Y1 impact** | 5pp UK primacy lift (≈500k incremental primary users) | 2–3pp standalone · 5pp paired with Idea 1 |
+| **Build** | ~3 months — pure UX + existing AISP + existing analytics; no licensing dependency | ~2-3 months — locked-state UI + sample peek + thin salary-aware logic on existing analytics |
+| **Y1 impact** | ~4pp UK primacy lift (≈400k incremental primary users at 10M UK base) | 2-3pp standalone · ~5pp paired with Idea 1 |
 
-**Combined Year-1 impact: 8 – 10pp net UK primacy lift.** The two compound — Locked Insights' sample peek is the conversion CTA into Confidence Period setup; Confidence Period users watch Insights populate with real numbers as cycles complete. Differentiation on Idea 2 is *structural* (Monzo, Starling, and Chase cannot match it without the same full-income visibility), not skin-deep. Failure modes are explicitly named (>20% cycle-1 reversal; <5% insight action rate). Detail at the screen, hook, comms, and metric level follows in the body.
+**Combined Year-1 impact: 7 – 9pp net UK primacy lift.** The two compound — Locked Insights' sample peek is the conversion CTA into Confidence Period setup; Confidence Period users watch Insights populate with real numbers as cycles complete. Differentiation on Idea 2 is *structural* (Monzo, Starling, and Chase cannot match it without the same full-income visibility), not skin-deep. Failure modes are explicitly named (>20% cycle-1 reversal; <5% insight action rate). Both ideas ship inside a quarter — growth-hacking discipline maintained throughout. Detail at the screen, hook, comms, and metric level follows in the body.
+
+**Geographic scope.** This analysis is **UK-anchored** — deposit comparator (Sacra / Sifted), 13M UK Annual Report users, Reddit/Trustpilot/MSE primary sources. CEE/EU markets carry **additional structural barriers** that PLG alone cannot solve — employer-side payroll restrictions (HR-approved bank lists, payroll-provider integrations that don't include Revolut) and salary-gated bundled benefits at local banks (health-insurance discounts, mortgage rates conditional on salary primacy). The 7-9pp lift applies to the UK addressable cohort; pan-EU extrapolation would over-state impact. CEE primacy is a separate B2B-partnership initiative, out of growth-hacking scope.
 
 ---
 
@@ -60,7 +62,7 @@ This caselet attacks both — one push idea, one pull idea, sized to compound.
 
 <div class="tldr" markdown="1">
 
-<span class="tldr-label">TL;DR</span> Five pains. Three are structural — bank licence, branch presence, lock-in products — and outside product's reach. Two are not: **P1 perceived operational risk** and **P5 primacy-hostile product surface**. Neither has a counter in the live product today. That's the surface this case attacks.
+<span class="tldr-label">TL;DR</span> Five pains, each with two axes where the geography matters. **P1** (operational risk) and **P5** (primacy-hostile surface) have no current vitamin counter and are pure-UX addressable — that's the wedge this case attacks for the UK cohort. **P3** has two sides: Revolut lacking sticky products (3a, structural) AND incumbents bundling salary-conditional benefits (3b, structural-competitive — common in EU/CEE). **P4** has two sides: user-side chore + incentive gap (4a, UK-PLG-addressable) AND employer-side payroll restrictions (4b, hard wall in CEE/DE markets). The growth-hack scope here is UK; EU structural barriers are out of scope.
 
 </div>
 
@@ -84,24 +86,36 @@ No branch to walk into. No phone number to call. Historical e-money-not-bank fra
 
 **Severity:** Structural. Solving requires the bank-licence rollout, lender partnerships, branch presence — none of which are PLG-shaped. Assumed in this case as table-stakes-coming.
 
-### P3. **Missing primacy lock-in products**
+### P3. **Missing primacy lock-in products — and salary-gated bundles at incumbents**
 
-Incumbents make primacy sticky via overdraft + credit card + mortgage — *attached* to the salary-deposit account. Revolut UK has none in market as of May 2026 (PRA only lifted mobilisation restrictions in March 2026; track record is zero). Even successfully-converted primacy users keep a high-street second account for local tax-wrappers (Livret A, LDD, PEA, ISA) — i.e. **even success-case primacy is partial**.
+Two sides of the same competitive coin:
+
+**3a) Revolut LACKS sticky products.** Incumbents make primacy sticky via overdraft + credit card + mortgage — *attached* to the salary-deposit account. Revolut UK has none in market as of May 2026 (PRA only lifted mobilisation restrictions in March 2026; track record is zero). Even successfully-converted primacy users keep a high-street second account for local tax-wrappers (Livret A, LDD, PEA, ISA) — i.e. **even success-case primacy is partial**.
 
 - *"I'm French, so I still have another traditional bank for my Livret A, LDD, and PEA, but my day-to-day banking is fully on Revolut."* — r/Revolut, the 2-year-Ultra-primary user (t01).
 - *Cash deposits discontinued 13 February 2026* — primacy *regression* mid-flight.
 
-**Severity:** Structural. Assumed table-stakes-coming. Not a PLG wedge.
+**3b) Local banks (especially in CEE / DE / EU) BUNDLE benefits conditional on salary primacy with them.** Health-insurance discounts, mortgage-rate preferentials, salary-account fee waivers, employer-sponsored bonus accounts — all gated on the user depositing their salary at that specific bank. **The incumbent is paying the user to NOT switch** — via bundled-benefit discounts rather than cash incentives. This violates the brief's "can't pay for primacy" constraint from the *competitor* side but it is the reality.
 
-### P4. **Switching friction & incentive gap**
+- Primary signal (May 2026, Czech Republic): a user reports both that *"my employer cannot transfer salary to Revolut — they don't have a tie-up"* AND that *"local banks give a lot of other benefits — health insurance, better rates"* conditional on the salary-primacy relationship. Two reasons, both structural, neither addressable by app-side UX alone.
 
-The mechanical chore of moving the salary mandate + DDs + payees, combined with an economic disincentive: high street pays £150-£750 to switch in (HSBC Premier £750, NatWest Premier £250); Revolut pays a £20 referral. **Existing primacy users get nothing** — the 12-month-Metal promo targets only new conversions.
+**Severity:** Structural. UK-side (3a) is assumed table-stakes-coming. EU-side (3b) is a deeper moat that compounds with P4 employer-side restrictions. **Not a PLG wedge in either direction.**
+
+### P4. **Switching friction & incentive gap — user-side AND employer-side**
+
+Friction is two-axis. UK pain centres on the user-side chore + incentive gap; EU pain layers an employer-side wall on top.
+
+**4a) User-side:** the mechanical chore of moving the salary mandate + DDs + payees, combined with an economic disincentive: high street pays £150-£750 to switch in (HSBC Premier £750, NatWest Premier £250); Revolut pays a £20 referral. **Existing primacy users get nothing** — the 12-month-Metal promo targets only new conversions.
 
 - *"I moved my salary to Revolut and didnt get shit."* — r/Revolut (t17 c26) re: 12-months-free Metal promo.
 - *Monzo blog, January 2020:* *"Switch to Monzo without closing your old account."* — Monzo's partial-switch onramp. Revolut has no equivalent prominent path.
 - *Revolut is **not** on the May 2026 "best switching offers" list* (Be Clever With Your Cash).
 
-**Severity:** Moderate. Pure PLG surface — no licensing dependency.
+**4b) Employer-side:** in some markets (CZ, PL, RO, DE, parts of FR) the **employer's payroll system structurally cannot send to Revolut.** Two root causes: (i) corporate HR runs payroll through a bank-integrated provider whose payment-rail list doesn't include Revolut; (ii) HR policy restricts salary destinations to an approved-bank list, often tied to the bank that hosts the employer's working capital. **The user can't override this even if motivated.** That's not "friction" — it's a hard wall.
+
+- Primary signal (May 2026, Czech Republic): *"my current company can't transfer salary to Revolut as they don't have tie-up"* — direct user testimony of employer-side structural blocker. This pattern is common in CEE + DACH markets where payroll-provider ecosystems pre-date neobank distribution.
+
+**Severity:** UK = moderate, pure PLG surface, no licensing dependency. EU (especially CEE/DE) = **high** when (4b) applies — the user is removed from the addressable cohort entirely. The UK growth-hacks in §4-5 do not solve (4b); CEE primacy requires a B2B payroll-integration motion that is out of growth-hacking scope.
 
 ### P5. **Primacy-hostile product surface**
 
@@ -184,10 +198,10 @@ Two pains have **no current vitamin counter** in the live product surface (P1 pe
 | **Type** | Push — migration de-risk | Pull — only-on-primary value |
 | **Attacks pain** | P1 (operational risk) + P4 (switching friction) | P5 (hostile surface) + V2 mistarget |
 | **Cohort focus** | C3 + C4 | C2 + C3 |
-| **Wedge mechanic** | Open-Banking parallel-run + Salary Guarantee during the trust period | Visible-but-locked intelligence surface; data envy as conversion driver |
-| **Brief constraint** | Not paying for primacy — Revolut absorbs operational risk via Open-Banking + advance mechanism | Not paying for primacy — value comes from intelligence only Revolut can produce |
-| **PLG feasibility** | 6-9 months: Open-Banking integration + advance product + cycle-state machine | 4-6 months: insight catalog + locked/unlocked surface state + populated rules |
-| **Estimated impact** | 5pp UK primacy lift Y1 (5% of C3 ≈ 500k users converted) | 2-3pp standalone; 5pp paired with #1 |
+| **Wedge mechanic** | Open-Banking parallel-run + auto-mirror % to old bank + Live Clearance reassurance layer (real-time salary-cleared push, pre-payday confidence reminder, historical AML-stats card) | Visible-but-locked intelligence surface; data envy as conversion driver |
+| **Brief constraint** | Not paying for primacy — Revolut removes operational-risk *fear* via UX-only reassurance + parallel-run safety net | Not paying for primacy — value comes from intelligence only Revolut can produce |
+| **Build window** | **~3 months** — pure UX + existing AISP (Revolut already has Open Banking for Vault) + existing AML pipeline data; no licensing dependency, no new financial product | **~2-3 months** — locked-state UI + sample peek + thin salary-aware logic layered on Revolut's existing Analytics infrastructure (subscription detection + spending categorisation already live) |
+| **Estimated impact** | ~4pp UK primacy lift Y1 (~4% of C3 ≈ 400k users converted) | 2-3pp standalone; ~5pp paired with #1 |
 
 ---
 
@@ -195,22 +209,30 @@ Two pains have **no current vitamin counter** in the live product surface (P1 pe
 
 <div class="tldr" markdown="1">
 
-<span class="tldr-label">TL;DR</span> The push idea — migration de-risk. Three salary cycles run in parallel via Open Banking, with a percentage auto-mirrored back to the old bank. A **Salary Guarantee** turns the AML-freeze fear into a covered event: any hold over 60 minutes triggers an instant interest-free advance up to the salary amount. Closes P1 and P4. **6-9 months to build · ~5pp UK primacy lift Year 1 (~500k incremental primary users).**
+<span class="tldr-label">TL;DR</span> The push idea — migration de-risk via UX only, no new financial product. Three salary cycles run in parallel via Open Banking, with a percentage auto-mirrored back to the old bank. A **Live Clearance** reassurance layer addresses the AML-freeze fear with three pure-UX mechanics: real-time *"Salary cleared in N minutes"* push, 24h pre-payday confidence reminder, and a public historical AML-clearance stats card. The fear is fixed by *reassurance*, not by *insurance*. Closes P1 and P4 (UK-side). **~3 months to build · ~4pp UK primacy lift Year 1 (~400k incremental primary users).**
 
 </div>
 
 ### What it is
 
-A 3-salary-cycle parallel-run that lets a user move their salary mandate to Revolut **without committing to single-bank primacy**. The system uses Open Banking to read the user's existing primary bank, automatically auto-mirror a percentage of each Revolut-received salary back to the old account, and bundles a **Salary Guarantee** — if Revolut ever holds the deposit for AML review beyond 60 minutes, the user receives an interest-free advance up to their salary amount, instantly.
+A 3-salary-cycle parallel-run that lets a user move their salary mandate to Revolut **without committing to single-bank primacy**. The system uses Open Banking — Revolut's existing AISP capability (already in production for Vault) — to read the user's existing primary bank and automatically auto-mirror a percentage of each Revolut-received salary back to the old account during the trust period.
+
+Surrounding the parallel-run is a **Live Clearance** reassurance layer — three pure-UX mechanics that anchor the AML pipeline as fast, transparent, and predictable rather than invisible-until-broken:
+
+- **Real-time "Salary cleared ✓" push notification** — fires within seconds of the AML clearance event, with elapsed time (*"cleared in 7 minutes"*). The fear is the *uncertainty*; this removes it.
+- **24h pre-payday confidence reminder** — soft notification the evening before predicted payday: *"Your salary is expected within X hours of your employer paying it. Anything off, our priority support line is in the app."* Replaces narrative anxiety with a concrete trust signal.
+- **Historical AML-clearance stats card on profile** — public, always-visible: *"Last 30 days: 99.7% of salaries cleared within 8 min · 0.2% within 1 hr · 0.1% required review."* Anchors fear in actual statistics, not anecdote.
 
 After 3 successful cycles the auto-mirror fades. The user has *lived* primacy without the fear, and the second-bank cohabitation has been quietly dissolved instead of confronted.
+
+**Why no Salary Guarantee?** An earlier draft of this idea bundled a Salary-Guarantee insurance product (instant interest-free advance up to the salary amount on any AML hold > 60 min). It was the strongest cognitive anchor — but it's a *lending product*, with regulatory clearance, credit-risk underwriting, advance-disbursement infrastructure, and a 5-6 month build window. That's strategic infrastructure, not a growth-hack. The brief asks for growth-hacking ideas; bundling a financial product breaks scope discipline. **The fear is the bottleneck, not the actual hold rate** — and fear is fixed by transparency + reassurance UX more cheaply than by insurance.
 
 ### Why this attacks the deepest pain
 
 Confidence Period directly addresses the highest-leverage uncovered pain in Stage 2's matrix:
 
-- **P1 (Perceived operational risk):** the Salary Guarantee mechanism converts the AML-hold from an existential threat ("can't pay rent") to a manageable inconvenience ("held but advanced"). It doesn't promise no holds — that's not credible — it promises *no consequences*.
-- **P4 (Switching friction):** the parallel-run formally acknowledges the two-bank cohabitation deal users have rationally settled into, and uses it as a bridge rather than a competitor. *Revolut becomes primary while you keep the old bank running.*
+- **P1 (Perceived operational risk):** the Live Clearance reassurance layer converts the AML pipeline from an invisible black box into a visible, predictable, fast process. The demote funnel is driven by *narrative anxiety* ("what if today is the day?"), not the actual hold rate — which is already near zero. The real-time notification gives a per-cycle anchor; the historical stats card gives a longitudinal anchor; the pre-payday reminder gives a forward-looking anchor. Three different framings of the same statistical truth, each closing a different cognitive door.
+- **P4a (User-side switching friction):** the parallel-run formally acknowledges the two-bank cohabitation deal users have rationally settled into, and uses it as a bridge rather than a competitor. *Revolut becomes primary while you keep the old bank running.* (P4b employer-side restrictions in CEE are out of scope — see §1.)
 - **P11 (Demote funnel):** each successful cycle is *lived evidence* that primacy works. The user accumulates trust, not just commitments.
 
 ### a) Step-by-step UX flow
@@ -229,8 +251,8 @@ Confidence Period directly addresses the highest-leverage uncovered pain in Stag
     <div class="sb-sub">Move your salary here. We'll keep your old bank as backup for 3 cycles.</div>
     <div class="card">
       <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z"/></svg></span></div>
-      <div class="card-title">Salary Guarantee</div>
-      <div class="card-body">If we ever hold your deposit, we advance you instantly — interest-free.</div>
+      <div class="card-title">Live Clearance</div>
+      <div class="card-body">You get a notification the moment your salary clears AML — usually within minutes. No silence, no guessing.</div>
     </div>
     <div class="card">
       <div class="card-row"><span class="card-icon">↔︎</span></div>
@@ -351,8 +373,8 @@ Why detection-first: Open Banking gives Revolut everything it needs — employer
     </div>
     <div class="toggle-row">
       <div>
-        <div class="label">Salary Guarantee</div>
-        <div class="sub">If we hold your deposit &gt;60 min, we advance you instantly — interest-free.</div>
+        <div class="label">Live Clearance alerts</div>
+        <div class="sub">Push the moment your salary clears AML (usually under 10 min). Plus a heads-up 24h before payday.</div>
       </div>
       <div class="toggle"></div>
     </div>
@@ -400,7 +422,7 @@ Why detection-first: Open Banking gives Revolut everything it needs — employer
       <div class="sum-row"><span class="sum-key">Salary destination</span><span class="sum-val">Revolut</span></div>
       <div class="sum-row"><span class="sum-key">Mirror to Lloyds</span><span class="sum-val">30% per cycle</span></div>
       <div class="sum-row"><span class="sum-key">Cycles</span><span class="sum-val">3</span></div>
-      <div class="sum-row"><span class="sum-key">Salary Guarantee</span><span class="sum-val"><span class="success-pill">on</span></span></div>
+      <div class="sum-row"><span class="sum-key">Live Clearance alerts</span><span class="sum-val"><span class="success-pill">on</span></span></div>
       <div class="sum-row"><span class="sum-key">First payday</span><span class="sum-val">28 June 2026</span></div>
       <div class="sum-row"><span class="sum-key">DDs moving cycle 1</span><span class="sum-val">2 of 6</span></div>
     </div>
@@ -441,36 +463,34 @@ Why detection-first: Open Banking gives Revolut everything it needs — employer
 </div>
 </div>
 
-#### If AML hold occurs — the Salary Guarantee path
+#### If AML processing runs long — the Live Clearance path
 
 <div class="screens-grid">
 <div class="screen-cell">
 <div class="phone"><div class="phone-inner">
   <div class="status-bar"><span>9:41</span><span class="right"><span>5G</span><span class="battery"></span></span></div>
-  <div class="nav-bar"><span class="back">‹</span><span class="title">Salary Guarantee</span><span class="more">⋯</span></div>
+  <div class="nav-bar"><span class="back">‹</span><span class="title">Verifying salary</span><span class="more">⋯</span></div>
   <div class="screen-body">
     <div class="toast warn">
-      <div class="toast-title">We need to verify a transaction</div>
-      Until we clear, here's an instant advance — interest-free.
-    </div>
-    <div class="balance-block guarantee">
-      <div class="balance-label">Advance issued</div>
-      <div class="balance-amt">£3,247.00</div>
-      <div class="balance-sub">Clears automatically when your salary releases.</div>
+      <div class="toast-title">Routine verification underway</div>
+      Bonus variance triggered a quick pattern check. Most clear within 1 hour.
     </div>
     <div class="card warn">
-      <div class="card-row"><span class="card-icon">⚠︎</span><span class="warn-pill">hold</span></div>
-      <div class="card-title">Estimated clearance · 2-4 hours</div>
-      <div class="card-body">Hold reason: bonus variance exceeded usual £3,000 pattern. KPMG payroll verified.</div>
+      <div class="card-row"><span class="card-icon">⚠︎</span><span class="warn-pill">verifying</span></div>
+      <div class="card-title">Estimated clearance · 30-60 min</div>
+      <div class="card-body">Bonus variance exceeded your usual £3,000 pattern. KPMG payroll already verified upstream — we just need to confirm on our side.</div>
       <div class="card-cta">Talk to a human now →</div>
     </div>
-    <div class="sb-section-label">Advance ledger</div>
-    <div class="ledger-row"><span class="ledger-time">09:41</span><span class="ledger-label">Advance issued</span><span class="ledger-amt">+£3,247</span></div>
-    <div class="ledger-row"><span class="ledger-time">est. 13:00</span><span class="ledger-label">Salary released</span><span class="ledger-amt muted">+£3,247</span></div>
-    <div class="ledger-row"><span class="ledger-time">est. 13:00</span><span class="ledger-label">Advance settled</span><span class="ledger-amt muted">−£3,247</span></div>
+    <div class="sb-section-label">Live status</div>
+    <div class="ledger-row"><span class="ledger-time">09:41</span><span class="ledger-label">Salary received, verifying</span><span class="ledger-amt muted">£3,247</span></div>
+    <div class="ledger-row"><span class="ledger-time">est. 10:30</span><span class="ledger-label">Expected to clear</span><span class="ledger-amt muted">+£3,247</span></div>
+    <div class="card">
+      <div class="card-title">Last 30 days at Revolut</div>
+      <div class="card-body"><strong>99.7%</strong> of salaries cleared within 8 min · <strong>0.2%</strong> within 1 hour · <strong>0.1%</strong> needed review. Your bank's processing time is in the small print of every salary; ours is on the front page.</div>
+    </div>
   </div>
 </div></div>
-<div class="caption">The load-bearing moment. The user's worst-case — <em>"I can't pay rent"</em> — never materialises. Priority human-line replaces the AI-bolted support that's currently the #1 primacy blocker.</div>
+<div class="caption">The load-bearing moment. Transparency &gt; insurance. The user's worst-case fear — <em>"I can't pay rent because it's been silently held"</em> — is converted into a visible, predictable process with an ETA and a human escalation. Historical stats on the same screen anchor today's wait in 30-day reality.</div>
 </div>
 <div class="screen-cell">
 <div class="phone"><div class="phone-inner">
@@ -489,8 +509,8 @@ Why detection-first: Open Banking gives Revolut everything it needs — employer
     </div>
     <div class="card live">
       <div class="card-row"><span class="card-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 6v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V6l-8-4z"/></svg></span></div>
-      <div class="card-title">Salary Guarantee · stays on</div>
-      <div class="card-body">As long as your salary lands here.</div>
+      <div class="card-title">Live Clearance · stays on</div>
+      <div class="card-body">Real-time salary alerts continue for as long as your salary lands here. <em>Avg clearance for you across 3 cycles: 6 min.</em></div>
     </div>
     <div class="sb-section-label">What about auto-mirror?</div>
     <div class="cta-secondary alt">Keep it on indefinitely</div>
@@ -498,7 +518,7 @@ Why detection-first: Open Banking gives Revolut everything it needs — employer
     <div class="cta-secondary alt">Let it stop</div>
   </div>
 </div></div>
-<div class="caption">Cycle 3 close. Celebration is quantified (savings APR, Guarantee continuity), not vague. Three buttons for auto-mirror — no default forced.</div>
+<div class="caption">Cycle 3 close. Celebration is quantified (savings APR, Live Clearance continuity with the user's personal avg), not vague. Three buttons for auto-mirror — no default forced.</div>
 </div>
 </div>
 
@@ -510,7 +530,7 @@ Same shape. Locked Insights (Idea 2) start populating with real data this week �
 Day -7 (one week before): Push — *"Cycle 3 finishes [date]. You've completed primacy."*
 
 Day 0: In-app celebration moment — *"Welcome to Revolut Primary."*
-- Reward unlock: savings APR +0.5pp permanent; existing Metal users get +12 months; *"Salary Guarantee remains active for as long as your salary is here."*
+- Reward unlock: savings APR +0.5pp permanent; existing Metal users get +12 months; *"Live Clearance alerts continue as long as your salary lands here."*
 - Auto-mirror winds down: *"Your auto-mirror is fading. Keep it on indefinitely? Pause it? Let it stop?"* — three buttons, no defaults forced.
 
 #### Reverse flow (if the user changes their mind)
@@ -541,9 +561,9 @@ Cmd-K equivalent / Settings → *"Reverse Confidence Period"* → one-screen CAS
 | Stakeholder | What they see | Why |
 |---|---|---|
 | **Fraud / AML team** | Confidence Period users flagged in the case management system; pre-cleared payroll signal in the user record | AML rules can run permissively on verified-employer salary deposits, dramatically lowering hold rate during the trust period |
-| **Customer support** | "Confidence Period in progress" badge on user profile; priority queue for users currently in a Guarantee event | Prevents AI-loop responses to users in active Guarantee state — the support team picks up these tickets first |
-| **Product analytics** | Real-time funnel: activation → cycle 1 → cycle 2 → cycle 3 → flip; reversal cohort tracking | Each cycle is a distinct conversion event; reversal at cycle 1 vs cycle 3 has different root causes |
-| **Treasury** | Mirror cost float report (Revolut effectively co-funds the old-bank balance during parallel run); Salary Guarantee advance ledger | Both are quantifiable capital costs — need to be modeled and bounded |
+| **Customer support** | "Confidence Period in progress" badge on user profile; priority queue for users in active verification state (rare) | Prevents AI-loop responses to users hitting an AML verification — the support team picks up these tickets first. The Live Clearance card's *"Talk to a human now"* CTA routes here directly |
+| **Product analytics** | Real-time funnel: activation → cycle 1 → cycle 2 → cycle 3 → flip; reversal cohort tracking; per-user salary-clearance time histogram | Each cycle is a distinct conversion event; reversal at cycle 1 vs cycle 3 has different root causes; per-user histograms populate the personal stats line in the Cycle 3 close screen |
+| **Treasury** | Mirror cost float report (Revolut effectively co-funds the old-bank balance during parallel run) | Quantifiable capital cost — needs to be modelled and bounded. No advance/lending exposure (Live Clearance is UX-only, not a credit product) |
 
 **External-stakeholder comms.**
 
@@ -551,7 +571,7 @@ Cmd-K equivalent / Settings → *"Reverse Confidence Period"* → one-screen CAS
 |---|---|---|
 | **Old bank** | Nothing automated. The CASS mechanism is invoked only if user picks the formal CASS path for DD migration | Revolut deliberately doesn't compete head-on; the cohabitation is a feature |
 | **Major UK payroll providers** | Future B2B integration target. Discussions around direct payroll-mandate API | Eliminates the HR-letter friction entirely for users at integrated employers |
-| **PRA / FCA** | Regulatory disclosure that the Salary Guarantee mechanism is a contingent-credit product; bounded exposure (max 1 salary per user, 7-day expected clearance) | Pre-cleared with regulator at design stage rather than after launch |
+| **PRA / FCA** | No new regulatory disclosure required — Confidence Period uses existing AISP capability (already cleared) + existing AML pipeline + push notifications. No new financial product is introduced | Growth-hack discipline: no licensing surface, no new approval path, fast to launch |
 
 ### d) Metrics — adoption + usage
 
@@ -562,29 +582,30 @@ Cmd-K equivalent / Settings → *"Reverse Confidence Period"* → one-screen CAS
 | | Cycle completion rate: cycle 1 / cycle 2 / cycle 3 (funnel) | Where users drop — cycle 1 dropout signals different root cause than cycle 3 dropout |
 | | Time-to-flip from activation | Migration speed |
 | | Reversal rate by cycle | Reverse signal — high reversal at cycle 1 means we mis-detected eligibility; at cycle 3 means our value prop is weak |
-| **Salary Guarantee** | Hold-rate during Confidence Period (target: <1% — pre-clearance works) | The Guarantee should fire rarely; if it fires often, pre-clearance is broken |
-| | Guarantee invocation rate (frequency × £ dispensed) | Capital exposure |
-| | Post-Guarantee retention (do users stay after their Guarantee was invoked?) | The most expensive single signal — proves the Guarantee converts a "freeze incident" from churn-event into trust-event |
+| **Live Clearance** | AML hold rate during Confidence Period (target: <1% — verified-employer pre-clearance works) | Holds should fire rarely; if often, pre-clearance is broken. Lower is better for fear-removal AND for the public stats card |
+| | Notification deliver time (push fires within 30s of clearance event, p95) | The reassurance is only real if the notification is real-time. p95 > 60s = the mechanic is broken |
+| | Post-verification retention (do users stay after they hit an AML verification event?) | The most expensive single signal — proves transparency + priority human support converts a "freeze incident" from churn-event into trust-event without needing an insurance product to back it |
 | **Secondary leading** | Mirror-% distribution chosen by users | If most pick 50%, our default is wrong; if most pick 0%, the feature was never the bottleneck |
 | | Existing-user activation rate (users who already had salary here pre-launch) | Closes the t17 gap — existing primacy users finally getting visible reward |
 | | DD migration pacing (cycle 1 / cycle 2 / cycle 3 breakdown) | Risk pacing — rent in cycle 3 vs cycle 1 |
 | **Lagging** | Net primacy uplift (Y1, Y2) | The bet |
 | | Demote-funnel reversal rate (% of users moving DDs back to old bank within 6 months) | The hidden churn signal |
 | | NPS for users 3 months post-flip | Did primacy stick? Are they happier? |
-| **Internal health** | Mirror float cost (basis points) | Bounded capital cost |
-| | Guarantee advance-vs-collect ratio | Repayment latency |
+| **Internal health** | Mirror float cost (basis points) | Bounded capital cost — the only treasury exposure in this idea |
+| | Live Clearance notification opt-out rate | If users mute it, the reassurance mechanic is unwanted noise. Pair with notification fatigue check (avg push/user/week) |
 | | AML false-positive rate on Confidence Period users (vs. control) | Validates the pre-clearance hypothesis |
 
-**Success threshold for Year 1:** 5pp net UK primacy uplift attributed to Confidence Period (≈500k incremental primary users at 10M UK base). Failure threshold: <1pp net, and/or >20% cycle-1 reversal rate — both indicate the mental model is wrong.
+**Success threshold for Year 1:** ~4pp net UK primacy uplift attributed to Confidence Period (≈400k incremental primary users at 10M UK base). Failure threshold: <1pp net, and/or >20% cycle-1 reversal rate — both indicate the mental model is wrong. Slightly lower than the original 5pp target reflects removing the Salary Guarantee anchor; the reassurance UX addresses fear effectively but tests less viscerally than the insurance product in a focus group.
 
 ### e) Risks & open questions
 
 <div class="risks" markdown="1">
 
-- **Salary Guarantee abuse** — a user invokes the Guarantee, withdraws the advance, then de-primacies before the held salary clears. *Hedge:* the advance is contingent-credit with a 30-day clawback right tied to the salary deposit; max one invocation per 90 days; pre-clearance via verified-employer signal pushes hold rate below 1%, so abuse-eligible events are rare by design.
+- **Notification fatigue** — three Live Clearance touchpoints per payday cycle (24h-pre push + clearance push + delayed-verification push if applicable) could read as noise. *Hedge:* opt-out toggle exposed prominently at setup; per-user push-rate cap; the historical-stats card on profile lets motivated users self-serve reassurance without a push.
 - **Mirror float capital cost** — Revolut effectively co-funds the old-bank balance during the parallel run. *Hedge:* the 30% default keeps capital exposure bounded; treasury models mirror float at <50bps of monthly active-salary throughput, recoverable as primacy compounds.
 - **Open Banking coverage gaps** — not every UK bank exposes the granular salary-and-DD signal Confidence Period needs. *Hedge:* MVP supports the top-10 UK banks (covers ~85% of consumer salary mandates); manual self-declared fallback for the remainder.
-- **AML pre-clearance assumption** — the model depends on Confidence Period users seeing a lower hold rate than control. *Open question:* if pre-clearance only lowers hold rate by ~30% (not the ~70% modelled), the Guarantee fires more often and the unit economics compress. Mitigated by a shadow-mode pilot before public launch.
+- **The reassurance UX is less viscerally reassuring than insurance** — *Open question:* in user research, does a "Salary cleared in 7 min ✓" push read as strongly as *"if it's ever held, we advance you instantly"*? The former is statistically more honest (the actual hold rate is near zero) but the latter is the cognitive anchor users instinctively reach for. Mitigated by shadow-test pre-launch; if the reassurance signal underperforms, the Salary Guarantee can be added in a later phase as a separate strategic build (out of growth-hacking scope).
+- **Stats-card honesty risk** — the "99.7% cleared in 8 min" claim has to be live and audited. *Hedge:* the stats source is the same AML pipeline the support team reads from; back-end is read-only; data refreshes daily with a 30-day lookback to smooth single-week anomalies.
 
 </div>
 
@@ -594,7 +615,7 @@ Cmd-K equivalent / Settings → *"Reverse Confidence Period"* → one-screen CAS
 
 <div class="tldr" markdown="1">
 
-<span class="tldr-label">TL;DR</span> The pull idea — only-on-primary value. Insights sits in the bottom nav for every user. Non-primary sees real cards with blurred numbers and a one-time sample peek; primary unlocks subscription audits, cashflow forecasts, DD optimisation, anomaly detection. Structural moat: only Revolut's full-income visibility produces these insights — Monzo, Starling, Chase can't match it. Closes P5 and activates V2. **4-6 months to build · 2-3pp standalone Year 1 · 5pp paired with Idea 1.**
+<span class="tldr-label">TL;DR</span> The pull idea — only-on-primary value. Insights sits in the bottom nav for every user. Non-primary sees real cards with blurred numbers and a one-time sample peek; primary unlocks subscription audits, cashflow forecasts, DD optimisation, anomaly detection. Structural moat: only Revolut's full-income visibility produces these insights — Monzo, Starling, Chase can't match it. Closes P5 and activates V2. **~2-3 months to build · 2-3pp standalone Year 1 · ~5pp paired with Idea 1.**
 
 </div>
 
@@ -603,6 +624,8 @@ Cmd-K equivalent / Settings → *"Reverse Confidence Period"* → one-screen CAS
 A salary-aware intelligence surface that **only functions with the user's full income visible**. Non-primary users see the *shapes* of insights — real cards in the Insights tab with blurred numbers — with a single CTA to unlock by making Revolut primary. Primary users see fully populated cards updating in real time: subscription audits, payday-cashflow nudges, DD-payday optimisation, projected-shortfall auto-vault-pull, bill anomalies.
 
 The conversion driver is **data envy**. The user sees what they're missing *in their own currency, on their own data*.
+
+**Why ~2-3 months and not longer.** Revolut's Analytics tab already ships the data backbone — subscription detection, spending categorisation, transaction tagging — as of 2025. The new build is thin: the locked-state UI (blurred cards + sample peek + "Connect your full income to unlock" CTA), a salary-aware logic layer on top of existing analytics (DD-payday optimisation, anomaly detection rules, anniversary-style anchors), and the Open Banking peek path for non-primary users (already infrastructure-present for Vault). No new financial product. No licensing surface. Growth-hack discipline.
 
 ### Why this attacks the deepest under-served vitamin
 
@@ -830,11 +853,13 @@ A short closing on why this is the pair, viewed across the dimensions that matte
 
 **Originality of mechanic.** Two ideas that **neither pay for primacy nor copy Monzo's playbook**. Confidence Period acknowledges the two-bank cohabitation deal that every Reddit thread reveals as the rational user equilibrium, and uses it as a bridge rather than a competitor. Locked Insights reframes primacy from a sacrifice ("give us your salary") to a key ("see what your salary tells us"). Both mechanics are unique implementations rather than feature combinations.
 
-**Depth of implementation.** Each idea is *one mechanic*, not 5 features bundled. Confidence Period = parallel-run + Salary Guarantee + cycle state machine. Locked Insights = locked surface + insight engine + sample peek. Both are defended end-to-end at the screen, hook, comms, and metric level — see sections 4 and 5.
+**Depth of implementation.** Each idea is *one mechanic*, not 5 features bundled. Confidence Period = parallel-run + auto-mirror + Live Clearance reassurance UX + HR letter generator. Locked Insights = locked surface + insight engine on existing Revolut Analytics + sample peek. Both are defended end-to-end at the screen, hook, comms, and metric level — see sections 4 and 5.
 
-**Strength of reasoning.** The trail is auditable: primary research surfaced 11 pains, clustered into 5 macro categories with 2 uncovered by any current vitamin; the ideation pool was scored on four axes and the two picks emerged with full pair-defensibility (push-pull, complementary cohorts, no redundant mechanism). Runner-ups are explicitly named and explicitly rejected.
+**Growth-hack discipline.** Both ideas ship inside a quarter — Confidence Period in ~3 months (pure UX + existing AISP + existing AML pipeline data; no new financial product, no licensing dependency); Locked Insights in ~2-3 months (locked-state UI + sample peek + thin layer on existing Revolut Analytics). An earlier draft of Confidence Period bundled a Salary-Guarantee insurance product as the strongest cognitive anchor for P1 fear — but that's a *lending product*, with regulatory clearance, credit-risk underwriting, and a 5-6 month build. Out of scope for a growth-hacking brief. The stripped version uses transparency + reassurance UX to address the same fear, and stays inside discipline.
 
-**Sized impact.** Conservative model: Confidence Period at 5pp UK primacy lift Year 1 (5% conversion of C3 cohort ≈ 500k users); Locked Insights at 2-3pp standalone, 5pp paired via the sample-peek funnel. Together: **8-10pp net UK primacy lift Year 1** — a meaningful step on a sub-20% global baseline. Failure modes are explicitly named (cycle 1 reversal > 20%; insight action-rate < 5%).
+**Strength of reasoning.** The trail is auditable: primary research surfaced 11 pains, clustered into 5 macro categories with 2 uncovered by any current vitamin; the ideation pool was scored on four axes and the two picks emerged with full pair-defensibility (push-pull, complementary cohorts, no redundant mechanism). Runner-ups are explicitly named and explicitly rejected. A primary-source signal from a Czech-Republic user during ideation surfaced two additional structural pain axes (employer-side payroll restrictions; salary-gated bundled benefits at local banks) — those are folded into the P3/P4 analysis with explicit geographic scoping; the UK growth-hacks in §4-5 do not solve them, and the analysis does not pretend otherwise.
+
+**Sized impact.** Conservative model: Confidence Period at ~4pp UK primacy lift Year 1 (~4% conversion of C3 cohort ≈ 400k users at 10M UK base); Locked Insights at 2-3pp standalone, ~5pp paired via the sample-peek funnel. Together: **7-9pp net UK primacy lift Year 1** — a meaningful step on a sub-20% global baseline. Failure modes are explicitly named (cycle 1 reversal > 20%; insight action-rate < 5%). The estimate is UK-only — pan-EU extrapolation would over-state given the structural barriers in CEE markets.
 
 The two ideas are designed to be **defensible end-to-end**, not just plausible at first read. Every load-bearing claim is anchored: every quote is sourced, every number is cited, every cohort sizing is built up from primary research.
 
