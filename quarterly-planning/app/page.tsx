@@ -576,21 +576,32 @@ function InlineTriageCard({
 
       {/* Action row */}
       <div
-        className="flex items-center justify-between gap-2 border-t px-4 py-3"
+        className="border-t px-4 pt-2.5 pb-3"
         style={{ borderColor: "var(--color-border)", background: "var(--color-surface-sunken)" }}
       >
-        <div className="flex items-center gap-2">
-          <ActionPill kind="defer" onClick={() => onDecide("defer")} />
-          <ActionPill kind="route" onClick={() => onDecide("route")} />
-          <ActionPill kind="promote" onClick={() => onDecide("promote")} />
-        </div>
-        <Link
-          href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
-          className="text-[11.5px] transition hover:underline"
+        <p
+          className="text-[9.5px] font-semibold uppercase tracking-[0.12em]"
           style={{ color: "var(--color-tertiary)" }}
         >
-          Why this →
-        </Link>
+          Sort
+          <span className="ml-1 normal-case font-normal tracking-normal" style={{ color: "var(--color-muted)" }}>
+            · the triage step; deeper decision happens on the initiative page
+          </span>
+        </p>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <ActionPill kind="defer" onClick={() => onDecide("defer")} />
+            <ActionPill kind="route" onClick={() => onDecide("route")} />
+            <ActionPill kind="promote" onClick={() => onDecide("promote")} />
+          </div>
+          <Link
+            href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
+            className="text-[11.5px] transition hover:underline"
+            style={{ color: "var(--color-tertiary)" }}
+          >
+            Why this →
+          </Link>
+        </div>
       </div>
     </motion.div>
   );

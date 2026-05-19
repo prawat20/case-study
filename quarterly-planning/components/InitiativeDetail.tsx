@@ -687,6 +687,17 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
             boxShadow: "var(--shadow-sm)",
           }}
         >
+          {mode === "default" && (
+            <p
+              className="mb-3 text-[9.5px] font-semibold uppercase tracking-[0.12em]"
+              style={{ color: "var(--color-tertiary)" }}
+            >
+              Decide
+              <span className="ml-1 normal-case font-normal tracking-normal" style={{ color: "var(--color-muted)" }}>
+                · the decision step; lighter Sort happens back on Now
+              </span>
+            </p>
+          )}
           <AnimatePresence mode="wait">
             {/* Default — three-action bar */}
             {mode === "default" && (

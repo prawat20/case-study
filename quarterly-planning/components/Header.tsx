@@ -1,10 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { RotateCcw, HelpCircle } from "lucide-react";
 import { useCommandPalette } from "@/components/CommandProvider";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useIsMac } from "@/lib/platform";
+import { clearDecisions, clearFrameworkOverrides } from "@/lib/decisions";
+import { clearTriage } from "@/lib/triage";
+import { clearCaptures } from "@/lib/captures";
+import { clearCalendarState } from "@/lib/calendar-state";
+import { OnboardingModal, openOnboarding } from "@/components/OnboardingModal";
 
 type NavItem = {
   label: string;
@@ -37,12 +44,29 @@ const NAV: NavItem[] = [
     href: "/audit/",
     match: (p) => p.startsWith("/audit"),
   },
+  {
+    label: "Architecture",
+    href: "/architecture/",
+    match: (p) => p.startsWith("/architecture"),
+  },
 ];
 
 export function Header() {
   const { open } = useCommandPalette();
   const pathname = usePathname() || "/";
   const isMac = useIsMac();
+  const router = useRouter();
+  const [confirmReset, setConfirmReset] = useState(false);
+
+  function resetDemo() {
+    clearDecisions();
+    clearFrameworkOverrides();
+    clearTriage();
+    clearCaptures();
+    clearCalendarState();
+    setConfirmReset(false);
+    router.push("/");
+  }
 
   return (
     <header
@@ -104,8 +128,49 @@ export function Header() {
         </nav>
 
         {/* Right cluster */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            onClick={openOnboarding}
+            aria-label="How Sift works"
+            title="How Sift works"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[var(--color-tertiary)] transition hover:bg-[var(--color-card-hover)] hover:text-[var(--color-primary)]"
+          >
+            <HelpCircle size={14} />
+          </button>
           <ThemeToggle />
+          {confirmReset ? (
+            <div className="inline-flex items-center gap-1">
+              <button
+                onClick={resetDemo}
+                aria-label="Confirm reset"
+                className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-[11px] font-medium transition"
+                style={{
+                  background: "var(--color-warning)",
+                  color: "var(--color-elevated)",
+                }}
+              >
+                Reset demo
+              </button>
+              <button
+                onClick={() => setConfirmReset(false)}
+                aria-label="Cancel reset"
+                className="inline-flex h-7 items-center rounded-md border border-[var(--color-border)] px-2 text-[11px] transition hover:bg-[var(--color-card-hover)]"
+                style={{ color: "var(--color-tertiary)" }}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmReset(true)}
+              aria-label="Reset demo state"
+              title="Reset demo state (theme preference preserved)"
+              className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-[11px] text-[var(--color-tertiary)] transition hover:bg-[var(--color-card-hover)] hover:text-[var(--color-primary)]"
+            >
+              <RotateCcw size={12} />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+          )}
           <button
             onClick={open}
             aria-label="Open command palette"
@@ -116,6 +181,7 @@ export function Header() {
           </button>
         </div>
       </div>
+      <OnboardingModal />
 
       {/* Nav — mobile/tablet (second row, scrollable if needed) */}
       <nav

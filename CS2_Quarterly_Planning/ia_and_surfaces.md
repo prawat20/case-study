@@ -62,9 +62,9 @@ A single surface, persistent 260px left rail with four audience cards (Sales, Ex
 No sidebar. No collapsible rail. **One thin top header.**
 
 ```
-┌────────────────────────────────────────────────────────────────────┐
-│  ◇ Sift           Now    Inbox  Prioritize  Calendar  Audit    ⌘K  │
-└────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  ◇ Sift   Now   Calendar   Stakeholders   Audit   Architecture   ?  ↻  ⌘K   │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
 > **Sift is the product.** Maya's fictional employer is *Glide* (see `product_pov.md`) — kept separate so the wordmark doesn't read as the company.
@@ -72,8 +72,9 @@ No sidebar. No collapsible rail. **One thin top header.**
 - 56px tall, `--surface` background, `--shadow-sm`, hairline `--border-subtle` bottom.
 - Logo (Sift diamond) is sage. Wordmark in `--ink-1`, weight 600.
 - Nav items: 14px Inter, `--ink-2` default, `--ink-1` on active surface, `--accent` on active page (single underline `--accent` 2px below).
-- `⌘K` chip on the right — `--ink-3`, mono, opens command palette.
-- **Stakeholders + Architecture are not in the top nav** — accessed via Cmd+K. They're not part of the daily loop.
+- Right cluster: **?** opens *How Sift works* modal (auto-shows once on first visit, persists via `qp_onboarding_seen_v1`); **theme toggle**; **↻ Reset** clears the six demo-state stores after a confirm step (theme preference survives); **⌘K** chip opens the command palette.
+- **Architecture is in the primary nav.** The original POV stance held Architecture as Cmd+K-only because it's not part of the daily loop. That tradeoff is wrong for this build — Architecture is the **case-study capability map**, and a reviewer who can't find it loses the most load-bearing context. Daily users would still default to Now / Calendar; the extra nav item costs them ~zero.
+- **Stakeholders is in the primary nav** for the same reason — it's where the brief's "communicate per audience" JBTD lives, and reviewers should find it without Cmd+K.
 
 Why no sidebar — Linear/Height/Tability all use sidebars. They're the right answer for *projects-with-issues* tools. We're not that. We're a *calm-flow planning* tool. Sidebar = constant navigation reminder = subtle cognitive load. Top header = "you're here, that's enough."
 
@@ -169,6 +170,8 @@ What Maya sees when she opens Inbox without committing to triage. Stack of un-tr
 ### 5b. Triage — Tinder swipe card (`/inbox/triage`) **[shipped — final design]**
 
 The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with keyboard fallback.
+
+> **Funnel framing.** Triage actions live under the **Sort** label — Promote / Defer / Route. The deeper **Decide** step (Commit / Defer / Escalate) happens on the Initiative Detail page after Promote. Both surfaces carry a small eyebrow making the distinction explicit, so a reviewer reads the funnel as deliberate rather than as drift between similar verbs.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
