@@ -28,7 +28,7 @@ CS2 is a five-surface app demonstrating an opinionated end-to-end planning loop:
 
 ## Demo flow (8 minutes, end-to-end)
 
-1. **Land on Now** — North Star ($1.5M of $2.4M Net New ARR) in 48px Fraunces serif. Dual-marker progress bar shows ARR achieved against time elapsed. Three "do today" cards stacked: Triage CTA · Sprint peek · Predictions due.
+1. **Land on Now** — North Star ($600k of $2.4M Net New ARR) in 48px Fraunces serif. Dual-marker progress bar shows ARR achieved against time elapsed (25% vs 31% — 6pp behind pace, the demo's deliberate tension). Three "do today" cards stacked: Triage CTA · Sprint peek · Predictions due.
 
 2. **Capture an ask with `⌘N`** — modal opens anywhere. Type *"Sales says SAML for Acme — 3 deals stalling"*. Auto-detected chips appear underneath (source: Sales · channel: Slack · signal: revenue). Soft pluck chime on save.
 
@@ -43,8 +43,8 @@ CS2 is a five-surface app demonstrating an opinionated end-to-end planning loop:
 
 5. **Calendar = the puzzle** — placement IS the prioritization, no abstract Commit step.
    - **TO PLACE rail** (sage dashed) at top. Each item shows effort + RICE + AI-suggested-sprint chip.
-   - **4 sprint lanes** with capacity bars (12 points each).
-   - **Drag a rail card into a sprint** = commit. If the sprint goes over capacity, the **Drop Planner** panel expands inline: each item currently in the target sprint gets a destination row (`Keep | Sprint 1 (Xp free) | Sprint 3 (Yp free) | Defer Q4`). AI's suggestion is pre-selected with a ✦ badge — every row overridable. Live trade-off summary updates per toggle.
+   - **4 sprint lanes** with capacity bars (12 points each). **Sprint 1 is shipped** — dimmed, read-only, no drop target (the PM can't plan work into a sprint that already closed). Sprint 2 is in flight; Sprints 3 + 4 are planned.
+   - **Drag a rail card into a sprint** = commit. If the sprint goes over capacity, the **Drop Planner** panel expands inline: each item currently in the target sprint gets a destination row (`Keep | Sprint 2 (Xp free) | Sprint 3 (Yp free) | Defer Q4`). AI's suggestion is pre-selected with a ✦ badge — every row overridable. Live trade-off summary updates per toggle.
    - **Drag any item to the DEFER tray** = pushed to next quarter.
    - **Snap as Q3 plan** only enables when the rail is empty AND no sprint is over capacity.
 
