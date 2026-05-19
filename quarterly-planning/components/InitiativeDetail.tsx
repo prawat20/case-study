@@ -428,17 +428,19 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
                 {isAIPick && (
                   <span
                     aria-hidden
-                    className="inline-block h-1 w-1 rounded-full"
+                    className="text-[10px] leading-none"
                     style={{
-                      background: active ? "rgba(255,255,255,0.7)" : "var(--color-accent)",
+                      color: active ? "rgba(255,255,255,0.85)" : "var(--color-accent)",
                     }}
-                  />
+                  >
+                    ✦
+                  </span>
                 )}
               </button>
             );
           })}
           <span className="ml-1 text-[11px]" style={{ color: "var(--color-muted)" }}>
-            • marks AI&rsquo;s pick
+            ✦ marks AI&rsquo;s pick
           </span>
         </div>
 

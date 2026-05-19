@@ -89,4 +89,4 @@ Open `http://localhost:3000`.
 
 ## Stack
 
-Next.js 16 (App Router · static export · Turbopack) · TypeScript · Tailwind v4 · Framer Motion · cmdk · Radix UI · Lucide React · Web Audio API. **No backend.** State persists in client-side localStorage across seven scoped stores, all reset by ⌘K → Reset.
+Next.js 16 (App Router · static export · Turbopack) · TypeScript · Tailwind v4 · Framer Motion · cmdk · Radix UI · Lucide React · Web Audio API. **No backend.** State persists in client-side localStorage across seven scoped stores; ⌘K → Reset clears six (theme preference survives so a reviewer doesn't lose their dark-mode choice mid-demo).

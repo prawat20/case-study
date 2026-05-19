@@ -24,6 +24,7 @@ The seven JBTDs map to five destination surfaces plus an off-loop case-study art
 ```
 /                          Now (home, aggregator + capture + triage front)
 /inbox                     → redirect to /  (deep-link compatibility)
+/quarter                   → alias for /calendar (deep-link compatibility)
 /prioritize/[id]           Prioritize — single-item depth
 /calendar                  Calendar — sprint-by-sprint plan + Drop Planner
 /stakeholders              Stakeholders — master/detail (?audience=sales|exec|customer|eng)
@@ -62,12 +63,14 @@ No sidebar. No collapsible rail. **One thin top header.**
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│  ◇ Glide          Now    Inbox  Prioritize  Calendar  Audit    ⌘K  │
+│  ◇ Sift           Now    Inbox  Prioritize  Calendar  Audit    ⌘K  │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
+> **Sift is the product.** Maya's fictional employer is *Glide* (see `product_pov.md`) — kept separate so the wordmark doesn't read as the company.
+
 - 56px tall, `--surface` background, `--shadow-sm`, hairline `--border-subtle` bottom.
-- Logo (Glide diamond) is sage. Wordmark in `--ink-1`, weight 600.
+- Logo (Sift diamond) is sage. Wordmark in `--ink-1`, weight 600.
 - Nav items: 14px Inter, `--ink-2` default, `--ink-1` on active surface, `--accent` on active page (single underline `--accent` 2px below).
 - `⌘K` chip on the right — `--ink-3`, mono, opens command palette.
 - **Stakeholders + Architecture are not in the top nav** — accessed via Cmd+K. They're not part of the daily loop.

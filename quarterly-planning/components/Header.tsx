@@ -68,7 +68,7 @@ export function Header() {
             className="text-[15px] font-semibold tracking-tight"
             style={{ color: "var(--color-primary)" }}
           >
-            Glide
+            Sift
           </span>
         </Link>
 

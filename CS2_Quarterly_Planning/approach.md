@@ -130,7 +130,7 @@ The brief's four evaluation criteria (creativity · depth · analytical reasonin
 
 ### Stack discipline
 
-Next.js 16 · TypeScript · Tailwind v4 · Framer Motion · cmdk · Radix UI · Lucide React · Web Audio API. **No backend.** State persists in seven scoped localStorage stores, each independently resettable by Cmd+K → Reset. The brief assumed ingestion is solved upstream — anything that asks the reviewer to imagine a backend would distract from the slice the build is testing.
+Next.js 16 · TypeScript · Tailwind v4 · Framer Motion · cmdk · Radix UI · Lucide React · Web Audio API. **No backend.** State persists in seven scoped localStorage stores; Cmd+K → Reset clears the six demo-state stores (theme preference persists across resets so a reviewer's dark-mode choice doesn't get nuked mid-demo). The brief assumed ingestion is solved upstream — anything that asks the reviewer to imagine a backend would distract from the slice the build is testing.
 
 ### What the deliverable explicitly is not
 

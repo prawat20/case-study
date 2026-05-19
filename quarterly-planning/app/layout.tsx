@@ -24,9 +24,9 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Quarterly Planning",
+  title: "Sift · Quarterly Planning",
   description:
-    "An AI-native decision orchestration workspace for product managers.",
+    "Sift — an AI-native decision orchestration workspace for product managers.",
 };
 
 export default function RootLayout({

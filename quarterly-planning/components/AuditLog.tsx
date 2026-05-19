@@ -101,8 +101,10 @@ export function AuditLog() {
   }, [decisions]);
 
   const totalOverrides = decisions.filter((d) => d.action === "overridden").length;
-  const accuracyRevenue = 71;
-  const accuracyAdoption = 38;
+  // Verdict counts from elapsed mock + real entries — only the SAML mock
+  // is "missed" at fresh-load; real predictions stay "pending" until 21d.
+  const elapsedEntries = predictionEntries.filter((p) => p.ageDays >= 21);
+  const reviewWindowOpen = elapsedEntries.length;
 
   return (
     <main className="mx-auto max-w-[720px] px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
@@ -131,7 +133,9 @@ export function AuditLog() {
               {decisions.length} logged · {totalOverrides} override{totalOverrides === 1 ? "" : "s"} · {triage.length} triaged
             </span>
             <span style={{ color: "var(--color-muted)" }}> · </span>
-            Accuracy: revenue <span className="font-numeric" style={{ color: "var(--color-accent)" }}>{accuracyRevenue}%</span> · adoption <span className="font-numeric" style={{ color: "var(--color-accent)" }}>{accuracyAdoption}%</span>
+            {reviewWindowOpen > 0
+              ? <>{reviewWindowOpen} prediction{reviewWindowOpen === 1 ? "" : "s"} due for review</>
+              : <>Predictions accumulate as you commit</>}
           </p>
         </motion.div>
       )}
@@ -164,8 +168,8 @@ export function AuditLog() {
             {!hydrated ? null : decidedDecorated.length === 0 ? (
               <EmptyCard
                 title="No decisions logged yet."
-                body="Open Inbox → triage → prioritize → commit. Each step lands here."
-                cta={{ href: "/inbox/", label: "Open Inbox" }}
+                body="Triage → prioritize → commit. Each step lands here."
+                cta={{ href: "/inbox/triage/", label: "Start triage" }}
               />
             ) : (
               decidedDecorated.map(({ decision, initiative }, idx) => (
@@ -193,7 +197,7 @@ export function AuditLog() {
               <EmptyCard
                 title="No predictions yet."
                 body="Predictions are recorded automatically when you commit a decision."
-                cta={{ href: "/inbox/", label: "Open Inbox" }}
+                cta={{ href: "/inbox/triage/", label: "Start triage" }}
               />
             ) : (
               predictionEntries.map((p, idx) => (

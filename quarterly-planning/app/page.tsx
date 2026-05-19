@@ -145,7 +145,7 @@ export default function NowPage() {
 
         <div className="mt-3 flex items-center gap-2 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
           <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>67%</span>
-          <span>of items decided same day they land</span>
+          <span>of items decided same day they land · quarter to date</span>
         </div>
 
         {/* ─────────── To triage ─────────── */}
@@ -259,7 +259,7 @@ export default function NowPage() {
                     style={{ background: "var(--color-warning)" }}
                   />
                   <p className="text-[14px]" style={{ color: "var(--color-primary)" }}>
-                    "SAML unlocks 3 deals" — 3 weeks old
+                    "SAML unlocks 3 deals" — 21 days old
                   </p>
                 </div>
                 <span
@@ -276,7 +276,7 @@ export default function NowPage() {
 
         <div className="mt-20 flex items-center gap-2 text-[11px]" style={{ color: "var(--color-tertiary)" }}>
           <span aria-hidden style={{ color: "var(--color-accent)" }}>◆</span>
-          <span>Glide · case study build</span>
+          <span>Sift · case study build</span>
         </div>
       </main>
     </div>

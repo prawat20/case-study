@@ -194,7 +194,7 @@ Five synthesised chimes, gain tuned ~30% softer than a typical dark-context UI �
 | Snap-as-plan | Three-note C5+E5+G5, slight rev sweep | Full celebration |
 | Override prompt fires | No sound | Speech-bubble appearance only — sound here would feel like correction |
 
-User-mutable via header toggle, default ON. localStorage persistent.
+Default ON. Browser tab-mute is the silence path; an in-app toggle is deferred — the chime set is conservative enough that the build doesn't yet earn one.
 
 ---
 
