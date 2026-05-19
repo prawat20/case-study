@@ -13,22 +13,22 @@
     ],
     "ai_recommendation": {
       "action": "commit",
-      "action_reason": "Direct line to Enterprise Readiness OKR. Unblocks $480k ARR in active deals. No conflicts; eng capacity available for Sprint 1.",
-      "sequence": "Q3 Sprint 1",
+      "action_reason": "Direct line to Enterprise Readiness OKR. Unblocks $480k ARR in active deals. No conflicts; eng capacity available for Sprint 2.",
+      "sequence": "Q3 Sprint 2",
       "effort_sprints": 3,
       "eng_confidence": "medium",
       "addresses": ["3 of top 5 enterprise blockers"],
       "conflicts": [],
       "tradeoffs": [
-        "Sequencing in Sprint 1 alongside SAML SSO uses 5 of 6 available eng-sprint slots.",
+        "Sequencing in Sprint 2 alongside SAML SSO uses 5 of 6 available eng-sprint slots.",
         "Permission Groups stays in Sprint 4 — no items pushed.",
-        "Webhook Retries deferral (separate AI call) frees Sprint 2 buffer."
+        "Webhook Retries deferral (separate AI call) frees Sprint 3 buffer."
       ],
       "okr_alignment": ["enterprise_readiness"],
       "okr_contribution": "Contributes ~$480k toward $1.5M Enterprise OKR target.",
       "framework": "RICE",
       "framework_rationale": "Revenue-anchored deal blocker — RICE balances reach (3 active deals), impact ($480k unblocked), confidence (sales-validated 2x), and effort (3 sprints).",
-      "predicted_outcome": "If sequenced Q3 Sprint 1: ~$480k ARR closes by end of Q3, onboarding-objection rate drops ~60% on enterprise demos."
+      "predicted_outcome": "If sequenced Q3 Sprint 2: ~$480k ARR closes by end of Q3, onboarding-objection rate drops ~60% on enterprise demos."
     },
     "status": "needs_decision",
     "signal_type": "deal_blocker",
@@ -77,14 +77,14 @@
     "ai_recommendation": {
       "action": "commit",
       "action_reason": "Direct line to Enterprise Readiness OKR. $340k Q4 renewals are time-bound. Implementation is clean (2 sprints, high eng confidence). No conflicts.",
-      "sequence": "Q3 Sprint 1",
+      "sequence": "Q3 Sprint 2",
       "effort_sprints": 2,
       "eng_confidence": "high",
       "addresses": ["2 enterprise renewals", "Q4 expansion pipeline"],
       "conflicts": [],
       "tradeoffs": [
-        "Pairs naturally with Bulk CSV in Sprint 1 — same eng team, same enterprise theme.",
-        "Frees Sprint 2 entirely if Bulk CSV finishes on time — buffer for SOC2 prep."
+        "Pairs naturally with Bulk CSV in Sprint 2 — same eng team, same enterprise theme.",
+        "Frees Sprint 3 entirely if Bulk CSV finishes on time — buffer for SOC2 prep."
       ],
       "okr_alignment": ["enterprise_readiness"],
       "okr_contribution": "Contributes ~$340k toward $1.5M Enterprise OKR target.",
@@ -136,7 +136,7 @@
       "effort_sprints": 2,
       "eng_confidence": "medium",
       "addresses": ["SOC2 Type II prep", "$1.2M enterprise pipeline"],
-      "conflicts": ["Slight overlap with Bulk CSV in Sprint 3 — manageable but tight"],
+      "conflicts": ["Tight handoff: Bulk CSV wraps in Sprint 2; if it slips, eng capacity for SOC2 in Sprint 3 thins"],
       "tradeoffs": [
         "Sprint 3 sequencing leaves 4 weeks buffer before October audit — minimum safe margin.",
         "Compressing to Sprint 2 requires either delaying Webhook fix OR hiring compliance contractor (~$30k).",

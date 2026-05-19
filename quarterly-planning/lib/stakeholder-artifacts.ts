@@ -83,7 +83,7 @@ function committedItems(ctx: BuildContext): Initiative[] {
 function buildSales(ctx: BuildContext): Line[] {
   const lines: Line[] = [];
   lines.push({ type: "title", text: "Q3 plan — what affects deals" });
-  lines.push({ type: "subtitle", text: "Generated from your committed plan · Week 9 of 13" });
+  lines.push({ type: "subtitle", text: `Generated from your committed plan · Week ${NORTH_STAR.weeks_elapsed} of ${NORTH_STAR.weeks_total}` });
   lines.push({ type: "spacer" });
 
   const dealItems = ctx.initiatives.filter(

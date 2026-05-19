@@ -177,6 +177,8 @@ export function CalendarPlan() {
 
   function sprintDragOver(e: React.DragEvent, sprintIndex: number) {
     if (locked || !dragSource) return;
+    // Shipped sprints are read-only — no drops accepted.
+    if (SPRINTS[sprintIndex - 1]?.status === "shipped") return;
     e.preventDefault();
     setHovered(sprintIndex);
   }
@@ -193,6 +195,9 @@ export function CalendarPlan() {
     strategy: StrategyKind = "minimise_rice_loss",
   ) {
     if (locked || !dragSource) return;
+    // Shipped sprints are read-only — silently ignore drops (the dragOver
+    // guard already blocks the visual drop hint, this is belt + suspenders).
+    if (SPRINTS[targetSprint - 1]?.status === "shipped") return;
     e.preventDefault();
     setHovered(null);
     const src = dragSource;
@@ -563,8 +568,12 @@ export function CalendarPlan() {
           const pct = Math.round((load / SPRINT_CAPACITY) * 100);
           const overflow = load > SPRINT_CAPACITY;
           const tight = load >= SPRINT_CAPACITY * 0.85 && !overflow;
-          const isHovered = hovered === sprint.index && !!dragSource;
+          // Shipped sprints are read-only — no drag/drop/hover affordances,
+          // no AI-suggests highlight, no reflow targeting.
+          const isShipped = sprint.status === "shipped";
+          const isHovered = !isShipped && hovered === sprint.index && !!dragSource;
           const isAIRec =
+            !isShipped &&
             !!dragSource &&
             (() => {
               const it = allInitiatives.find((x) => x.id === dragSource.id);
@@ -575,14 +584,14 @@ export function CalendarPlan() {
           // Predicted load if the dragged item lands here under the default
           // strategy (option A). Used to render the live capacity preview.
           const predictedLoad =
-            !!dragSource && predictedLoads
+            !isShipped && !!dragSource && predictedLoads
               ? predictedLoads[sprint.index] ?? load
               : load;
-          const showPrediction = !!dragSource && predictedLoad !== load;
-          const wouldOverflow = !!dragSource && predictedLoad > SPRINT_CAPACITY;
+          const showPrediction = !isShipped && !!dragSource && predictedLoad !== load;
+          const wouldOverflow = !isShipped && !!dragSource && predictedLoad > SPRINT_CAPACITY;
           const showTradeOffPanel = isHovered && hoveredOverflow && strategyOptions;
           // Items moving INTO this sprint under default strategy (chain effect).
-          const incomingReflow = !!dragSource && reflowTargetSprints.has(sprint.index) && !isHovered;
+          const incomingReflow = !isShipped && !!dragSource && reflowTargetSprints.has(sprint.index) && !isHovered;
           // Net incoming reflow items count for the inline chain hint.
           const incomingItems = incomingReflow && defaultOption
             ? defaultOption.impact.pushed_items.filter(
@@ -595,6 +604,7 @@ export function CalendarPlan() {
               key={sprint.id}
               onDragOver={(e) => sprintDragOver(e, sprint.index)}
               onDragLeave={(e) => {
+                if (isShipped) return;
                 // Don't un-hover when the cursor crosses into a child of the
                 // sprint (eg. the trade-off panel or its strategy cards).
                 const next = e.relatedTarget as Node | null;
@@ -602,24 +612,34 @@ export function CalendarPlan() {
                 setHovered(null);
               }}
               onDrop={(e) => dropOnSprint(e, sprint.index)}
+              aria-disabled={isShipped || undefined}
               className="rounded-2xl px-5 py-4 transition-all"
               style={{
-                background: isHovered
-                  ? "var(--color-accent-tint)"
+                background: isShipped
+                  ? "var(--color-surface-sunken)"
+                  : isHovered
+                    ? "var(--color-accent-tint)"
+                    : incomingReflow
+                      ? "var(--color-elevated)"
+                      : "var(--color-elevated)",
+                border: isShipped
+                  ? "1px dashed"
                   : incomingReflow
-                    ? "var(--color-elevated)"
-                    : "var(--color-elevated)",
-                border: incomingReflow ? "1px dashed" : "1px solid",
-                borderColor: isHovered
-                  ? wouldOverflow
-                    ? "var(--color-warning)"
-                    : "var(--color-accent)"
-                  : incomingReflow
-                    ? "var(--color-accent)"
-                    : isAIRec && !!dragSource
-                      ? "var(--color-accent-soft)"
-                      : "var(--color-border)",
-                boxShadow: "var(--shadow-sm)",
+                    ? "1px dashed"
+                    : "1px solid",
+                borderColor: isShipped
+                  ? "var(--color-border)"
+                  : isHovered
+                    ? wouldOverflow
+                      ? "var(--color-warning)"
+                      : "var(--color-accent)"
+                    : incomingReflow
+                      ? "var(--color-accent)"
+                      : isAIRec && !!dragSource
+                        ? "var(--color-accent-soft)"
+                        : "var(--color-border)",
+                boxShadow: isShipped ? "none" : "var(--shadow-sm)",
+                opacity: isShipped ? 0.62 : 1,
               }}
             >
               <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
@@ -737,7 +757,11 @@ export function CalendarPlan() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {sprintItems.length === 0 ? (
                   <p className="text-[12.5px]" style={{ color: "var(--color-muted)" }}>
-                    {locked ? "—" : "Drop items here"}
+                    {isShipped
+                      ? "Shipped sprint · read-only"
+                      : locked
+                        ? "—"
+                        : "Drop items here"}
                   </p>
                 ) : (
                   sprintItems.map((it) => {
@@ -749,6 +773,7 @@ export function CalendarPlan() {
                         initiative={it}
                         soft={soft}
                         locked={locked}
+                        shipped={isShipped}
                         onDragStart={(e) =>
                           dragStart(
                             { kind: "sprint", id: it.id, from: sprint.index },
@@ -960,12 +985,14 @@ function SprintItemCard({
   initiative,
   soft,
   locked,
+  shipped,
   onDragStart,
   onDragEnd,
 }: {
   initiative: Initiative;
   soft: boolean;
   locked: boolean;
+  shipped?: boolean;
   onDragStart: (e: React.DragEvent) => void;
   onDragEnd: () => void;
 }) {
@@ -985,21 +1012,23 @@ function SprintItemCard({
       className="inline-block"
     >
       <div
-        draggable={!locked}
+        draggable={!locked && !shipped}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         className="group inline-flex items-center gap-2 rounded-lg px-3 py-2 transition"
         style={{
           background: "var(--color-page)",
           border: soft ? "1px dashed var(--color-border-strong)" : "1px solid var(--color-border)",
-          cursor: locked ? "default" : "grab",
+          cursor: locked || shipped ? "default" : "grab",
         }}
         title={
-          locked
-            ? "Plan is locked"
-            : soft
-              ? "AI-placed (drag to reposition or commit elsewhere)"
-              : "Committed (drag to reposition)"
+          shipped
+            ? "Shipped — read-only"
+            : locked
+              ? "Plan is locked"
+              : soft
+                ? "AI-placed (drag to reposition or commit elsewhere)"
+                : "Committed (drag to reposition)"
         }
       >
         {!soft && (

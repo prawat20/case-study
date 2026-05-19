@@ -27,13 +27,16 @@ export interface OKR {
   key_results: string[];
 }
 
+// Q3 2026 — early-quarter anchor. Sprint 1 has shipped; Sprint 2 is in
+// flight; Sprints 3 + 4 are planned. The 6pp "behind pace" trend is
+// deliberate demo tension (NSM 25% achieved vs 31% elapsed).
 export const NORTH_STAR: NorthStar = {
   metric: "Net New ARR",
-  current_value: 1_500_000,
+  current_value: 600_000,
   target_value: 2_400_000,
   format: "usd",
   period: "Q3 2026",
-  weeks_elapsed: 9,
+  weeks_elapsed: 4,
   weeks_total: 13,
 };
 

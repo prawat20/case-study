@@ -345,6 +345,12 @@ The implementation evolved past a pure "calendar with drag." Per user direction 
 - **Deferred**: strikethrough, in the tray
 - **AI-rec sprint while dragging**: sage outline + "AI suggests" pill
 
+**Sprint lifecycle** (added 2026-05-20 for logical consistency with the NSM weeks-elapsed clock):
+- **Shipped** — past sprint. Lane dimmed (opacity 0.62), dashed muted border, "Shipped" pill. **No drops accepted**, items inside not draggable, no AI-suggests highlight, not selected as a reflow destination. The PM can't act on a sprint that already shipped — surfacing it as a valid drop target would be a lie.
+- **In flight** — current sprint. Drops accepted; visually carries the "In flight" pill so late-adds read as the scope-creep they are.
+- **Planned** — future sprints. Normal drop targets.
+- The temporal anchor (`weeks_elapsed` in `lib/strategic.ts`) and the sprint statuses (`lib/sprint-data.ts`) are kept in sync — moving one without the other creates the same kind of internal inconsistency that caused this fix.
+
 ---
 
 ## 8. Surface 5 — Stakeholders (`/stakeholders`)
