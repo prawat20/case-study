@@ -30,7 +30,7 @@ Case study submission for the Director of Product role at Momentum. Three delive
 
 **Brief 2 · Quarterly Planning & Prioritization**
 
-- **Working tool** · [case-study-iud.pages.dev](https://case-study-iud.pages.dev/) (desktop primary input is drag-and-drop)
+- **Working tool** · [sift-pm.pages.dev](https://sift-pm.pages.dev/) (desktop primary input is drag-and-drop)
 - **Supporting writeup** (North Star metric · 5 events to instrument · PM interview question bank) · [`CS2_Quarterly_Planning/supporting_writeup.md`](https://github.com/prawat20/case-study/blob/main/CS2_Quarterly_Planning/supporting_writeup.md)
 - **Approach + methodology trace** · [`CS2_Quarterly_Planning/approach.md`](https://github.com/prawat20/case-study/blob/main/CS2_Quarterly_Planning/approach.md) + [`CS2_Quarterly_Planning/methodology_trace.md`](https://github.com/prawat20/case-study/blob/main/CS2_Quarterly_Planning/methodology_trace.md)
 - **Source** · [`quarterly-planning/`](https://github.com/prawat20/case-study/tree/main/quarterly-planning) (Next.js · TypeScript · Tailwind · Framer Motion · static export to Cloudflare Pages)
@@ -63,7 +63,7 @@ Founder, Plottwyst
 
 - [ ] Personalise greeting (`Hi [Bhavin / first name]`)
 - [ ] Verify all GitHub URLs return 200 (PDFs render in-browser on GitHub)
-- [ ] Verify [case-study-iud.pages.dev](https://case-study-iud.pages.dev/) is up
+- [ ] Verify [sift-pm.pages.dev](https://sift-pm.pages.dev/) is up
 - [ ] Plottwyst figures still accurate at send time (data-vintage section in `caselet2_plottwyst.md`)
 - [ ] Subject line picked
 - [ ] Sender signature on the right firm / role (Plottwyst founder is the durable anchor)

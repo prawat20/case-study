@@ -92,7 +92,7 @@ The Calendar is the most opinionated surface. The interaction model resolves the
 
 ## Demo state
 
-The deployed build at [case-study-iud.pages.dev](https://case-study-iud.pages.dev/) is the canonical demo surface. An 8-minute reviewer flow takes the user from landing on Now → capturing an ask with `⌘N` → swiping through triage → placing items on the Calendar (including a deliberately-overflowing drop to surface the Drop Planner) → switching stakeholder audiences → opening the Audit Predictions tab.
+The deployed build at [sift-pm.pages.dev](https://sift-pm.pages.dev/) is the canonical demo surface. An 8-minute reviewer flow takes the user from landing on Now → capturing an ask with `⌘N` → swiping through triage → placing items on the Calendar (including a deliberately-overflowing drop to surface the Drop Planner) → switching stakeholder audiences → opening the Audit Predictions tab.
 
 The full flow + key states are walked through in the top-level [`README.md`](../README.md) (Demo flow section).
 

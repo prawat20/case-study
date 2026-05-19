@@ -1,6 +1,6 @@
 # Approach — CS2 (Quarterly Planning & Prioritization)
 
-> How the CS2 deliverable was approached, end-to-end. The methodology here is what produced the working tool at [case-study-iud.pages.dev](https://case-study-iud.pages.dev/). The [`methodology_trace.md`](methodology_trace.md) is the longer process record; this is the one-read summary.
+> How the CS2 deliverable was approached, end-to-end. The methodology here is what produced the working tool at [sift-pm.pages.dev](https://sift-pm.pages.dev/). The [`methodology_trace.md`](methodology_trace.md) is the longer process record; this is the one-read summary.
 
 ---
 

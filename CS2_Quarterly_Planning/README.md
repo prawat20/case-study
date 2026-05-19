@@ -1,6 +1,6 @@
 # Brief 2 — Quarterly Planning & Prioritization
 
-> An AI-native decision-orchestration workspace for product managers. Live as a working tool at [case-study-iud.pages.dev](https://case-study-iud.pages.dev/). Built in Claude Code as a hand-written Next.js app, deployed on Cloudflare Pages.
+> An AI-native decision-orchestration workspace for product managers. Live as a working tool at [sift-pm.pages.dev](https://sift-pm.pages.dev/). Built in Claude Code as a hand-written Next.js app, deployed on Cloudflare Pages.
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Order | Document / link | What it gives you |
 |---|---|---|
-| 1 | **[case-study-iud.pages.dev](https://case-study-iud.pages.dev/)** | The working tool. Best experienced on desktop (drag-and-drop is the primary input model). |
+| 1 | **[sift-pm.pages.dev](https://sift-pm.pages.dev/)** | The working tool. Best experienced on desktop (drag-and-drop is the primary input model). |
 | 2 | **[`approach.md`](approach.md)** | How CS2 was approached — reading the brief, research method, synthesis framework (JBTDs + POVs), decision framework (NSM + events + interview bank), build/deliver method. One read covers the full methodology. |
 | 3 | **[`supporting_writeup.md`](supporting_writeup.md)** | The brief's three written deliverables — North Star metric, five events to instrument, PM interview question bank. |
 | 4 | [`product_pov.md`](product_pov.md) | Persona (Maya), seven JBTDs, POV-per-JBTD design rubric, North Star principle. Upstream of every design move in the build. |

@@ -10,7 +10,7 @@
 |---|---|---|---|
 | Brief 1 · Growth Hacking | **Caselet 1 — Revolut Primacy** | 31-page A4 PDF | [`/CS1_Caselet1_Revolut_Primacy.pdf`](CS1_Caselet1_Revolut_Primacy.pdf) |
 | Brief 1 · Growth Hacking | **Caselet 2 — Plottwyst pitch** | 13-page A4 PDF | [`/CS1_Caselet2_Plottwyst.pdf`](CS1_Caselet2_Plottwyst.pdf) |
-| Brief 2 · Quarterly Planning | **Working tool** | Next.js app (Cloudflare Pages) | [case-study-iud.pages.dev](https://case-study-iud.pages.dev/) |
+| Brief 2 · Quarterly Planning | **Working tool** | Next.js app (Cloudflare Pages) | [sift-pm.pages.dev](https://sift-pm.pages.dev/) |
 | Brief 2 · Quarterly Planning | **Supporting writeup** (NSM · 5 events · interview bank) | Markdown | [`CS2_Quarterly_Planning/supporting_writeup.md`](CS2_Quarterly_Planning/supporting_writeup.md) |
 
 The submission cover note (the email body that accompanies these artifacts) is at [`submission_cover_note.md`](submission_cover_note.md).
@@ -91,7 +91,7 @@ Case Study/
 
 **Caselet 2 — Plottwyst pitch.** A brief-aligned five-section pitch for the narrative-game platform I built (`play.plottwyst.app`, live on Discord + web today). §1 splits into two personas — Multiplayer Host and Daily Puzzle Player — each with its own problem list. Engine and traction claims (297 cases generated, 467 games played, 94% generation success, 30+ countries, 14 Discord servers, 1-in-4 return rate) are derived from the deployed system, not projected.
 
-**Brief 2 — Quarterly Planning.** A working AI-native decision-orchestration workspace for PMs. Five surfaces, one loop: capture → triage → place → communicate → learn. The Calendar's **Drop Planner** pattern resolves the brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) onto a single interaction — drop on an over-capacity sprint, the planner expands inline with per-item destination control, AI suggests but the PM decides. **AI is advisory, not deciding** throughout. Live at [case-study-iud.pages.dev](https://case-study-iud.pages.dev/); supporting writeup ships the North Star metric, five instrumented events, and a 21-question PM interview validation bank.
+**Brief 2 — Quarterly Planning.** A working AI-native decision-orchestration workspace for PMs. Five surfaces, one loop: capture → triage → place → communicate → learn. The Calendar's **Drop Planner** pattern resolves the brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) onto a single interaction — drop on an over-capacity sprint, the planner expands inline with per-item destination control, AI suggests but the PM decides. **AI is advisory, not deciding** throughout. Live at [sift-pm.pages.dev](https://sift-pm.pages.dev/); supporting writeup ships the North Star metric, five instrumented events, and a 21-question PM interview validation bank.
 
 ---
 

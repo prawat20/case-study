@@ -1,7 +1,7 @@
 # Supporting Writeup
 
 > Three brief deliverables: North Star metric · 5 events to instrument · PM interview question bank.
-> Companion to the deployed product at `https://case-study-iud.pages.dev/`.
+> Companion to the deployed product at `https://sift-pm.pages.dev/`.
 
 ---
 
