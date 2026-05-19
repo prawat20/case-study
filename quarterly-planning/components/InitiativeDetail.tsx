@@ -693,9 +693,6 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
               style={{ color: "var(--color-tertiary)" }}
             >
               Decide
-              <span className="ml-1 normal-case font-normal tracking-normal" style={{ color: "var(--color-muted)" }}>
-                · the decision step; lighter Sort happens back on Now
-              </span>
             </p>
           )}
           <AnimatePresence mode="wait">

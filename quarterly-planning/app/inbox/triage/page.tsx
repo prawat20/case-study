@@ -339,16 +339,7 @@ export default function TriagePage() {
         </div>
 
         {/* Action buttons — sit right under the card */}
-        <p
-          className="mt-5 text-center text-[9.5px] font-semibold uppercase tracking-[0.12em]"
-          style={{ color: "var(--color-tertiary)" }}
-        >
-          Sort
-          <span className="ml-1 normal-case font-normal tracking-normal" style={{ color: "var(--color-muted)" }}>
-            · triage step; deeper Decide happens on the initiative page
-          </span>
-        </p>
-        <div className="mt-2 flex items-center gap-3">
+        <div className="mt-4 flex items-center gap-3">
           <ActionButton kind="defer" onClick={() => decide("defer")} />
           <ActionButton kind="route" onClick={() => decide("route")} />
           <ActionButton kind="promote" onClick={() => decide("promote")} />

@@ -171,7 +171,7 @@ What Maya sees when she opens Inbox without committing to triage. Stack of un-tr
 
 The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with keyboard fallback.
 
-> **Funnel framing.** Triage actions live under the **Sort** label — Promote / Defer / Route. The deeper **Decide** step (Commit / Defer / Escalate) happens on the Initiative Detail page after Promote. Both surfaces carry a small eyebrow making the distinction explicit, so a reviewer reads the funnel as deliberate rather than as drift between similar verbs.
+> **Funnel framing.** Triage actions are **Promote / Defer / Route** (the sort step). Decide is **Commit / Defer / Escalate** and happens in two places — (a) the **Calendar drop** (dragging a promoted item into a sprint = commit; the Drop Planner fires on overflow), or (b) the **Initiative Detail** page (the deeper view with framework picker, conflicts, predicted outcome). The Now page's "Ready to place" section surfaces both paths explicitly — clicking a row opens Decide; the "Open Calendar" CTA goes to drop-and-commit.
 
 ```
 ┌──────────────────────────────────────────────────────────┐

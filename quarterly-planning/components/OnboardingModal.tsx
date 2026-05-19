@@ -1,14 +1,14 @@
 "use client";
 
 /**
- * Single-screen onboarding modal — the 5-surface loop + keyboard shortcuts.
+ * Right-side slide-in panel — "How Sift works."
  *
- * Auto-shows once on first visit (localStorage flag qp_onboarding_seen_v1);
- * after that, click the (?) chip in the header to re-open. Dismissible by
- * Esc / backdrop click / "Got it" button.
+ * Triggered only by the header (?) button via openOnboarding(); no auto-fire
+ * on first visit. No backdrop blur — the panel sits to the right and the user
+ * can keep interacting with the page or just glance and dismiss.
  *
- * openOnboarding() is a module-scope trigger so the Header's (?) button can
- * fire it without prop-drilling. Uses a `window` custom event under the hood.
+ * Dismiss via Esc, the close button, or clicking the dim overlay strip to the
+ * left of the panel.
  */
 
 import { useEffect, useState } from "react";
@@ -23,7 +23,6 @@ import {
   Plus,
 } from "lucide-react";
 
-const STORAGE_KEY = "qp_onboarding_seen_v1";
 const EVENT_NAME = "qp:open-onboarding";
 
 export function openOnboarding() {
@@ -33,17 +32,6 @@ export function openOnboarding() {
 
 export function OnboardingModal() {
   const [open, setOpen] = useState(false);
-
-  // First-visit auto-open + manual open via event
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const seen = window.localStorage.getItem(STORAGE_KEY);
-    if (!seen) {
-      // Wait a beat so the page paints first; less jarring than instant overlay
-      const t = setTimeout(() => setOpen(true), 600);
-      return () => clearTimeout(t);
-    }
-  }, []);
 
   useEffect(() => {
     function onOpenEvent() {
@@ -60,46 +48,38 @@ export function OnboardingModal() {
     };
   }, []);
 
-  function dismiss() {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(STORAGE_KEY, "1");
-    }
-    setOpen(false);
-  }
-
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
-          className="fixed inset-0 z-50 flex items-center justify-center px-4 pt-16 pb-8 sm:items-center sm:pt-4"
-          style={{
-            background: "rgba(26, 24, 21, 0.42)",
-            backdropFilter: "blur(4px)",
-            WebkitBackdropFilter: "blur(4px)",
-          }}
-          onClick={dismiss}
-        >
+        <>
+          {/* Dim strip — clicking dismisses; no blur, no full-screen wash */}
           <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.97 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(26, 24, 21, 0.18)" }}
+            onClick={() => setOpen(false)}
+            aria-hidden
+          />
+
+          <motion.aside
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 24 }}
             transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-[600px] rounded-2xl"
+            role="dialog"
+            aria-label="How Sift works"
+            className="fixed right-0 top-0 z-50 h-full w-full max-w-[400px] flex flex-col"
             style={{
               background: "var(--color-elevated)",
-              border: "1px solid var(--color-border)",
+              borderLeft: "1px solid var(--color-border)",
               boxShadow: "var(--shadow-lg)",
-              maxHeight: "calc(100vh - 96px)",
-              overflowY: "auto",
             }}
           >
             <div
-              className="flex items-center justify-between px-5 sm:px-6 py-3.5"
+              className="flex items-center justify-between px-5 py-3.5 shrink-0"
               style={{ borderBottom: "1px solid var(--color-border)" }}
             >
               <div className="flex items-center gap-2">
@@ -120,7 +100,7 @@ export function OnboardingModal() {
                 </span>
               </div>
               <button
-                onClick={dismiss}
+                onClick={() => setOpen(false)}
                 aria-label="Close"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[var(--color-tertiary)] transition hover:bg-[var(--color-card-hover)] hover:text-[var(--color-primary)]"
               >
@@ -128,100 +108,78 @@ export function OnboardingModal() {
               </button>
             </div>
 
-            <div className="px-5 sm:px-6 py-5">
-              <p className="text-[13.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
-                Sift is a decision-orchestration workspace for product managers — capture an ask, sort it, place it on the calendar, ship it to the right audience, and learn from what you predicted vs. what landed.
+            <div className="flex-1 overflow-y-auto px-5 py-5">
+              <p className="text-[13px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+                A decision-orchestration workspace for product managers. Capture an ask, triage it, place it on the calendar, ship it to the right audience, and learn from what you predicted.
               </p>
 
               <p
-                className="mt-5 text-[10.5px] font-semibold uppercase tracking-[0.12em]"
+                className="mt-5 text-[10px] font-semibold uppercase tracking-[0.14em]"
                 style={{ color: "var(--color-tertiary)" }}
               >
-                The loop, in five surfaces
+                The loop
               </p>
 
               <ol className="mt-3 space-y-2.5">
                 <Step
-                  icon={<Plus size={13} />}
+                  icon={<Plus size={12} />}
                   num="1"
                   title="Capture"
-                  body="Press ⌘N anywhere to drop an ask. Source + signal auto-detect as you type."
+                  body="⌘N anywhere. Source + signal auto-detect."
                 />
                 <Step
-                  icon={<Inbox size={13} />}
+                  icon={<Inbox size={12} />}
                   num="2"
-                  title="Sort (Triage)"
-                  body="On Now, swipe or click Promote / Defer / Route on the top card. Or open bulk triage for the swipe deck."
+                  title="Triage"
+                  body="On Now, act on the top card: Promote / Defer / Route. Or open Bulk triage for the swipe deck."
                 />
                 <Step
-                  icon={<CalendarIcon size={13} />}
+                  icon={<CalendarIcon size={12} />}
                   num="3"
-                  title="Place (Calendar)"
-                  body="Drag a promoted item into a sprint. If it overflows capacity, the Drop Planner expands — AI suggests, you decide row-by-row."
+                  title="Decide + Place"
+                  body="Drag a promoted item into a Calendar sprint — that's the commit. If it overflows, the Drop Planner expands with per-item options."
                 />
                 <Step
-                  icon={<Users size={13} />}
+                  icon={<Users size={12} />}
                   num="4"
-                  title="Ship (Stakeholders)"
-                  body="Each audience gets a custom-shaped artifact — Slack for Sales, paragraph for Exec, plain-language for Customer, capacity table for Eng."
+                  title="Ship"
+                  body="Stakeholders generates a per-audience artifact — Slack for Sales, paragraph for Exec, plain language for Customer, capacity table for Eng."
                 />
                 <Step
-                  icon={<History size={13} />}
+                  icon={<History size={12} />}
                   num="5"
-                  title="Learn (Audit)"
-                  body="Each commit logs a prediction. After 21 days, a review window opens — predicted vs. actual."
+                  title="Learn"
+                  body="Each commit logs a prediction. After 21 days, the review window opens — predicted vs actual."
                 />
                 <Step
-                  icon={<GitBranch size={13} />}
+                  icon={<GitBranch size={12} />}
                   num="+"
                   title="Architecture"
-                  body="The six-layer system map behind the build — read this if you want the case-study capability picture."
+                  body="The six-layer system map behind the build — for the case-study capability picture."
                 />
               </ol>
 
               <p
-                className="mt-6 text-[10.5px] font-semibold uppercase tracking-[0.12em]"
+                className="mt-5 text-[10px] font-semibold uppercase tracking-[0.14em]"
                 style={{ color: "var(--color-tertiary)" }}
               >
-                Keyboard shortcuts
+                Shortcuts
               </p>
-              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[12.5px]" style={{ color: "var(--color-secondary)" }}>
+              <div className="mt-3 space-y-1.5 text-[12.5px]" style={{ color: "var(--color-secondary)" }}>
                 <ShortcutRow keys={["⌘", "K"]} label="Command palette" />
                 <ShortcutRow keys={["⌘", "N"]} label="Capture an ask" />
-                <ShortcutRow keys={["P"]} label="Promote top card (Now)" />
-                <ShortcutRow keys={["D"]} label="Defer top card (Now)" />
-                <ShortcutRow keys={["R"]} label="Route top card (Now)" />
-                <ShortcutRow keys={["Esc"]} label="Close any modal" />
+                <ShortcutRow keys={["P"]} label="Promote top card on Now" />
+                <ShortcutRow keys={["D"]} label="Defer top card on Now" />
+                <ShortcutRow keys={["R"]} label="Route top card on Now" />
+                <ShortcutRow keys={["Esc"]} label="Close any modal / panel" />
               </div>
 
               <p className="mt-6 text-[11.5px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
-                Stuck or want to start fresh? <span style={{ color: "var(--color-primary)" }}>Reset</span> in the header clears all demo state (your theme preference survives).
+                Stuck? <span style={{ color: "var(--color-primary)" }}>Reset</span> in the header clears all demo state (theme preference survives).
               </p>
             </div>
-
-            <div
-              className="flex items-center justify-between px-5 sm:px-6 py-3"
-              style={{
-                borderTop: "1px solid var(--color-border)",
-                background: "var(--color-page)",
-              }}
-            >
-              <span className="text-[11px]" style={{ color: "var(--color-tertiary)" }}>
-                Open again any time from the <span style={{ color: "var(--color-primary)" }}>?</span> in the header.
-              </span>
-              <button
-                onClick={dismiss}
-                className="inline-flex items-center rounded-md px-3 py-1.5 text-[12.5px] font-medium transition"
-                style={{
-                  background: "var(--color-accent)",
-                  color: "var(--color-elevated)",
-                }}
-              >
-                Got it
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
+          </motion.aside>
+        </>
       )}
     </AnimatePresence>
   );
@@ -239,10 +197,10 @@ function Step({
   body: string;
 }) {
   return (
-    <li className="flex items-start gap-3">
+    <li className="flex items-start gap-2.5">
       <span
         aria-hidden
-        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md"
+        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md"
         style={{
           background: "var(--color-accent-soft)",
           color: "var(--color-accent)",
@@ -251,7 +209,7 @@ function Step({
         {icon}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-semibold" style={{ color: "var(--color-primary)" }}>
+        <p className="text-[12.5px] font-semibold" style={{ color: "var(--color-primary)" }}>
           <span
             className="font-numeric mr-1.5"
             style={{ color: "var(--color-tertiary)" }}
@@ -260,7 +218,7 @@ function Step({
           </span>
           {title}
         </p>
-        <p className="mt-0.5 text-[12.5px] leading-snug" style={{ color: "var(--color-secondary)" }}>
+        <p className="mt-0.5 text-[12px] leading-snug" style={{ color: "var(--color-secondary)" }}>
           {body}
         </p>
       </div>

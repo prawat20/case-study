@@ -215,6 +215,9 @@ export default function NowPage() {
         {hydrated && promotedItems.length > 0 && (
           <>
             <SectionEyebrow label="Ready to place" count={promotedItems.length} fresh={0} hydrated />
+            <p className="mt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+              Drop one into a Calendar sprint — that's the commit. Open an item for the full Decide view (framework picker, conflicts, predicted outcome).
+            </p>
             <div className="mt-4 space-y-1">
               {promotedItems.slice(0, 4).map((i, idx) => (
                 <PromotedRow key={i.id} initiative={i} index={idx} />
@@ -576,32 +579,21 @@ function InlineTriageCard({
 
       {/* Action row */}
       <div
-        className="border-t px-4 pt-2.5 pb-3"
+        className="flex items-center justify-between gap-2 border-t px-4 py-3"
         style={{ borderColor: "var(--color-border)", background: "var(--color-surface-sunken)" }}
       >
-        <p
-          className="text-[9.5px] font-semibold uppercase tracking-[0.12em]"
+        <div className="flex items-center gap-2">
+          <ActionPill kind="defer" onClick={() => onDecide("defer")} />
+          <ActionPill kind="route" onClick={() => onDecide("route")} />
+          <ActionPill kind="promote" onClick={() => onDecide("promote")} />
+        </div>
+        <Link
+          href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
+          className="text-[11.5px] transition hover:underline"
           style={{ color: "var(--color-tertiary)" }}
         >
-          Sort
-          <span className="ml-1 normal-case font-normal tracking-normal" style={{ color: "var(--color-muted)" }}>
-            · the triage step; deeper decision happens on the initiative page
-          </span>
-        </p>
-        <div className="mt-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <ActionPill kind="defer" onClick={() => onDecide("defer")} />
-            <ActionPill kind="route" onClick={() => onDecide("route")} />
-            <ActionPill kind="promote" onClick={() => onDecide("promote")} />
-          </div>
-          <Link
-            href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
-            className="text-[11.5px] transition hover:underline"
-            style={{ color: "var(--color-tertiary)" }}
-          >
-            Why this →
-          </Link>
-        </div>
+          Why this →
+        </Link>
       </div>
     </motion.div>
   );
@@ -728,7 +720,7 @@ function PromotedRow({ initiative, index }: { initiative: Initiative; index: num
           className="inline-flex items-center gap-1 text-[12.5px] shrink-0 transition-transform group-hover:translate-x-0.5"
           style={{ color: "var(--color-accent)" }}
         >
-          Place
+          Decide
           <ArrowRight size={12} />
         </span>
       </Link>
