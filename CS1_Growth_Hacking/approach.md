@@ -111,7 +111,7 @@ For a 25+ page deliverable, a single executive summary at the doc level isn't en
 
 Caselet 1's body carries **14 high-fidelity HTML phone mockups** in 2-up grids across all seven flows (Confidence Period 1–7 + post-activation; Locked Insights 1–4). Each phone is a real iOS-feel surface — slider, segment control, toggle, DD checklist, letter-card, ledger, year-in-review hero, sample banner — not an ASCII sketch. Inline-SVG icons using `currentColor` keep icons cohesive with surrounding card text colour. CSS-blurred numbers on Locked Insights cards communicate the locked-state loss concretely (real `filter: blur()` over real money fields, not `???` placeholders).
 
-Caselet 2 reuses the same pipeline with cover + footer + title swapped, and ships as both a 13-page PDF and a **live applicant-aligned deck at [plottwyst.app/deck/momentum](https://plottwyst.app/deck/momentum)** (nine brief-aligned slides built as a filtered subset of the live Plottwyst investor deck via an `IS_MOMENTUM` conditional in the deck source).
+Caselet 2 reuses the same pipeline with cover + footer + title swapped, shipping as a 13-page PDF aligned 1:1 to the brief's five sections.
 
 ---
 

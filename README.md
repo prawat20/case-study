@@ -9,7 +9,7 @@
 | Brief | Deliverable | Format | Open |
 |---|---|---|---|
 | Brief 1 · Growth Hacking | **Caselet 1 — Revolut Primacy** | 31-page A4 PDF | [`/CS1_Caselet1_Revolut_Primacy.pdf`](CS1_Caselet1_Revolut_Primacy.pdf) |
-| Brief 1 · Growth Hacking | **Caselet 2 — Plottwyst pitch** | 13-page A4 PDF + [live deck](https://plottwyst.app/deck/momentum) | [`/CS1_Caselet2_Plottwyst.pdf`](CS1_Caselet2_Plottwyst.pdf) |
+| Brief 1 · Growth Hacking | **Caselet 2 — Plottwyst pitch** | 13-page A4 PDF | [`/CS1_Caselet2_Plottwyst.pdf`](CS1_Caselet2_Plottwyst.pdf) |
 | Brief 2 · Quarterly Planning | **Working tool** | Next.js app (Cloudflare Pages) | [case-study-iud.pages.dev](https://case-study-iud.pages.dev/) |
 | Brief 2 · Quarterly Planning | **Supporting writeup** (NSM · 5 events · interview bank) | Markdown | [`CS2_Quarterly_Planning/supporting_writeup.md`](CS2_Quarterly_Planning/supporting_writeup.md) |
 
@@ -89,7 +89,7 @@ Case Study/
 
 **Caselet 1 — Revolut Primacy.** A push-pull pair of growth-hacking ideas, sized for a conservative **7–9pp UK primacy lift in Year 1**. *Confidence Period* (3-salary-cycle Open-Banking parallel-run + auto-mirror + Live Clearance reassurance layer) attacks the perceived-operational-risk + switching-friction pains. *Locked Insights* (visible-but-locked salary-aware intelligence built on existing Revolut Analytics) attacks the primacy-hostile-surface pain and the salary-aware-vitamin mistarget. Both ideas ship inside a quarter — UX-only, no new financial product, no licensing surface. Built via a 4-stage research-first process with Reddit primary sources (17 threads, ~1,000 comments) and an explicit UK-only geographic scope (CEE structural barriers documented as out-of-growth-hacking-scope).
 
-**Caselet 2 — Plottwyst pitch.** A brief-aligned five-section pitch for the narrative-game platform I built (`play.plottwyst.app`, live on Discord + web today). §1 splits into two personas — Multiplayer Host and Daily Puzzle Player — each with its own problem list. Engine and traction claims (297 cases generated, 467 games played, 94% generation success, 30+ countries, 14 Discord servers, 1-in-4 return rate) are derived from the deployed system, not projected. Also lives as a [live applicant-aligned deck](https://plottwyst.app/deck/momentum).
+**Caselet 2 — Plottwyst pitch.** A brief-aligned five-section pitch for the narrative-game platform I built (`play.plottwyst.app`, live on Discord + web today). §1 splits into two personas — Multiplayer Host and Daily Puzzle Player — each with its own problem list. Engine and traction claims (297 cases generated, 467 games played, 94% generation success, 30+ countries, 14 Discord servers, 1-in-4 return rate) are derived from the deployed system, not projected.
 
 **Brief 2 — Quarterly Planning.** A working AI-native decision-orchestration workspace for PMs. Five surfaces, one loop: capture → triage → place → communicate → learn. The Calendar's **Drop Planner** pattern resolves the brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) onto a single interaction — drop on an over-capacity sprint, the planner expands inline with per-item destination control, AI suggests but the PM decides. **AI is advisory, not deciding** throughout. Live at [case-study-iud.pages.dev](https://case-study-iud.pages.dev/); supporting writeup ships the North Star metric, five instrumented events, and a 21-question PM interview validation bank.
 

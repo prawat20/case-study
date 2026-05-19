@@ -10,7 +10,7 @@
 |---|---|---|
 | 1 | **[`approach.md`](approach.md)** | How both caselets were approached — reading the brief, research method, synthesis framework, decision framework, deliverable design. One read covers the full methodology. |
 | 2 | **[`/CS1_Caselet1_Revolut_Primacy.pdf`](../CS1_Caselet1_Revolut_Primacy.pdf)** | Caselet 1 deliverable — 31-page print-ready PDF with full UX flows, hooks, comms, and metrics for two growth-hacking ideas. |
-| 3 | **[`/CS1_Caselet2_Plottwyst.pdf`](../CS1_Caselet2_Plottwyst.pdf)** | Caselet 2 deliverable — 13-page print-ready PDF aligned 1:1 to the brief sections. Also lives as a [live applicant-aligned deck](https://plottwyst.app/deck/momentum). |
+| 3 | **[`/CS1_Caselet2_Plottwyst.pdf`](../CS1_Caselet2_Plottwyst.pdf)** | Caselet 2 deliverable — 13-page print-ready PDF aligned 1:1 to the brief sections. |
 | 4 | [`methodology_trace.md`](methodology_trace.md) | The longer process record. Read this if you want the stage-by-stage trace, source bibliography, and validated process lessons. |
 | 5 | [`research/`](research/) | The working artifacts that fed the submissions — research, synthesis, ideation. Read these to stress-test specific claims. |
 | 6 | [`build/`](build/) | The Python-Markdown + Chrome-headless pipeline that turns source markdown into the PDFs. Editable; reproducible. |

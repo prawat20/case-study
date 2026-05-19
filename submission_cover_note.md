@@ -25,7 +25,7 @@ Case study submission for the Director of Product role at Momentum. Three delive
 - **Caselet 1 — Revolut Primacy** · 31-page print-ready PDF · [`CS1_Caselet1_Revolut_Primacy.pdf`](https://github.com/prawat20/case-study/blob/main/CS1_Caselet1_Revolut_Primacy.pdf)
   Push-pull pair (Confidence Period + Locked Insights) sized for a conservative 7–9pp UK primacy lift in Year 1. Both ideas ship inside a quarter — UX-only, no new financial product, no licensing surface (growth-hacking discipline maintained throughout). Built via a 4-stage research-first process — research → macro synthesis → ideation + scoring → submission — with Reddit primary sources synthesised across 17 threads and a Czech-Republic user signal during ideation that surfaced two structural CEE pain axes (folded into §1 P3 + P4 with explicit geographic scoping).
 - **Caselet 2 — Plottwyst pitch** · 13-page print-ready PDF · [`CS1_Caselet2_Plottwyst.pdf`](https://github.com/prawat20/case-study/blob/main/CS1_Caselet2_Plottwyst.pdf)
-  Brief-aligned five-section pitch (Persona + Problem · Proposition · MVP · Revenue · TAM). §1 splits into two personas — Multiplayer Host and Daily Puzzle Player — each with its own problem list. Also lives as an applicant-aligned live deck at **[plottwyst.app/deck/momentum](https://plottwyst.app/deck/momentum)** (9 slides, a filtered subset of the Plottwyst investor deck).
+  Brief-aligned five-section pitch (Persona + Problem · Proposition · MVP · Revenue · TAM). §1 splits into two personas — Multiplayer Host and Daily Puzzle Player — each with its own problem list.
   Plottwyst itself is a live product I built — `play.plottwyst.app` runs on Discord + web today, with 297 unique cases generated and zero paid acquisition. The engine + traction claims in Caselet 2 are derived from the deployed system, not projected.
 
 **Brief 2 · Quarterly Planning & Prioritization**
@@ -64,7 +64,6 @@ Founder, Plottwyst
 - [ ] Personalise greeting (`Hi [Bhavin / first name]`)
 - [ ] Verify all GitHub URLs return 200 (PDFs render in-browser on GitHub)
 - [ ] Verify [case-study-iud.pages.dev](https://case-study-iud.pages.dev/) is up
-- [ ] Verify [plottwyst.app/deck/momentum](https://plottwyst.app/deck/momentum) is up
 - [ ] Plottwyst figures still accurate at send time (data-vintage section in `caselet2_plottwyst.md`)
 - [ ] Subject line picked
 - [ ] Sender signature on the right firm / role (Plottwyst founder is the durable anchor)

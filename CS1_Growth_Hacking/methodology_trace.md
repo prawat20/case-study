@@ -135,10 +135,6 @@ The brief asked for "Persona" singular + "list of Problems" plural. Plottwyst's 
 | §4 Revenue | Three streams that compound on the same engine — Consumer Premium, B2B API, Creator Economy |
 | §5 TAM | Three-layer market sizing ($90B+ TAM · ~$8B SAM · ~$150M SOM at Year-3 capture) |
 
-### Companion live deck
-
-The Caselet 2 submission also ships as an applicant-aligned live deck at **[plottwyst.app/deck/momentum](https://plottwyst.app/deck/momentum)** — nine brief-aligned slides (Cover → Persona+Problem → Proposition → MVP → Engine → TAM → Live Today → Revenue → Appendix) built as a filtered subset of the Plottwyst investor deck via an `IS_MOMENTUM` conditional + `MOMENTUM_SLIDES` filter in the deck source. Same engine claim, applicant-framing footer. The live deck is hosted on a separate repository (`plottwyst-website`).
-
 ### PDF craft
 
 The Caselet 2 build pipeline ([`build/build_pdf_caselet2.py`](build/build_pdf_caselet2.py)) reuses the Caselet 1 pipeline wholesale with cover, footer, and title swapped. TL;DR callouts ship on §1, §2, §4 following the Caselet 1 convention. Final PDF: 13 pages.
