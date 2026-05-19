@@ -1,18 +1,20 @@
-# CS2 v2 — JBTD, Persona, and POV
+# Product POV — JBTDs, Persona, Design Rubric
 
-**Status:** draft for review (2026-05-08). This document is upstream of every other artifact in the v2 rebuild — design system, IA, surface design, copy. If a design move can't be traced back to a JBTD or POV here, it doesn't ship.
+> The upstream document for the CS2 build. Every design move — design system, IA, surface, copy — traces back to a JBTD or a POV declared here. If it can't be, it didn't ship.
 
 ---
 
-## 1. Why we're rebuilding
+## 1. Thesis
 
-The current build (commit `2f7c594`) is POV-complete against the original brief, but the front-door experience reads as a "smart inbox of pre-prioritized cards" — which is the wrong shape. Three honest problems:
+**Planning should feel like a single calm flow, not a series of intensive decisions.**
 
-1. **Skips triage entirely.** Items appear pre-ranked. A real PM's day starts with a pile of un-triaged asks across Slack/email/calls — not a clean stack of priority-1-through-N.
-2. **No end-to-end loop.** There's no surface where you watch a request flow from "just landed" → "scheduled in Sprint 3 of Q3" → "communicated to sales." Each surface is a feature; together they're not a journey.
-3. **Calm-but-cold.** The current craft is competent dark-theme minimalism. It is not *fun*. Planning should feel like Cron's calendar drag or Amie's gentle motion, not a Bloomberg terminal.
+The PM's quarterly-planning week is dominated by three failure modes that every existing tool inherits:
 
-The v2 thesis: **planning should feel like a single calm flow, not a series of intensive decisions.** Every JBTD below is one stop on that flow.
+1. **The pile is invisible.** Real PM days start with un-triaged asks across Slack, email, calls, customer interviews, exec hallway questions. "Smart inboxes of pre-prioritised cards" skip the triage moment that *is* the work.
+2. **There is no end-to-end loop.** Capture, triage, prioritise, sequence, communicate, and audit live in separate tools. The PM holds the loop together in their head.
+3. **The surface is cold.** Competent dark-theme minimalism reads as a Bloomberg terminal. Planning should feel like Cron's calendar drag or Amie's gentle motion — calm but warm.
+
+The seven JBTDs below are the loop. Each design move on each surface serves one of them.
 
 ---
 
@@ -108,7 +110,7 @@ Listed in the order they fire across the loop — these become the surfaces in �
                                                               (system learns weights)
 ```
 
-The current build collapses CAPTURE + TRIAGE into "Priority Stream" (which is actually post-triage), has PRIORITIZE + SEQUENCE separately but disconnected, and has COMMUNICATE bolted on as audience-toggle. The v2 build makes the loop visible.
+The deployed build makes the full loop visible end-to-end: triage is the front-door act of work, prioritize and sequence are connected through the calendar puzzle, communicate is generated artifacts per audience, and audit closes the loop with prediction-vs-actual.
 
 ---
 
@@ -147,7 +149,7 @@ Each POV is a design rubric. When a designer/coder hesitates, they re-read these
 **Reject:** Same data, different filters. "Here's the roadmap, tell me what you think." Demanding the audience translate PM-shaped output.
 
 ### POV-7 (Audit + learn)
-**Believe:** Every decision logs reasoning + framework + predicted outcome. The Audit surface shows decisions chronologically *and* surfaces "predictions due for review" — "3 weeks ago you predicted SAML would unblock 3 deals; 2 are closed, 1 stalled. Update your priors?" This closes the learning loop the current build half-promised.
+**Believe:** Every decision logs reasoning + framework + predicted outcome. The Audit surface shows decisions chronologically *and* surfaces "predictions due for review" — "3 weeks ago you predicted SAML would unblock 3 deals; 2 are closed, 1 stalled. Update your priors?" This is the learning loop most planning tools half-promise but never close.
 
 **Reject:** Audit-as-immutable-log. "Just a feed of what happened." No prediction-vs-actual loop.
 
@@ -157,7 +159,7 @@ Each POV is a design rubric. When a designer/coder hesitates, they re-read these
 
 **Move planning from decision-by-decision suffering to a single calm flow.**
 
-Operationalized: **median time from idea-surfaced → decision-logged.** Already locked in `cs2_supporting_writeup.md`. This v2 build serves that NSM directly — every JBTD shaves time off that median, every reduction in cognitive load reduces the chance Maya delays the decision because "I'll think about it later."
+Operationalised: **median time from idea-surfaced → decision-logged.** Defined in `supporting_writeup.md`. The build serves the NSM directly — every JBTD shaves time off that median, every reduction in cognitive load reduces the chance Maya delays the decision because "I'll think about it later."
 
 ---
 
@@ -172,28 +174,24 @@ Borrowing from Amie's design philosophy — *"Connecting events to bigger goals"
 
 ---
 
-## 8. What we're explicitly *not* doing in v2
+## 8. What is deliberately out of scope
 
-To keep scope honest:
+The brief assumes ingestion is solved upstream. The build covers the post-ingestion slice (capture → triage → place → communicate → learn). Everything below is deliberately out:
 
-- **No real backend.** Still mocked data. Capture is fake; triage decisions live in localStorage.
-- **No multi-user collaboration.** Maya is alone with the tool.
+- **No real backend.** Mocked data; triage decisions persist in localStorage.
+- **No multi-user collaboration.** The persona is alone with the tool.
 - **No ticketing-system integration.** Linear/Jira sync is a credible-future demo, not a built feature.
-- **No editing/CRUD on initiatives.** Maya doesn't author items in v2; the system is about deciding on them.
-- **No mobile.** Desktop-only. PM workstation is the use context.
+- **No editing/CRUD on initiatives.** The system is about deciding on inbound items, not authoring them.
+- **No mobile primary input.** Desktop drag-and-drop is the primary interaction model; mobile renders are read-only and explicitly disclosed.
 
-Anything outside the seven JBTDs is out of scope until v3.
-
----
-
-## 9. Decisions locked (2026-05-08 review)
-
-1. **Persona = Senior PM at Series-C B2B SaaS** (Maya). She *does* the planning work, doesn't review others'. ✅
-2. **Light theme is the default**, with optional dark. Warm earth-toned palette per 2026 minimalism trend. The current cold-dark vibe is replaced. ✅
-3. **Audience renders are replaced with generated stakeholder artifacts** (POV-6) — bigger rebuild, right per JBTD. ✅
-4. **SignalShifts banner moves into Triage flow** — surfaces as "3 items shifted priority overnight; re-triage first?" rather than front-door noise. ✅
-5. **NSM stays at median time idea→decision.** Leading indicator added for demo purposes: "% of items decided same day they're captured." ✅
+Anything outside the seven JBTDs is out of scope.
 
 ---
 
-**Next step:** §3 design system v2 (palette + typographic scale + motion), then §4 IA + surface map, then build surface-by-surface starting with Inbox (Capture + Triage).
+## 9. Locked design decisions
+
+1. **Persona — Senior PM at Series-C B2B SaaS** (Maya). She *does* the planning work, doesn't review others'.
+2. **Light theme default**, optional dark. Warm earth-toned palette aligned with 2026 minimalism's "rooted earth tones" shift.
+3. **Audience renders as generated stakeholder artifacts**, not toggled filters on shared data. Each audience gets its own copy + format.
+4. **SignalShifts surfaces inside Triage**, not as front-door noise. Surfaced as "N items shifted priority overnight; re-triage first?"
+5. **NSM = median time idea-surfaced → decision-logged.** Leading indicator: "% of items decided same day they're captured."

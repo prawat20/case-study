@@ -25,7 +25,7 @@ Most planning tools optimize for the wrong thing. The candidates I considered an
 
 The chosen metric — *median time from idea-surfaced to decision-logged* — survives every test:
 
-- **It captures the founder's framing.** Bhavin's "speed of thought" thesis from the Loom video is exactly this: compressing the elapsed time between *the system surfacing context* and *the PM acting on it*.
+- **It captures the founding framing.** The "speed of thought" thesis — compressing the elapsed time between *the system surfacing context* and *the PM acting on it* — collapses cleanly onto this metric.
 - **It captures the product thesis.** Our POV reframes quarterly planning as a *context-synthesis and decision-orchestration* problem. If the synthesis is automated and the decision is fast, this metric goes down. If either is broken, it goes up.
 - **It is leading, not lagging.** A drop in this metric tells us the tool is doing its job *today* — independent of whether the resulting quarterly plan turns out to be "good." Plan quality is downstream and slower to measure; we triangulate via supporting metrics.
 - **It is measurable from day one.** Both endpoints are timestamps the system already records. No external attribution, no panel surveys, no quarterly retros required.

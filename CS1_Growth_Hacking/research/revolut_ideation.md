@@ -1,8 +1,6 @@
 # Revolut Primacy — Ideation & Selection
 
-> Stage 3 of 5. Inputs: `cs1_revolut_research.md` (v2) + `cs1_revolut_painkiller_vitamin.md`.
-> Output: 17 ideas generated broadly across the 3 idea zones, scored against the brief's 4-criteria rubric (creativity · depth · analytical reasoning · impact), narrowed to top 2.
-> Status: 2026-05-11 first draft.
+> Idea-generation and selection layer downstream of `revolut_painkiller_vitamin.md`. Seventeen ideas generated broadly across three idea zones (Trust counter-narrative · Primacy-as-ritual · Primacy-only economics), scored against a four-axis rubric (Impact · PLG-actionability · Differentiation · Interview-defensibility), narrowed to the two push-pull picks that ship in the caselet.
 
 ---
 

@@ -1,6 +1,6 @@
-# Caselet 2 — Stage A: Personas + Problems
+# Caselet 2 — Personas + Problems (working draft)
 
-> Working draft for §1 of the final submission. Two personas, one section. Each persona owns its own problem list. Brief asks "Persona" singular + "list of Problems" plural — two persona blocks each with their own problems reads natural AND reinforces Plottwyst's core platform thesis: one engine, two surfaces, two demand vectors.
+> Persona synthesis backing §1 of the Caselet 2 submission. Two personas, one section. Each persona owns its own problem list. The brief asks for "Persona" singular + "list of Problems" plural — two persona blocks, each with their own problems, reads natural AND reinforces Plottwyst's core platform thesis: one engine, two surfaces, two demand vectors.
 
 ---
 

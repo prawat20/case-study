@@ -1,7 +1,6 @@
-# PM Planning & Prioritization — Pain Points Research
+# PM Planning & Prioritization — Pain Points
 
-> Working doc for Case Study 2 (Quarterly Planning & Prioritization Tool) — informs the product POV.
-> Status: first-principles draft 2026-05-07; web research findings to be merged when the parallel research agent reports back.
+> Research artifact backing the CS2 product POV. Six-stage workflow synthesis (intake → cluster → enrich → score → sequence → communicate) anchored to existing-tool gaps and validated PM pains. Feeds the persona + seven JBTDs in `product_pov.md`.
 
 ---
 
@@ -126,7 +125,7 @@ Most existing tools over-serve one stage and bridge the others with spreadsheet 
 
 ## Implications for our product POV (CS2)
 
-- The thesis is **"AI-native system of decision, not system of record"** — directly echoes Bhavin's "system of momentum, not system of record" (TaskKit positioning).
+- The thesis is **"AI-native system of decision, not system of record"** — collapses cleanly onto the *system of momentum, not system of record* framing.
 - **Don't try to win on intake**. Brief assumes intake is solved. Win on stages 2–5.
 - The single most defensible wedge: **AI does the grunt work** (cluster, enrich, suggest scores, draft the plan), **PM does the judgment** (override, sequence, communicate).
 - The North Star should reflect *time-to-decision*, not artifacts produced.
@@ -141,7 +140,7 @@ Most existing tools over-serve one stage and bridge the others with spreadsheet 
 - **49% of IC PMs** cite "overemphasis on delivery vs. strategy and differentiation" as a major issue or 5-alarm fire.
 - **40% of respondents** cite "poor prioritization and decision-making discipline" as major impact or 5-alarm fire.
 - Direct quote (paraphrased from report): *"Prioritization often turns into negotiation, shaped by executive mandates, internal pressure, and the loudest voice in the room."* This is the politics-not-math observation, validated.
-- **Key irony** — AI is reclaiming PM time, but the reclaimed time is being absorbed by **coordination and alignment**, not market learning or decision clarity. The bottleneck moved but didn't disappear. (This is direct validation of Bhavin's "system of momentum" thesis: the new bottleneck is still anti-momentum.)
+- **Key irony** — AI is reclaiming PM time, but the reclaimed time is being absorbed by **coordination and alignment**, not market learning or decision clarity. The bottleneck moved but didn't disappear — the new bottleneck is still anti-momentum.
 - Top three issues facing PMs: **firefighting, lack of resources, prioritization** — listed together.
 
 ### Lenny Rachitsky (Lenny's Newsletter)
@@ -160,7 +159,7 @@ Most existing tools over-serve one stage and bridge the others with spreadsheet 
 ### AI-native PM tooling — competitive scan (2025-2026)
 
 - **Reforge launched an AI-native product suite** (Q1 2025-2026), including **Reforge Build** for AI-prototyping. Reforge themselves shipped 5 AI products in 9 months with 25 people — they are walking the talk.
-- The Reforge thesis: AI-native product teams will *think, work, and build* differently from AI-augmented teams. Tools should be **rebuilt around AI**, not bolted on. (Direct alignment with Bhavin's framing.)
+- The Reforge thesis: AI-native product teams will *think, work, and build* differently from AI-augmented teams. Tools should be **rebuilt around AI**, not bolted on.
 - The space is moving fast — 2026 will see a wave of AI-native planning/prioritization launches. **Differentiation will not be "we have AI"** — every tool will. Differentiation will be **product POV** (what work the AI actually does) and **flow simplicity**.
 
 ### Sources
@@ -179,7 +178,7 @@ Most existing tools over-serve one stage and bridge the others with spreadsheet 
 The 2025 SOPM data tightens the wedge significantly:
 
 1. **49% strategy-vs-delivery + 40% prioritization-discipline as 5-alarm-fire issues** = ~half the PM workforce is acutely aware they're not doing their best thinking. Our tool's promise should be *"give the PM their thinking time back"* — not "store your prioritized list better."
-2. **The "AI saves time, coordination eats it" irony** is the strongest validation of Bhavin's thesis I've seen. The moat is not "we have AI" — every tool will. The moat is **AI that compresses the coordination/alignment loop**, not AI that just does the rote work faster.
+2. **The "AI saves time, coordination eats it" irony** is the strongest validation of the system-of-momentum thesis. The moat is not "we have AI" — every tool will. The moat is **AI that compresses the coordination/alignment loop**, not AI that just does the rote work faster.
 3. **Politics-not-math** is officially validated by industry data, not just punditry. Tools that pretend prioritization is math (RICE alone) will lose to tools that **surface tradeoffs + document the why** (so the PM can defend the decision).
 4. **Re-prioritization is the steady state** (Lenny's "every planning cycle"). First-class UI for mid-cycle re-planning is not a feature — it's the core loop.
 5. The market is **explicitly moving toward AI-native** (Reforge suite, Productboard alternative trends). Bolt-on AI is no longer table stakes; it's a liability.

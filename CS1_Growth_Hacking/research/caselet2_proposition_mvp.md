@@ -1,6 +1,6 @@
-# Caselet 2 — Stage B: Proposition + MVP + Revenue + TAM
+# Caselet 2 — Proposition + MVP + Revenue + TAM (working draft)
 
-> Working draft for §2–§5 of the final submission. Lifts fragments from the live Plottwyst deck (`functions/deck/[[slug]].js`). Tone calibrated to Bhavin-vocabulary: AI-native vs AI-bolted, system not product, speed of thought.
+> Working artifact for §2–§5 of the Caselet 2 submission. Lifts fragments from the live Plottwyst investor deck and rephrases them for the Momentum brief's growth-hacking framing.
 
 ---
 

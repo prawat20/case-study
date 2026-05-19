@@ -1,7 +1,6 @@
-# Revolut Primacy — Pain Points & Switching Drivers Research
+# Revolut Primacy — Pain Points & Switching Drivers
 
-> Working doc for Case Study 1 (Revolut Primacy %) — informs the PLG POV.
-> Status: v2 desk-research synthesis 2026-05-11. Stage 1 of 5. v1 was secondary-source only; v2 adds primary-source Reddit signal across 17 high-engagement threads (1,000+ comments synthesised). Stage 2 will turn this into a Painkiller / Vitamin list.
+> Research artifact backing Caselet 1. Desk research synthesised with primary-source Reddit signal across 17 high-engagement threads (~1,000 comments). Feeds the macro pain/vitamin synthesis in `revolut_painkiller_vitamin.md` and the ideation pass in `revolut_ideation.md`.
 
 ---
 
@@ -15,7 +14,7 @@ Stack on top of that: (1) the `e-money` → `bank` migration only completed regu
 
 Net: **the brief asks us to convert vitamin-driven affection into painkiller-grade primacy** — and the product hasn't yet earned the painkiller mandate. The numbers confirm it: Revolut average consumer deposit ≈ £575/mo vs Monzo £811 vs Starling £2,944 (Sacra/Sifted). That's the gap to close.
 
-**The sharpest specific insight from primary-source Reddit signal (added v2):** Revolut's primacy problem is **as much a public-narrative problem as an operational one**. The recurring meme on r/Revolut is *"Revolut is great until it is not"*. Users describe a self-administered **demote funnel** — they don't need to be frozen themselves; reading other users' freeze stories alone is enough to start rationing balances. ("*Even if I haven't had a problem so far. Reading about other people's problems is enough for me*" — r/Revolut comment, t05). Each viral freeze story does measurable damage to *all* future primacy decisions across the user base. The salary-deposit moment is where the narrative crystallises: it's the single point in the month where the customer asks "if Revolut froze right now, what's the worst case?" — and the answer ("can't pay rent, no branch, no phone, AI bot loop") is what kills the primacy switch even for users who love the product.
+**The sharpest specific insight from the primary-source Reddit signal:** Revolut's primacy problem is **as much a public-narrative problem as an operational one**. The recurring meme on r/Revolut is *"Revolut is great until it is not"*. Users describe a self-administered **demote funnel** — they don't need to be frozen themselves; reading other users' freeze stories alone is enough to start rationing balances. ("*Even if I haven't had a problem so far. Reading about other people's problems is enough for me*" — r/Revolut comment, t05). Each viral freeze story does measurable damage to *all* future primacy decisions across the user base. The salary-deposit moment is where the narrative crystallises: it's the single point in the month where the customer asks "if Revolut froze right now, what's the worst case?" — and the answer ("can't pay rent, no branch, no phone, AI bot loop") is what kills the primacy switch even for users who love the product.
 
 ---
 
@@ -107,7 +106,7 @@ The single highest-resonance pain point in the dataset. Pattern: first salary la
 - *Chyshkala 2026:* the app feels "cluttered with crypto, stocks, hotel bookings, and dozens of other features" vs Monzo's simplicity. The same multi-product surface that wins acquisition fights primacy — primacy wants boring reliability, not feature density.
 - `[first-principles]` Daily-active behaviour for a primary account is checking balance + paying a bill + glancing at last few transactions. Revolut's home is optimised for cross-sell, not ritual reassurance.
 
-**P11. The demote funnel — the under-named risk** *(new in v2 from Reddit signal)*
+**P11. The demote funnel — the under-named risk** *(surfaced from the Reddit primary-source pass)*
 The reverse of a primacy migration is a self-administered demotion, and it's well-documented in the dataset. Pattern: user starts with Revolut as primary or aspirational primary → reads freeze stories OR has a minor incident → starts keeping less money on Revolut → manually tops up before each transaction → eventually demotes Revolut to "card-only" tier. The user is unconsciously running their *own* daily-DD migration *away* from Revolut.
 - *Reddit r/Revolut, "I love revolut but now I am paranoid" (75 upvotes):* OP describes the demote funnel verbatim. *"I love Revolut. I used to keep all my money there… But now, reading all the stories about suspended accounts and blocked funds, I make a transfer from my other bank, which has now become my primary bank account, whenever my funds on Revolut run low... I'd like to no longer keep almost anything under €5 on Revolut."* (t11 OP)
 - *Reddit r/Revolut, "Do not trust Revolut with your money" (340 upvotes):* *"I've been a paying premium customer for over five years and, until recently, was very satisfied. I even considered making Revolut my primary bank account. Now, I am incredibly thankful that I never did."* (t15 OP) — explicit demote-from-aspirational pattern.
@@ -167,7 +166,7 @@ The interesting product-strategy cohort is **C3 + C4 combined** — these are us
 
 ---
 
-## The two-bank cohabitation equilibrium *(new in v2)*
+## The two-bank cohabitation equilibrium
 
 The dominant *rational user mental model* across Reddit + forum + Trustpilot signal is **not** "Revolut is bad" — it's that **two banks is the right number of banks**, and Revolut's job in that pair is well-defined: spending money, FX, virtual cards, crypto/stocks. The salary mandate stays at the high-street partner. Direct quotes:
 - *Reddit r/UKPersonalFinance, t13 c72:* *"Makes me glad that my banking app itself only has my monthly salary and some buffer savings in it. The bulk of my cash savings are in HL active savings… You would need the user, password, pin and 2FA code to login, and then sell down and withdraw from my ISA, or from my active savings product, which would take days."* The two-bank pattern is treated as a **security feature**, not a workaround.
@@ -254,7 +253,7 @@ The case study should go after #2 as the primary wedge, with #1 features assumed
 - **Revolut Annual Report 2025 PDF** — file too large to fetch directly; relied on Crowdfund Insider, TechCrunch, Banking Dive secondary coverage of disclosed figures.
 - **Sifted full article + Payments Association full article** — 403 forbidden; relied on the snippets surfaced via search summary. The Sifted comparator data points (Starling £999 / Monzo £357 / Revolut £236 per user) come from search-result extraction, worth re-verifying directly before quoting in the final submission.
 
-### Reddit primary-source threads (v2 addition)
+### Reddit primary-source threads
 Pulled via Reddit `.json` API endpoint, May 2026. Engagement-ranked. The first two are the load-bearing ones for the thesis.
 - **t03 — r/Revolut, "Can't access my salary. I am suing." (1,006 upvotes / 319 comments)** — `reddit.com/r/Revolut/comments/1j03ak7/` — first-payday + bonus-payslip freeze, top comment chorus = "use Lloyds for salary." Cohort C4 archetype.
 - **t02 — r/Revolut, "Revolut blocked my salary and now I can not pay my rent" (278 / 176)** — `reddit.com/r/Revolut/comments/1nvxczq/` — UK Metal user, salary lands, transfer to KZ, frozen. Comments crystallise the two-bank cohabitation rationale.

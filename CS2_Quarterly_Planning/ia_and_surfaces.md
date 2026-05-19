@@ -1,95 +1,58 @@
-# CS2 v2 — IA + Surface Map
+# Information Architecture + Surface Map
 
-**Status:** v2 spec drafted 2026-05-08, shipped 2026-05-09. **v3 flow optimization shipped 2026-05-11** (see v3 delta below). This document locks the v2 surface skeleton + route map. The v3 update layers on top, preserving the v2 design narrative as historical context.
-
----
-
-## v3 delta — flow optimization (2026-05-11)
-
-Three flow moves applied on top of the v2 IA below. Read this first to understand what's live now; the v2 sections that follow document the intent the v3 edits inherit.
-
-### Surface count: 6 → 5 destination surfaces
-
-- **Inbox folded into Now.** Inbox is no longer a destination surface — it's been merged into the Now home (NSM hero + capture button + inline triage rows + `Start triage →` CTA). `/inbox/` stays as a transparent client redirect to `/` so any external deep-link still resolves.
-- **Top nav: 5 items → 4.** `Now · Calendar · Stakeholders · Audit`. The Inbox item is removed. Active-page match for `/` was widened to also catch `/inbox` and `/initiative` so navigation underline behaves correctly during the redirect bounce.
-
-### Calendar — silent auto-reflow → explicit 3-strategy trade-off
-
-The v2 spec assumed the engine would auto-reflow lower-priority items on overflow and surface the result via a post-commit toast. v3 makes the trade-off visible *before* commit:
-
-- On drag, every sprint shows a live `current → predicted` load chip (e.g. `12 → 20/12p`). Sprints that would overflow shift to amber border + bar.
-- On hover over an over-capacity sprint, a `TradeOffPanel` slides in inline below the sprint's items, with three named AI strategies as separate drop targets:
-  - **A · Minimise score loss** — push lowest-RICE items downstream (the v2 default behaviour, now explicit).
-  - **B · Minimise deadline risk** — protect items with `signal_type === "deadline" || "compliance"`; push everything else first.
-  - **C · Defer to next quarter** — don't reflow within Q3 at all; displaced items become deferred decisions.
-- Each card shows the rationale + the pushes that would happen + a `score_impact` value (sage when best, amber when worst).
-- On commit, items use `motion.div layoutId={initiative.id}` for shared-layout transitions — reflowed items *slide* between sprints over ~420ms rather than snap-disappearing.
-
-This collapses the brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) onto a single interaction.
-
-### Stakeholders — hub → master/detail
-
-The v2 spec was a 4-card hub that drilled into `/stakeholders/[audience]/`. v3 unifies:
-
-- `/stakeholders/` is now a master/detail layout (`grid-cols-[260px_1fr]` on md+). Persistent left rail with 4 audience cards. Right pane is the artifact.
-- URL syncs to `?audience=sales|exec|customer|eng` via `useSearchParams` + `router.replace`. Default = sales. Suspense boundary wraps the params reader for static export.
-- `<StakeholderArtifact key={audience} embedded />` — the `key` prop forces remount on every audience switch so the materialize stagger re-fires, not just on first mount. New `embedded` prop on the component skips Header + outer wrapper + back-link.
-- Legacy `/stakeholders/[audience]/` paths kept static-exportable but bounce to the unified URL via a `redirect-client.tsx` helper.
-
-### Click-count consequence
-
-```
-Land → first triage card:        v2 = 2 clicks  →  v3 = 1 click
-Switch stakeholder audience:     v2 = 2 clicks  →  v3 = 1 click
-See trade-off space before commit: v2 = 0 clicks (invisible)  →  v3 = 0 clicks (visible inline)
-```
-
-The v2 IA below remains the design-intent record. The route map in §2 still describes intent; the live URL behaviour after v3 differs as documented above (Inbox redirects, `/stakeholders/[audience]` redirects).
+> The surface skeleton, route map, and per-surface design intent that the CS2 build runs on. Downstream of `product_pov.md` (the seven JBTDs); upstream of every component in `quarterly-planning/components/`.
 
 ---
 
-## 1. Six surfaces, one loop (v2 design intent)
+## 1. Five surfaces, one loop
 
-The seven JBTDs map to six surfaces — **Now** is the home that aggregates the loop, the other five are the loop itself. *(v3 update: Inbox no longer a destination surface; folded into Now. The other five are unchanged in role, two changed in interaction model — see v3 delta above.)*
+The seven JBTDs map to five destination surfaces plus an off-loop case-study artifact. **Now** is the home that aggregates the loop and carries the front of capture + triage; the other four are the body of the loop.
 
-| # | Surface       | Route               | Owns JBTD(s)        | Purpose statement                                                  |
-|---|---------------|---------------------|---------------------|--------------------------------------------------------------------|
-| 1 | Now           | `/`                 | aggregator (1-7)    | Where Maya lands. Calm overview of NSM, what's waiting, what's next. *(v3: also owns JBTD-1, JBTD-2 — capture + the front of triage)* |
-| 2 | ~~Inbox~~     | ~~`/inbox`~~        | ~~JBTD-1, JBTD-2~~  | *v3: folded into Now. `/inbox/` redirects to `/`.* |
-| 3 | Prioritize    | `/prioritize/[id]`  | JBTD-3, JBTD-4      | Single-item depth — framework, scorecard, trade-offs, commit.        |
-| 4 | Calendar      | `/calendar`         | JBTD-5              | The missing surface today. Sprint-by-sprint plan, drag-resequence. *(v3: trade-off space visible during drag, 3-strategy AI choice)* |
-| 5 | Stakeholders  | `/stakeholders`     | JBTD-6              | Generated artifacts per audience. Copy-paste-ready. *(v3: master/detail, 1-click audience switch, `?audience=` query)* |
-| 6 | Audit         | `/audit`            | JBTD-7              | Decision log + prediction-vs-actual learning loop.                   |
-| – | Architecture  | `/architecture`     | (case-study artifact) | Reviewer-facing only. Shows the AI capability stack.               |
-
-**Architecture stays** — it's a deliverable for the case-study reviewer, not for Maya. Lives off the main loop.
+| # | Surface       | Route               | Owns JBTD(s)        | Purpose                                                                |
+|---|---------------|---------------------|---------------------|------------------------------------------------------------------------|
+| 1 | Now           | `/`                 | JBTD-1, JBTD-2, aggregator (1–7) | Where the PM lands. NSM hero, inline triage rows, capture (`⌘N`), `Start triage →` CTA. |
+| 2 | Prioritize    | `/prioritize/[id]`  | JBTD-3, JBTD-4      | Single-item depth — framework, scorecard, trade-offs, commit.          |
+| 3 | Calendar      | `/calendar`         | JBTD-5              | Sprint-by-sprint plan as a drag-and-drop puzzle. Live capacity, AI-advisory Drop Planner on overflow. |
+| 4 | Stakeholders  | `/stakeholders`     | JBTD-6              | Master/detail with persistent audience rail. Generated artifacts per audience, copy-paste-ready. |
+| 5 | Audit         | `/audit`            | JBTD-7              | Decision log + prediction-vs-actual review loop.                       |
+| – | Architecture  | `/architecture`     | (reviewer artifact) | Off-loop. Six-layer AI capability stack diagram for the case-study reviewer. |
 
 ---
 
 ## 2. The route map
 
 ```
-/                       Now (home, aggregator)
-/inbox                  Inbox — capture + triage
-/inbox/triage           Triage flow (deck-of-cards full-screen mode)
-/prioritize/[id]        Prioritize — single-item depth (replaces /initiative/[id])
-/calendar               Calendar — sprint-by-sprint plan
-/stakeholders           Stakeholders — generated artifacts hub
-/stakeholders/[audience] One audience artifact (sales / exec / customer / eng)
-/audit                  Audit + learn
-/architecture           Case-study capability map (reviewer-facing)
+/                          Now (home, aggregator + capture + triage front)
+/inbox                     → redirect to /  (deep-link compatibility)
+/prioritize/[id]           Prioritize — single-item depth
+/calendar                  Calendar — sprint-by-sprint plan + Drop Planner
+/stakeholders              Stakeholders — master/detail (?audience=sales|exec|customer|eng)
+/stakeholders/[audience]   → redirect to /stakeholders?audience=[...]
+/audit                     Audit + learn (#predictions hash for direct tab landing)
+/architecture              Case-study capability map (reviewer-facing)
 ```
 
-### What's removed from current build
+### Vocabulary choices
 
-- `/quarter` → split. Sprint visibility moves to `/calendar`. Audience views move to `/stakeholders`.
-- `/initiative/[id]` → renamed `/prioritize/[id]` to align with JBTD vocabulary.
+- **Inbox** rather than "Priority Stream." Nothing is prioritised until the PM triages it; the name should not pre-commit the outcome.
+- **Prioritize** rather than "Initiative Detail." Detail is description-mode; Prioritize is decision-mode. Vocabulary should reveal intent.
+- **Calendar** rather than "Quarterly Simulation." Planning here should feel as natural as Cron, not like a simulation.
 
-### What's renamed and why
+### Calendar — explicit trade-off, not silent auto-reflow
 
-- "Priority Stream" → **Inbox**. The current name implies pre-prioritized; the JBTD-2 promise is that *nothing is prioritized until Maya triages it*.
-- "Initiative Detail" → **Prioritize**. Detail is description-mode; Prioritize is decision-mode. Vocabulary should reveal intent.
-- "Quarterly Simulation" → **Calendar**. "Simulation" is fancy-dress for what should feel as natural as Cron.
+When a drag would overflow a sprint, a Drop Planner panel expands inline with per-item destination control:
+
+- Each item currently in the target sprint gets a row with destination buttons: `Keep | Sprint 1 (Xp free) | Sprint 3 (Yp free) | Sprint 4 (Zp free) | Defer Q4`. Headroom recomputes live as the PM toggles.
+- An AI-suggested plan is pre-selected on each row with a ✦ badge on the suggested destination — the PM can override any row.
+- A live trade-off summary updates per toggle: `Freeing 2p of 2p needed ✓ · RICE cost: −0.5 · All deadlines protected`.
+- Commit is disabled until capacity matches; cancel reverts cleanly.
+- On commit, reflowed items animate between sprints via Framer Motion `layoutId` shared-layout transitions (~420ms slide, no snap-disappear).
+
+AI is **advisory, not deciding** — the PM controls *who* moves and *where they go*, not just which strategy label runs.
+
+### Stakeholders — master/detail
+
+A single surface, persistent 260px left rail with four audience cards (Sales, Exec, Customer, Engineering), right pane carrying the generated artifact. URL syncs to `?audience=sales|exec|customer|eng`. The artifact body remounts on every audience switch so the materialize stagger re-fires. Each artifact ships with `Copy as Slack` and `Copy as email` actions — clipboard-ready, no manual reformatting.
 
 ---
 
@@ -272,7 +235,7 @@ The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with key
 
 **Owns:** JBTD-3 (framework), JBTD-4 (trade-offs).
 
-Lifted from current `Initiative Detail` but rebuilt against design system v2 + JBTD-3/4. Major changes:
+Single-item depth surface that holds the framework moment and the trade-off moment. Four design moves carry the surface:
 
 1. **Framework picker is a first-class control** (not a chip popover). Top of the surface. PM picks RICE / ICE / Value-Effort / Strategic Bet / WSJF; the **scorecard re-renders below**.
 2. **Trade-offs section is part of the commit confirmation**, not above-the-fold. When PM clicks Commit, an inline confirm shows: *"Committing this will push X to Sprint 4 and free Y for Sprint 2. Confirm?"*
@@ -430,42 +393,18 @@ Cmd+K stays. It now handles:
 - Reset demo
 - Toggle theme (light / dark)
 
-Same `cmdk` library. Restyled to match design system v2.
+Built on the `cmdk` library, restyled to the project palette.
 
 ---
 
-## 11. What's gone from the current build
+## 11. Anti-patterns explicitly avoided
 
-| Removed | Replaced by |
+| Avoided | Reason |
 |---|---|
-| `/quarter` (audience-toggle Q view) | `/calendar` + `/stakeholders` (split) |
-| `/initiative/[id]` route | `/prioritize/[id]` (rename) |
-| Strategic banner + SignalShifts as front-door | Now-page summary cards (NSM display + Triage CTA + sprint peek) |
-| Sprint View component embedded in Initiative Detail | Pulled out to `/calendar` as primary surface |
-| Audience render toggle on Quarter | Removed; Stakeholder surface owns it |
-| Dark theme as default | Light theme default; dark via `data-theme` |
-
----
-
-## 12. Build sequence — what actually shipped (2026-05-09)
-
-All ten steps shipped, plus three follow-up rounds in response to user feedback during the build.
-
-| # | Commit | What landed |
-|---|---|---|
-| 1 | `26a747a` | Foundation — tokens + fonts + theme toggle |
-| 2 | `d961018` | Now (home aggregator) + Inbox bridge |
-| 3 | `9d7d11d` | Inbox + deck-of-cards triage + Cmd+N capture + Cmd+K refit |
-| 4 | `aefaacb` | Prioritize v2 — framework picker + scorecard + commit-confirm |
-| 5 | `c2a749c` | Calendar + Stakeholders + Audit + Architecture |
-| 6 | `4a970e1` | **Real sprint impact on commit** — auto-reflow via `computeCommitImpact` |
-| 7 | `b6291b9` | **Compact Prioritize** to single Decision card · triage intent labels |
-| 8 | `9d2b9de` | **Calendar = puzzle** — TO PLACE rail + DEFER tray + drag-to-decide |
-| 9 | `a6e8e04` | **Triage = Tinder swipe** with "Why this" inline expand |
-| 10 | `2a99957` | Triage action buttons close to card |
-
-The three highlighted rounds (6, 8, 9) emerged from user feedback during the build — items that the original IA spec had right in spirit but not in the specific interaction model. The doc above has been updated to reflect the actual shipped surfaces.
-
----
-
-**v2 build complete.** Next: CS1 written doc (Revolut Primacy + Plottwyst pitch).
+| Audience-toggle quarter view | Same data filtered four ways pretends the audiences read the same shape; they don't. Per-audience generated artifacts replace it. |
+| "Initiative Detail" framing | Detail is description-mode; the surface is decision-mode. Renamed `Prioritize`. |
+| SignalShifts banner on the home | Front-door noise. Folded into Triage as "N items shifted priority overnight; re-triage first?" |
+| Sprint View embedded in Initiative Detail | Sequencing is its own JBTD; it earns its own surface (`Calendar`). |
+| Dark theme as default | Cold dark on cold black reads as Bloomberg terminal; light cream + sage is the default, dark is opt-in. |
+| Multi-column tables on any surface | Forces multi-axis scanning; violates Zero Cognitive Load. Every surface is single-column or vertical. |
+| Standalone AI chat panel | Anti-pattern per the design rubric — AI is in-place advisor, not a separate persona to talk to. |

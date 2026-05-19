@@ -3,12 +3,11 @@
 # non-publishable artifacts. Never commit.
 _private/
 
-# Node / Next.js
-node_modules/
-.next/
-out/
-build/
-dist/
+# Node / Next.js — scoped to the app folder so the PDF pipeline at CS1_Growth_Hacking/build/ is not caught
+quarterly-planning/node_modules/
+quarterly-planning/.next/
+quarterly-planning/out/
+quarterly-planning/dist/
 
 # Environment
 .env

@@ -1,16 +1,16 @@
-# CS2 v2 — Design System
+# Design System
 
-**Status:** draft for review (2026-05-08). Built downstream of `cs2_jbtd_and_pov.md`. This locks the visual + motion + sonic vocabulary before we touch a single surface. Three principles override every choice below: **Zero Cognitive Load** (DfD-1), **Restraint** (Amie: *"products die from obesity"*), **Calm flow over output** (Linear: *"when execution becomes the default, we devalue the why"*).
+> The visual, motion, and sonic vocabulary that the CS2 build runs on. Sits downstream of `product_pov.md` and upstream of every surface in `ia_and_surfaces.md`. Three principles override every choice below: **Zero Cognitive Load** (DfD-1), **Restraint** (Amie: *"products die from obesity"*), **Calm flow over output** (Linear: *"when execution becomes the default, we devalue the why"*).
 
 ---
 
 ## 1. The palette — warm light, single accent, restrained
 
-The current build is cold dark on cold black. v2 inverts that consciously: **warm paper-feel cream as page, pure white as elevated surface, sage as the only accent.** This is the single biggest visual step-change, and it traces directly to two research signals — 2026 minimalism's shift to "rooted earth tones" and Amie's joyful-but-not-loud language.
+**Warm paper-feel cream as page, pure white as elevated surface, sage as the only accent.** The choice traces directly to two research signals — 2026 minimalism's shift to "rooted earth tones" and Amie's joyful-but-not-loud language. Most PM tools default to cold dark on cold black; the inversion is deliberate.
 
 ### Why sage as the accent
 
-Considered: Linear violet (`#5E6AD2`) — too associated with Linear, unoriginal. Soft amber/caramel — competes with status warning. Lavender — already a 2026 cliché. Deep ink-blue — too austere, kills joy. **Sage green (`#5A8F6F`)** — calm, distinctive among PM tools (most use blue/violet/teal), reads as "growth/momentum" which aligns with Bhavin's thesis. One accent, used sparingly. When something is sage, it matters.
+Considered: Linear violet (`#5E6AD2`) — too associated with Linear, unoriginal. Soft amber/caramel — competes with status warning. Lavender — already a 2026 cliché. Deep ink-blue — too austere, kills joy. **Sage green (`#5A8F6F`)** — calm, distinctive among PM tools (most use blue/violet/teal), reads as *growth* and *momentum* in equal measure. One accent, used sparingly. When something is sage, it matters.
 
 ### Tokens
 
@@ -81,7 +81,7 @@ Earth-toned dark — warm graphite page, near-black elevated, same sage accent s
 
 ## 2. Typography — Inter for UI, serif for moments
 
-The current build runs Inter mono-family. v2 introduces a **display serif for personality moments** — page titles, the North Star number, the case-study cover. Inspired by Reflect, Cron, and Things 3. Adds warmth without compromising restraint.
+A **display serif for personality moments** — page titles, the North Star number — runs alongside Inter for everything else. Inspired by Reflect, Cron, and Things 3. Warmth without compromising restraint.
 
 ### Families
 
@@ -112,8 +112,8 @@ The current build runs Inter mono-family. v2 introduces a **display serif for pe
 
 ### Type rules
 
-1. **Body bumps from 13px → 14px.** Light backgrounds need more body weight. The current 13px on dark looks crisp; on cream it looks anemic.
-2. **Line-height 1.55 on body** (vs 1.4 today). Cream calls for more breathing room.
+1. **Body at 14px.** Light backgrounds need more body weight than dark; 13px reads anemic on cream.
+2. **Line-height 1.55 on body.** Cream calls for breathing room.
 3. **Eyebrow labels are uppercase + 0.08em tracked** — used to label sections without competing with content (`OVERNIGHT SHIFTS`, `THIS SPRINT`).
 4. **Numerics always mono** — in tables, in scorecards, in audit logs. Stops alignment jitter.
 5. **Serif is a treat, not a style choice.** If a page has more than 3 serif elements, we've overused it.
@@ -122,7 +122,7 @@ The current build runs Inter mono-family. v2 introduces a **display serif for pe
 
 ## 3. Spacing rhythm — 4px base, generous
 
-Current build is tight (`--space-2` ≈ 8px between cards). v2 opens up.
+A 4px base scale, used wide rather than tight. Card-to-card vertical rhythm sits at 32px, section breaks at 48px — light backgrounds amplify density, so the rhythm errs generous.
 
 ```
 --space-1:  4px;
@@ -182,17 +182,17 @@ Borrowing the 2026 trend term **"resonant stark"** — minimalism with just enou
 
 ---
 
-## 5. Sound — three sage chimes, tuned softer than v1
+## 5. Sound — Web Audio chimes, cream-context tuning
 
-Current build has commit (D5+A5), defer (G4 tick), snap (C5+E5+G5). v2 keeps the structure but **drops gain by ~30%** and adjusts envelopes — cream backgrounds need quieter sound.
+Five synthesised chimes, gain tuned ~30% softer than a typical dark-context UI — cream backgrounds need quieter sound.
 
 | Event | Sound | Rationale |
 |---|---|---|
 | Capture (new ask saved) | Single soft pluck, A5, 120ms | Confirms entry, doesn't punctuate |
-| Triage decision (D/R/P) | Three pitches by action — D=G4, R=B4, P=D5 | Audible decision color |
-| Commit | Two-tone D5+A5, fuller envelope | Same as v1, softer attack |
+| Triage decision (D/R/P) | Three pitches by action — D=G4, R=B4, P=D5 | Audible decision colour |
+| Commit | Two-tone D5+A5, fuller envelope, soft attack | Decision-lands beat |
 | Snap-as-plan | Three-note C5+E5+G5, slight rev sweep | Full celebration |
-| Override prompt fires | No sound | Speech bubble appearance only — sound here would feel like correction |
+| Override prompt fires | No sound | Speech-bubble appearance only — sound here would feel like correction |
 
 User-mutable via header toggle, default ON. localStorage persistent.
 
@@ -265,15 +265,11 @@ She's on a call with the sales lead. Cmd+K, "for sales," enter. The artifact mat
 
 ---
 
-## 11. What we're explicitly *not* importing from current build
+## 11. What the system explicitly avoids
 
-- The cold dark `#0a0a0b` page — gone.
-- The Linear-violet accent `#7c5cff` — replaced by sage.
-- The 13px body and 1.4 line-height — bumped to 14px / 1.55.
-- The 16px card padding — bumped to 24px.
-- The mono-only typographic feel — broken with serif for hero moments.
-- Decorative gradients on the deck cover — none in v2.
-
----
-
-**Next step:** §4 IA + surface map — apply this design system to JBTD-derived surfaces, lock the navigation skeleton, then start on Inbox build.
+- Cold dark page tones — palette is warm light by default.
+- Linear-violet or other ubiquitous PM-tool accents — sage is the deliberate-distinct choice.
+- Tight 13px body / 1.4 line-height — body sits at 14px / 1.55 because cream needs breathing room.
+- 16px crammed card padding — minimum is 24px.
+- Mono-only typographic feel — serif punctuates hero moments for warmth.
+- Decorative gradients, glassmorphism beyond the cmd palette, parallax — all out.

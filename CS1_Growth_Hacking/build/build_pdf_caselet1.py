@@ -7,9 +7,10 @@ from pathlib import Path
 
 import markdown
 
-DOC_ROOT = Path(__file__).parent
-SRC = DOC_ROOT / "cs1_caselet1_revolut.md"
-OUT_HTML = DOC_ROOT / "cs1_caselet1_revolut.html"
+BUILD_ROOT = Path(__file__).parent
+CASE_ROOT = BUILD_ROOT.parent
+SRC = CASE_ROOT / "caselet1_revolut_primacy.md"
+OUT_HTML = BUILD_ROOT / "caselet1_revolut_primacy.html"
 
 raw = SRC.read_text(encoding="utf-8")
 

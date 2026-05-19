@@ -1,8 +1,6 @@
 # Revolut Primacy — Painkiller / Vitamin Synthesis
 
-> Stage 2 of 5. Inputs: `cs1_revolut_research.md` (v2 with Reddit primary source).
-> Output: macro pain + macro benefit categories that the brief explicitly asks for, anchored to evidence and ranked for PLG-actionability.
-> Status: 2026-05-11 first draft.
+> Macro synthesis layer between raw research (`revolut_pain_research.md`) and idea generation (`revolut_ideation.md`). Collapses ~11 atomic pain points into five macro pain categories and five macro vitamin categories, ranked by PLG-actionability. The pain×vitamin asymmetry — pains with no current vitamin counter — defines the idea space the caselet attacks.
 
 ---
 
