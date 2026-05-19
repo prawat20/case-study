@@ -103,4 +103,4 @@ Next.js 16 · TypeScript · Tailwind v4 · Framer Motion · cmdk · Radix UI · 
 
 ## Contact
 
-Pravesh Rawat · `pravesh.rawat89@gmail.com` · Founder, Plottwyst.
+Pravesh Rawat · `pravesh.rawat89@gmail.com` · 
