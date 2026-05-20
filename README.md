@@ -13,8 +13,6 @@
 | Brief 2 · Quarterly Planning | **Working tool** | Next.js app (Cloudflare Pages) | [sift-pm.pages.dev](https://sift-pm.pages.dev/) |
 | Brief 2 · Quarterly Planning | **Supporting writeup** (NSM · 5 events · interview bank) | Markdown | [`CS2_Quarterly_Planning/supporting_writeup.md`](CS2_Quarterly_Planning/supporting_writeup.md) |
 
-The submission cover note (the email body that accompanies these artifacts) is at [`submission_cover_note.md`](submission_cover_note.md).
-
 ---
 
 ## How to navigate this repo
@@ -52,7 +50,6 @@ Both READMEs include a file map and the rebuild / run-locally commands.
 ```
 Case Study/
 ├── README.md                              ← you are here · top-level navigation
-├── submission_cover_note.md               Email body for the submission
 │
 ├── CS1_Caselet1_Revolut_Primacy.pdf       Brief 1, Caselet 1 — final deliverable
 ├── CS1_Caselet2_Plottwyst.pdf             Brief 1, Caselet 2 — final deliverable
