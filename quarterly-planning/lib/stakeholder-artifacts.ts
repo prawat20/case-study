@@ -188,38 +188,70 @@ function buildExec(ctx: BuildContext): Line[] {
   return lines;
 }
 
+// Calendar month each Q2 sprint completes in (by its end date) — customers think
+// in months, not sprint windows.
+const SHIP_MONTH_BY_SPRINT: Record<number, string> = { 1: "May", 2: "June", 3: "June", 4: "July" };
+const MONTH_ORDER = ["May", "June", "July"];
+
 function buildCustomer(ctx: BuildContext): Line[] {
   const lines: Line[] = [];
   lines.push({ type: "title", text: "What's coming" });
-  lines.push({ type: "subtitle", text: "The next eight weeks, in plain terms." });
+  lines.push({ type: "subtitle", text: "The improvements headed your way this quarter." });
   lines.push({ type: "spacer" });
+
+  // Customer-safe content only: confirmed work that's genuinely planned for THIS
+  // quarter. Never deferred/exploratory items, never internal rationale (ARR,
+  // deal counts, tickets, "escalated") — those live in synthesis_oneliner and
+  // must not leave the building. We render i.customer (plain name + benefit).
+  const committedIds = new Set(
+    ctx.decisions
+      .filter((d) => d.action === "committed" || d.action === "overridden")
+      .map((d) => d.initiative_id),
+  );
+  const shipping = ctx.initiatives.filter((i) => {
+    const confirmed = committedIds.has(i.id) || i.ai_recommendation.action === "commit";
+    const thisQuarter = (i.ai_recommendation.sequence ?? "").startsWith("Q2");
+    return confirmed && thisQuarter;
+  });
+
+  if (shipping.length === 0) {
+    lines.push({
+      type: "para",
+      text: "We don't have new releases to confirm for you just yet — we'll share the plan as soon as it's set.",
+    });
+    return lines;
+  }
 
   lines.push({
     type: "para",
-    text: "Here's what your team will see ship between now and end of June. We've grouped by sprint window so you can plan training and rollout.",
+    text: "Here's what your team will see roll out, grouped by month so you can plan training and adoption. We'll let you know as each one becomes available.",
   });
   lines.push({ type: "spacer" });
 
-  for (const sprint of SPRINTS) {
-    const sprintItems = ctx.initiatives.filter((i) => getSprintFor(i, ctx) === sprint.index);
-    if (sprintItems.length === 0) continue;
-    lines.push({
-      type: "section",
-      text: `${sprint.label} · ${sprint.date_label}`,
-    });
-    for (const i of sprintItems) {
+  const byMonth = new Map<string, Initiative[]>();
+  for (const i of shipping) {
+    const month = SHIP_MONTH_BY_SPRINT[getSprintFor(i, ctx)] ?? "Later this quarter";
+    if (!byMonth.has(month)) byMonth.set(month, []);
+    byMonth.get(month)!.push(i);
+  }
+
+  for (const month of [...MONTH_ORDER, "Later this quarter"]) {
+    const items = byMonth.get(month);
+    if (!items || items.length === 0) continue;
+    lines.push({ type: "section", text: month });
+    for (const i of items) {
       lines.push({
         type: "bullet",
-        text: i.title,
-        meta: humanizeOneliner(i.synthesis_oneliner),
+        text: i.customer?.name ?? i.title,
+        meta: i.customer?.summary,
       });
     }
     lines.push({ type: "spacer" });
   }
 
-  lines.push({ type: "section", text: "How to ask for changes" });
-  lines.push({ type: "bullet", text: "Reach out to your CSM for anything time-sensitive — they'll capture it directly into our triage." });
-  lines.push({ type: "bullet", text: "Bigger requests can land via the customer advisory board email; they shape next quarter." });
+  lines.push({ type: "section", text: "Questions or requests?" });
+  lines.push({ type: "bullet", text: "For anything time-sensitive, reach out to your Customer Success Manager — they'll make sure it reaches our product team." });
+  lines.push({ type: "bullet", text: "Have a bigger idea? Our customer advisory board helps shape what we build next." });
 
   return lines;
 }
@@ -266,19 +298,6 @@ export function buildArtifact(audience: AudienceKey, ctx: BuildContext): Line[] 
     case "eng":
       return buildEng(ctx);
   }
-}
-
-/* ─────────── Helpers ─────────── */
-
-function humanizeOneliner(text: string): string {
-  // Strip ARR mentions / internal terms for customer-facing rendering
-  return text
-    .replace(/\$[\d.,]+k?\s*ARR/gi, "")
-    .replace(/Sales escalated.*?\.\s*/gi, "")
-    .replace(/  +/g, " ")
-    .trim()
-    .replace(/^\.+/, "")
-    .trim();
 }
 
 /* ─────────── Render to plain text (for clipboard) ─────────── */

@@ -3,6 +3,7 @@
     "id": "init_bulk_csv",
     "title": "Bulk CSV import for enterprise",
     "synthesis_oneliner": "Blocking 3 deals worth $480k ARR. Sales escalated this week.",
+    "customer": { "name": "Bulk data import", "summary": "Bring large sets of records in at once from a spreadsheet, instead of adding them one at a time." },
     "rationale_narrative": "This unblocks 3 deals worth $480k ARR. Sales escalated it this week — second time this quarter. The pattern is clear: enterprise buyers expect bulk import on day one.",
     "evidence": [
       { "metric": "$480k", "label": "ARR exposure", "source": "Salesforce, 3 open opps", "kind": "revenue", "quote": "Acme — 'Without bulk import we can't migrate from our current vendor.'" },
@@ -67,6 +68,7 @@
     "id": "init_saml_sso",
     "title": "SSO via SAML",
     "synthesis_oneliner": "Required for 2 enterprise renewals — $340k ARR at risk.",
+    "customer": { "name": "Single sign-on", "summary": "Sign in with your organization's existing company login — no separate password to manage." },
     "rationale_narrative": "Two enterprise renewals in Q3 are conditional on SAML SSO. This is table-stakes for enterprise; without it, we churn $340k ARR. The implementation is well-scoped.",
     "evidence": [
       { "metric": "$340k", "label": "renewal at risk", "source": "Salesforce, Q3 renewals", "kind": "revenue" },
@@ -123,6 +125,7 @@
     "id": "init_audit_log",
     "title": "Audit log export for SOC2",
     "synthesis_oneliner": "July audit window — $1.2M pipeline gated on compliance.",
+    "customer": { "name": "Audit log export", "summary": "Export a full history of account activity for your own security and compliance reviews." },
     "rationale_narrative": "Required for SOC2 Type II compliance. Audit window is July — we need export-ready audit logs by end of Q2 to be safe. No customer pull yet, but compliance is non-negotiable for enterprise expansion.",
     "evidence": [
       { "metric": "Jul '26", "label": "audit window", "source": "Compliance lead", "kind": "deadline" },
@@ -163,6 +166,7 @@
     "id": "init_webhook_retry",
     "title": "Webhook delivery retries",
     "synthesis_oneliner": "Top reliability complaint — 18 tickets, 3 customer escalations.",
+    "customer": { "name": "More reliable integrations", "summary": "Connected apps keep receiving updates automatically, even through brief interruptions." },
     "rationale_narrative": "Webhook delivery is the #1 reliability complaint this quarter. Customers report missed events with no retry. Eng has a clean fix scoped at 1 sprint with dead-letter queue.",
     "evidence": [
       { "metric": "18", "label": "tickets", "source": "Zendesk, last 60d", "kind": "support" },
@@ -200,6 +204,7 @@
     "id": "init_slack_threaded",
     "title": "Slack integration v2 — threaded notifications",
     "synthesis_oneliner": "High-volume request from CS — but low ARR exposure.",
+    "customer": { "name": "Improved Slack notifications", "summary": "Cleaner, threaded updates in Slack so your channels stay organized." },
     "rationale_narrative": "CS has been pushing for threaded Slack notifications for two quarters. The volume of requests is high (24 in Productboard) but the ARR impact is unclear — most asks are from customers under $20k MRR.",
     "evidence": [
       { "metric": "24", "label": "requests", "source": "Productboard", "kind": "deals" },
@@ -230,6 +235,7 @@
     "id": "init_perm_groups",
     "title": "Permission groups (vs individual ACLs)",
     "synthesis_oneliner": "Mid-size customer pain — 8 tickets from $50k+ MRR accounts.",
+    "customer": { "name": "Team-based permissions", "summary": "Grant access by role or team instead of setting it for each person individually." },
     "rationale_narrative": "Mid-market customers (>$50k MRR) repeatedly hit the limit of individual ACLs. They need group permissions. Solid signal across 8 tickets and 3 customer interviews.",
     "evidence": [
       { "metric": "8", "label": "tickets", "source": "Zendesk, $50k+ accounts", "kind": "support" },
@@ -261,6 +267,7 @@
     "id": "init_mobile_push",
     "title": "Mobile push notifications",
     "synthesis_oneliner": "Low signal — 4 requests, no revenue tie. Defer.",
+    "customer": { "name": "Mobile notifications", "summary": "Timely alerts on your phone so you don't miss what matters." },
     "rationale_narrative": "Mobile push has been requested 4 times but with no revenue tie and no support volume. Recommend monitoring; not worth Q2 capacity.",
     "evidence": [
       { "metric": "4", "label": "requests", "source": "Productboard", "kind": "deals" },
@@ -290,6 +297,7 @@
     "id": "init_custom_fields",
     "title": "Custom field types in workflows",
     "synthesis_oneliner": "Growing pull — 14 requests, themes consolidating.",
+    "customer": { "name": "Custom fields in workflows", "summary": "Shape workflows with the field types your team actually uses." },
     "rationale_narrative": "Custom field types (date, dropdown, multi-select) are a growing request across mid-market and enterprise. Themes are consolidating; worth scoping for Q3.",
     "evidence": [
       { "metric": "14", "label": "requests", "source": "Productboard, growing trend", "kind": "deals" },

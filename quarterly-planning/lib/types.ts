@@ -74,6 +74,13 @@ export interface Initiative {
   id: string;
   title: string;
   synthesis_oneliner: string;
+  /**
+   * Customer-safe presentation of this item — a plain-language name + benefit
+   * with zero internal jargon, acronyms, revenue, or deal/ticket data. The
+   * Customer stakeholder artifact renders THIS, never `synthesis_oneliner`
+   * (which is internal decision rationale and must not leave the building).
+   */
+  customer?: { name: string; summary: string };
   rationale_narrative: string;
   evidence: Evidence[];
   ai_recommendation: AIRecommendation;
