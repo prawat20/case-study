@@ -126,157 +126,144 @@ export default function NowPage() {
     [triage, decidedIds],
   );
 
-  /* Predictions due — single demo entry that's always seeded */
-  const predictionsDue: number = 1;
-
   const hydrated = decisionsHydrated && triageHydrated && capturesHydrated;
 
   return (
     <div className="min-h-screen text-primary" style={{ background: "var(--color-page)" }}>
       <Header />
 
-      <main className="mx-auto max-w-[720px] px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
+      <main className="mx-auto max-w-[1040px] px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
         {/* Top row — date + capture affordance */}
         <div className="flex items-start justify-between gap-4">
           <DateEyebrow />
           <CaptureButton onClick={openCapture} />
         </div>
 
-        <NSMHero />
+        {/* North Star — a calm full-width strip, not a column */}
+        <NSMStrip />
 
-        <div className="mt-3 flex items-center gap-2 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-          <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>67%</span>
-          <span>of items decided same day they land · quarter to date</span>
-        </div>
-
-        {/* ─────────── To triage ─────────── */}
-        <SectionEyebrow
-          label="To triage"
-          count={triageCount}
-          fresh={freshCount}
-          hydrated={hydrated}
-        />
-
-        {hydrated && triageCount === 0 ? (
-          <EmptyState
-            message="Nothing waiting on you."
-            sub={
-              <>
-                Capture an ask with{" "}
-                <ShortcutKbd letter="N" />
-                {" "}when one lands.
-              </>
-            }
-          />
-        ) : (
-          <div className="mt-4">
-            {/* Top card — act on the next item directly */}
-            <AnimatePresence mode="wait">
-              {top && (
-                <InlineTriageCard
-                  key={top.data.id}
-                  row={top}
-                  onDecide={decideTop}
-                />
+        {/* Master/detail — triage owns the focus on the left; the "Why this" reasoning lives on the right */}
+        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:items-start">
+          {/* ───── Triage column (the focus) ───── */}
+          <div className="min-w-0">
+            <div className="flex items-baseline gap-2">
+              <p className="eyebrow">To triage</p>
+              {hydrated && triageCount > 0 && (
+                <>
+                  <span className="font-numeric text-[11px]" style={{ color: "var(--color-tertiary)" }}>
+                    {triageCount}
+                  </span>
+                  {freshCount > 0 && (
+                    <span
+                      className="rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
+                      style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}
+                    >
+                      {freshCount} new
+                    </span>
+                  )}
+                </>
               )}
-            </AnimatePresence>
+            </div>
 
-            {/* Queue — remaining items as compact rows */}
-            {queue.length > 0 && (
-              <div className="mt-4 space-y-1">
-                <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>
-                  Next up
-                </p>
-                {queue.map((row, idx) => (
-                  <QueueRow key={row.data.id} row={row} index={idx} />
-                ))}
-                {overflowCount > 0 && (
-                  <p className="pl-7 pt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-                    + {overflowCount} more
-                  </p>
+            {hydrated && triageCount === 0 ? (
+              <EmptyState
+                message="Nothing waiting on you."
+                sub={
+                  <>
+                    Capture an ask with{" "}
+                    <ShortcutKbd letter="N" />
+                    {" "}when one lands.
+                  </>
+                }
+              />
+            ) : (
+              <div className="mt-4">
+                {/* Top card — act on the next item directly */}
+                <AnimatePresence mode="wait">
+                  {top && (
+                    <InlineTriageCard
+                      key={top.data.id}
+                      row={top}
+                      onDecide={decideTop}
+                    />
+                  )}
+                </AnimatePresence>
+
+                {/* Queue — remaining items as compact rows */}
+                {queue.length > 0 && (
+                  <div className="mt-4 space-y-1">
+                    <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>
+                      Next up
+                    </p>
+                    {queue.map((row, idx) => (
+                      <QueueRow key={row.data.id} row={row} index={idx} />
+                    ))}
+                    {overflowCount > 0 && (
+                      <p className="pl-7 pt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+                        + {overflowCount} more
+                      </p>
+                    )}
+                  </div>
                 )}
+
+                {/* Secondary path — full swipe deck for bulk triage */}
+                <div className="mt-5">
+                  <Link
+                    href="/inbox/triage/"
+                    className="inline-flex items-center gap-1 text-[12px] transition hover:underline"
+                    style={{ color: "var(--color-tertiary)" }}
+                  >
+                    Bulk triage
+                    <ArrowRight size={11} />
+                  </Link>
+                </div>
               </div>
             )}
 
-            {/* Secondary path — full swipe deck for bulk triage */}
-            <div className="mt-5">
-              <Link
-                href="/inbox/triage/"
-                className="inline-flex items-center gap-1 text-[12px] transition hover:underline"
-                style={{ color: "var(--color-tertiary)" }}
-              >
-                Bulk triage
-                <ArrowRight size={11} />
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* ─────────── Ready to place ─────────── */}
-        {hydrated && promotedItems.length > 0 && (
-          <>
-            <SectionEyebrow label="Ready to place" count={promotedItems.length} fresh={0} hydrated />
-            <p className="mt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-              Drop one into a Calendar sprint — that's the commit. Open an item for the full Decide view (framework picker, conflicts, predicted outcome).
-            </p>
-            <div className="mt-4 space-y-1">
-              {promotedItems.slice(0, 4).map((i, idx) => (
-                <PromotedRow key={i.id} initiative={i} index={idx} />
-              ))}
-              {promotedItems.length > 4 && (
-                <p className="pl-7 pt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-                  + {promotedItems.length - 4} more promoted
+            {/* ─────────── Ready to place ─────────── */}
+            {hydrated && promotedItems.length > 0 && (
+              <>
+                <SectionEyebrow label="Ready to place" count={promotedItems.length} fresh={0} hydrated />
+                <p className="mt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+                  Drop one into a Calendar sprint — that's the commit. Open an item for the full Decide view (framework picker, conflicts, predicted outcome).
                 </p>
-              )}
-              <div className="mt-5">
-                <Link
-                  href="/calendar/"
-                  className="inline-flex h-9 items-center gap-1.5 rounded-md px-4 text-[13px] font-medium transition"
-                  style={{
-                    background: "var(--color-elevated)",
-                    border: "1px solid var(--color-accent)",
-                    color: "var(--color-accent)",
-                  }}
-                >
-                  Open Calendar
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* ─────────── Predictions due ─────────── */}
-        {hydrated && predictionsDue > 0 && (
-          <>
-            <SectionEyebrow label="Predictions due" count={predictionsDue} fresh={0} hydrated />
-            <div className="mt-4">
-              <Link
-                href="/audit/#predictions"
-                className="group flex items-center justify-between rounded-lg px-4 py-3 transition hover:bg-[var(--color-card-hover)]"
-                style={{ background: "transparent" }}
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <span
-                    aria-hidden
-                    className="inline-flex h-1.5 w-1.5 rounded-full shrink-0"
-                    style={{ background: "var(--color-warning)" }}
-                  />
-                  <p className="text-[14px]" style={{ color: "var(--color-primary)" }}>
-                    "SAML unlocks 3 deals" — 21 days old
-                  </p>
+                <div className="mt-4 space-y-1">
+                  {promotedItems.slice(0, 4).map((i, idx) => (
+                    <PromotedRow key={i.id} initiative={i} index={idx} />
+                  ))}
+                  {promotedItems.length > 4 && (
+                    <p className="pl-7 pt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+                      + {promotedItems.length - 4} more promoted
+                    </p>
+                  )}
+                  <div className="mt-5">
+                    <Link
+                      href="/calendar/"
+                      className="inline-flex h-9 items-center gap-1.5 rounded-md px-4 text-[13px] font-medium transition"
+                      style={{
+                        background: "var(--color-elevated)",
+                        border: "1px solid var(--color-accent)",
+                        color: "var(--color-accent)",
+                      }}
+                    >
+                      Open Calendar
+                      <ArrowRight size={14} />
+                    </Link>
+                  </div>
                 </div>
-                <span
-                  className="inline-flex items-center gap-1 text-[12.5px] shrink-0 transition-transform group-hover:translate-x-0.5"
-                  style={{ color: "var(--color-tertiary)" }}
-                >
-                  Review
-                  <ArrowRight size={12} />
-                </span>
-              </Link>
-            </div>
-          </>
-        )}
+              </>
+            )}
+
+          </div>
+
+          {/* ───── Why this — the top item's reasoning, on the right (no new screen) ─────
+               Desktop only: below lg the grid collapses to one column, so this would land at
+               the very bottom (under "Ready to place"), far from the card it explains. On
+               mobile the card's own "Why this →" link carries the path into full reasoning. */}
+          <aside className="hidden lg:block lg:sticky lg:top-20">
+            <WhyThisPanel row={top} />
+          </aside>
+        </div>
 
         <div className="mt-20 flex items-center gap-2 text-[11px]" style={{ color: "var(--color-tertiary)" }}>
           <span aria-hidden style={{ color: "var(--color-accent)" }}>◆</span>
@@ -329,13 +316,13 @@ function CaptureButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function NSMHero() {
+function NSMStrip() {
   const ns = computeNorthStar(NORTH_STAR);
   const trendCopy =
     ns.trend === "behind"
-      ? `${Math.abs(ns.pace_gap_pp)}pp behind pace`
+      ? `${Math.abs(ns.pace_gap_pp)}pp behind`
       : ns.trend === "ahead"
-        ? `${ns.pace_gap_pp}pp ahead of pace`
+        ? `${ns.pace_gap_pp}pp ahead`
         : "On pace";
   const trendColor =
     ns.trend === "behind"
@@ -345,64 +332,174 @@ function NSMHero() {
         : "var(--color-secondary)";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="mt-3"
+    <div
+      className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl px-5 py-3"
+      style={{
+        background: "var(--color-elevated)",
+        border: "1px solid var(--color-border)",
+        boxShadow: "var(--shadow-sm)",
+      }}
     >
-      <p className="eyebrow mb-3" style={{ color: "var(--color-tertiary)" }}>
-        North Star · {NORTH_STAR.period}
-      </p>
-
-      <div className="flex items-baseline gap-3">
+      {/* North Star — compact, inline (shown, never the loudest thing on the page) */}
+      <div className="flex items-baseline gap-2">
+        <span className="eyebrow" style={{ color: "var(--color-tertiary)" }}>North Star</span>
         <span
           className="font-display"
-          style={{
-            fontSize: 48,
-            lineHeight: 1.05,
-            letterSpacing: "-0.025em",
-            fontWeight: 500,
-            color: "var(--color-primary)",
-          }}
+          style={{ fontSize: 19, lineHeight: 1, letterSpacing: "-0.01em", fontWeight: 500, color: "var(--color-primary)" }}
         >
           {formatMetric(NORTH_STAR.current_value, NORTH_STAR.format)}
         </span>
-        <span
-          className="font-display"
-          style={{
-            fontSize: 22,
-            lineHeight: 1.1,
-            fontWeight: 400,
-            color: "var(--color-tertiary)",
-          }}
-        >
-          of {formatMetric(NORTH_STAR.target_value, NORTH_STAR.format)}
+        <span className="font-display" style={{ fontSize: 13, fontWeight: 400, color: "var(--color-tertiary)" }}>
+          / {formatMetric(NORTH_STAR.target_value, NORTH_STAR.format)}
+        </span>
+        <span className="hidden sm:inline text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+          Net New ARR
         </span>
       </div>
 
-      <p className="mt-1.5 text-[13.5px]" style={{ color: "var(--color-secondary)" }}>
-        {NORTH_STAR.metric}
-      </p>
-
-      <div className="mt-5 max-w-[480px]">
+      <div className="hidden md:block w-24">
         <ProgressBar achieved={ns.achieved_pct} elapsed={ns.elapsed_pct} />
       </div>
 
-      <div className="mt-3 flex items-center gap-3 text-[12.5px]">
-        <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
-          {ns.achieved_pct}% achieved
-        </span>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
+        <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>{ns.achieved_pct}% achieved</span>
         <span style={{ color: "var(--color-muted)" }}>·</span>
-        <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
-          {ns.elapsed_pct}% elapsed
-        </span>
+        <span className="font-medium" style={{ color: trendColor }}>{trendCopy}</span>
         <span style={{ color: "var(--color-muted)" }}>·</span>
-        <span className="font-medium" style={{ color: trendColor }}>
-          {trendCopy}
+        <span style={{ color: "var(--color-tertiary)" }}>
+          <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>67%</span> same-day
         </span>
       </div>
-    </motion.div>
+
+      {/* Predictions due — pushed to the right end */}
+      <Link
+        href="/audit/#predictions"
+        className="group ml-auto inline-flex items-center gap-1.5 text-[12px] transition"
+        style={{ color: "var(--color-tertiary)" }}
+      >
+        <span aria-hidden className="inline-flex h-1.5 w-1.5 rounded-full" style={{ background: "var(--color-warning)" }} />
+        1 prediction due
+        <ArrowRight size={11} className="transition-transform group-hover:translate-x-0.5" />
+      </Link>
+    </div>
+  );
+}
+
+function WhyThisPanel({ row }: { row: Row | null }) {
+  const panelStyle = {
+    background: "var(--color-elevated)",
+    border: "1px solid var(--color-border)",
+    boxShadow: "var(--shadow-sm)",
+  } as const;
+
+  // No top card — calm empty state.
+  if (!row) {
+    return (
+      <div className="rounded-xl px-5 py-5" style={panelStyle}>
+        <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>Why this</p>
+        <p className="mt-2 text-[13px]" style={{ color: "var(--color-tertiary)" }}>
+          Nothing waiting — your inbox is clear.
+        </p>
+      </div>
+    );
+  }
+
+  // Captures have no AI scoring yet.
+  if (row.kind !== "initiative") {
+    return (
+      <div className="rounded-xl px-5 py-5" style={panelStyle}>
+        <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>Why this</p>
+        <p className="mt-1.5 text-[14px] font-medium leading-snug" style={{ color: "var(--color-primary)" }}>
+          {row.data.text}
+        </p>
+        <p className="mt-3 text-[12.5px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
+          Newly captured — no AI scoring yet. Triage it on your read.
+        </p>
+      </div>
+    );
+  }
+
+  const ini = row.data;
+  const rec = ini.ai_recommendation;
+  const score = getScoring(rec.framework, ini);
+  const aiVerb = TRIAGE_VERB[recommendedTriageAction(rec.action)];
+
+  return (
+    <div className="rounded-xl px-5 py-5" style={panelStyle}>
+      <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>Why this</p>
+      <p className="mt-1.5 text-[15px] font-medium leading-snug" style={{ color: "var(--color-primary)" }}>
+        {ini.title}
+      </p>
+
+      {/* AI recommendation */}
+      <div
+        className="mt-3 flex items-center gap-1.5 rounded-md px-3 py-2 text-[12.5px]"
+        style={{ background: "var(--color-accent-soft)" }}
+      >
+        <Sparkles size={12} className="shrink-0" style={{ color: "var(--color-accent)" }} />
+        <span style={{ color: "var(--color-tertiary)" }}>AI recommends</span>
+        <span className="font-semibold" style={{ color: "var(--color-accent)" }}>{aiVerb}</span>
+      </div>
+
+      {/* Score */}
+      <p className="eyebrow mt-4" style={{ color: "var(--color-tertiary)" }}>Score · {score.framework}</p>
+      <div
+        className="mt-2 grid gap-2"
+        style={{ gridTemplateColumns: `repeat(${score.rows.length + 1}, minmax(0, 1fr))` }}
+      >
+        {score.rows.map((r, i) => (
+          <div key={i}>
+            <p className="text-[10px] uppercase tracking-wider" style={{ color: "var(--color-muted)" }}>{r.label}</p>
+            <p className="font-numeric text-[13px]" style={{ color: "var(--color-secondary)", fontWeight: 500 }}>{r.value}</p>
+          </div>
+        ))}
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--color-accent)" }}>{score.total.label}</p>
+          <p className="font-numeric text-[13px]" style={{ color: "var(--color-accent)", fontWeight: 600 }}>{score.total.value}</p>
+        </div>
+      </div>
+
+      {/* AI reasoning */}
+      <p className="eyebrow mt-4" style={{ color: "var(--color-tertiary)" }}>AI reasoning</p>
+      <p className="mt-1 text-[12.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>{rec.action_reason}</p>
+
+      {/* Predicted outcome */}
+      <p className="eyebrow mt-4" style={{ color: "var(--color-tertiary)" }}>If we ship</p>
+      <p className="mt-1 text-[12.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>{rec.predicted_outcome}</p>
+
+      {/* Conflicts */}
+      {rec.conflicts.length > 0 && (
+        <>
+          <p className="eyebrow mt-4" style={{ color: "var(--color-warning)" }}>Conflicts</p>
+          <ul className="mt-1 space-y-1">
+            {rec.conflicts.map((c, i) => (
+              <li key={i} className="text-[12px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>{c}</li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {/* Trade-offs */}
+      {rec.tradeoffs.length > 0 && (
+        <>
+          <p className="eyebrow mt-4" style={{ color: "var(--color-tertiary)" }}>Trade-offs</p>
+          <ul className="mt-1 space-y-1">
+            {rec.tradeoffs.map((t, i) => (
+              <li key={i} className="text-[12px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>{t}</li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      <Link
+        href={`/initiative/${ini.id}/`}
+        className="mt-5 inline-flex items-center gap-1 text-[12px] transition hover:underline"
+        style={{ color: "var(--color-accent)" }}
+      >
+        Open full Decide view
+        <ArrowRight size={11} />
+      </Link>
+    </div>
   );
 }
 
@@ -603,9 +700,11 @@ function InlineTriageCard({
             <ActionPill kind="escalate" recommended={aiTriage === "escalate"} onClick={() => onDecide("escalate")} />
             <ActionPill kind="promote" recommended={aiTriage === "promote"} onClick={() => onDecide("promote")} />
           </div>
+          {/* On lg+ the persistent "Why this" panel makes this redundant; keep it for
+              mobile, where the panel is hidden and this is the path into the reasoning. */}
           <Link
             href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
-            className="text-[11.5px] transition hover:underline"
+            className="text-[11.5px] transition hover:underline lg:hidden"
             style={{ color: "var(--color-tertiary)" }}
           >
             Why this →
