@@ -20,6 +20,7 @@ import {
   TRIAGE_VERB,
   TRIAGE_TO_AI,
   realizedActionOf,
+  escalationTargetsFromRationale,
 } from "@/lib/ai-reco";
 
 const allInitiatives = initiativesJson as Initiative[];
@@ -43,6 +44,9 @@ interface ActivityEntry {
   pmLabel: string;
   rationale?: string;
   predicted?: string;
+  /** Escalations: who it went to (display labels) + the unresolved status. */
+  escalatedTo?: string[];
+  awaitingInput?: boolean;
 }
 
 interface PredictionEntry {
@@ -109,6 +113,8 @@ export function AuditLog() {
         pmAction,
         diverged: pmAction !== aiAction,
         pmLabel: TRIAGE_VERB[t.action],
+        // A bulk-triage escalate doesn't capture stakeholders, but it's still unresolved.
+        awaitingInput: t.action === "escalate",
       });
     }
 
@@ -118,6 +124,7 @@ export function AuditLog() {
       const aiAction = ini.ai_recommendation.action;
       const pmAction = realizedActionOf(d);
       const diverged = pmAction ? pmAction !== aiAction : d.action === "overridden";
+      const isEscalate = pmAction === "escalate";
       out.push({
         id: `decision_${d.initiative_id}_${d.decided_at}`,
         kind: "decision",
@@ -126,9 +133,12 @@ export function AuditLog() {
         aiAction,
         pmAction,
         diverged,
-        pmLabel: decisionPmLabel(d),
+        // For escalations we name the targets inline (below), so the label is just the verb.
+        pmLabel: isEscalate ? "Escalated to" : decisionPmLabel(d),
         rationale: d.human_rationale,
         predicted: ini.ai_recommendation.predicted_outcome,
+        escalatedTo: isEscalate ? escalationTargetsFromRationale(d.human_rationale) : undefined,
+        awaitingInput: isEscalate,
       });
     }
 
@@ -142,7 +152,9 @@ export function AuditLog() {
 
   const predictionEntries: PredictionEntry[] = useMemo(() => {
     const real = decisions
-      .filter((d) => d.action === "committed" || d.action === "overridden")
+      // Only items we actually committed carry a predicted outcome to review —
+      // escalate/defer overrides (action "overridden") are not predictions.
+      .filter((d) => realizedActionOf(d) === "commit")
       .map((d) => {
         const ini = allInitiatives.find((i) => i.id === d.initiative_id);
         if (!ini) return null;
@@ -435,6 +447,20 @@ function ActivityCard({ entry, index }: { entry: ActivityEntry; index: number })
         <span className="font-medium" style={{ color: "var(--color-primary)" }}>
           {entry.pmLabel}
         </span>
+        {entry.escalatedTo && entry.escalatedTo.length > 0 && (
+          <span className="font-medium" style={{ color: "var(--color-secondary)" }}>
+            {entry.escalatedTo.join(", ")}
+          </span>
+        )}
+        {entry.awaitingInput && (
+          <span
+            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10.5px] font-medium"
+            style={{ background: "var(--color-warning-soft)", color: "var(--color-warning)" }}
+          >
+            <span aria-hidden className="inline-flex h-1.5 w-1.5 rounded-full" style={{ background: "var(--color-warning)" }} />
+            Awaiting input
+          </span>
+        )}
         <ArrowRight size={12} style={{ color: "var(--color-muted)" }} />
         <Sparkles size={11} style={{ color: "var(--color-accent)" }} />
         <span style={{ color: "var(--color-tertiary)" }}>AI recommended</span>

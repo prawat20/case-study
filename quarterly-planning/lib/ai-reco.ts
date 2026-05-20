@@ -31,6 +31,31 @@ export const TRIAGE_VERB: Record<TriageAction, string> = {
   escalate: "Escalate",
 };
 
+/** Stakeholder keys → display labels. Shared by the escalate prompt (Now card +
+ *  Decide view) and the Audit log, so escalation targets read identically everywhere. */
+export const STAKEHOLDER_LABELS: Record<string, string> = {
+  sales: "Sales",
+  cs: "Customer Success",
+  exec: "Exec",
+  eng: "Engineering",
+};
+
+/**
+ * Pull the escalation targets out of a decision's human_rationale. The escalate
+ * flow writes "Escalated to: exec, eng" (matched) or "…— sent to exec" (override) —
+ * both end with a comma-separated list of stakeholder keys. Returns display labels.
+ */
+export function escalationTargetsFromRationale(rationale: string | undefined): string[] {
+  if (!rationale) return [];
+  const m = rationale.match(/(?:escalated to:|sent to)\s*(.+?)\.?\s*$/i);
+  if (!m) return [];
+  return m[1]
+    .split(/,\s*/)
+    .map((k) => k.trim())
+    .filter(Boolean)
+    .map((k) => STAKEHOLDER_LABELS[k.toLowerCase()] ?? k);
+}
+
 /* ── cross-vocabulary maps ── */
 
 /** AI recommendation → the equivalent triage action (Now card / swipe deck). */
