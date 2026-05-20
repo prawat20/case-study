@@ -11,7 +11,7 @@ The seven JBTDs map to five destination surfaces plus an off-loop case-study art
 | # | Surface       | Route               | Owns JBTD(s)        | Purpose                                                                |
 |---|---------------|---------------------|---------------------|------------------------------------------------------------------------|
 | 1 | Now           | `/`                 | JBTD-1, JBTD-2, aggregator (1–7) | Where the PM lands. NSM hero, inline triage rows, capture (`⌘N`), `Start triage →` CTA. |
-| 2 | Prioritize    | `/prioritize/[id]`  | JBTD-3, JBTD-4      | Single-item depth — framework, scorecard, trade-offs, commit.          |
+| 2 | Prioritize    | `/initiative/[id]`  | JBTD-3, JBTD-4      | Single-item depth — framework, scorecard, trade-offs, commit. (Surface named "Prioritize"; route kept `/initiative`.) |
 | 3 | Calendar      | `/calendar`         | JBTD-5              | Sprint-by-sprint plan as a drag-and-drop puzzle. Live capacity, AI-advisory Drop Planner on overflow. |
 | 4 | Stakeholders  | `/stakeholders`     | JBTD-6              | Master/detail with persistent audience rail. Generated artifacts per audience, copy-paste-ready. |
 | 5 | Audit         | `/audit`            | JBTD-7              | Decision log + prediction-vs-actual review loop.                       |
@@ -25,7 +25,7 @@ The seven JBTDs map to five destination surfaces plus an off-loop case-study art
 /                          Now (home, aggregator + capture + triage front)
 /inbox                     → redirect to /  (deep-link compatibility)
 /quarter                   → alias for /calendar (deep-link compatibility)
-/prioritize/[id]           Prioritize — single-item depth
+/initiative/[id]           Prioritize — single-item depth
 /calendar                  Calendar — sprint-by-sprint plan + Drop Planner
 /stakeholders              Stakeholders — master/detail (?audience=sales|exec|customer|eng)
 /stakeholders/[audience]   → redirect to /stakeholders?audience=[...]
@@ -72,7 +72,7 @@ No sidebar. No collapsible rail. **One thin top header.**
 - 56px tall, `--surface` background, `--shadow-sm`, hairline `--border-subtle` bottom.
 - Logo (Sift diamond) is sage. Wordmark in `--ink-1`, weight 600.
 - Nav items: 14px Inter, `--ink-2` default, `--ink-1` on active surface, `--accent` on active page (single underline `--accent` 2px below).
-- Right cluster: **?** opens *How Sift works* modal (auto-shows once on first visit, persists via `qp_onboarding_seen_v1`); **theme toggle**; **↻ Reset** clears the six demo-state stores after a confirm step (theme preference survives); **⌘K** chip opens the command palette.
+- Right cluster: **?** opens the *How Sift works* side panel (400px right slide-in; no backdrop blur, no auto-fire — opens only on click, page stays interactive, mounted at body level so the fixed panel resolves against the viewport not the blurred header); **theme toggle**; **↻ Reset** clears the six demo-state stores after a confirm step (theme preference survives); **⌘K** chip opens the command palette.
 - **Architecture is in the primary nav.** The original POV stance held Architecture as Cmd+K-only because it's not part of the daily loop. That tradeoff is wrong for this build — Architecture is the **case-study capability map**, and a reviewer who can't find it loses the most load-bearing context. Daily users would still default to Now / Calendar; the extra nav item costs them ~zero.
 - **Stakeholders is in the primary nav** for the same reason — it's where the brief's "communicate per audience" JBTD lives, and reviewers should find it without Cmd+K.
 
@@ -88,10 +88,10 @@ Why no sidebar — Linear/Height/Tability all use sidebars. They're the right an
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  Wednesday, May 8  ·  Week 9 of 13              │  ← contextual eyebrow
+│  Wednesday, May 8  ·  Week 4 of 13              │  ← contextual eyebrow
 │                                                 │
-│  Net New ARR     $1.5M of $2.4M                 │  ← NSM display
-│  ▓▓▓▓▓▓▓░░░    63% achieved                    │
+│  Net New ARR     $600k of $2.4M                 │  ← NSM display
+│  ▓▓░░░░░░░░    25% achieved                    │
 │  Pace             −6pp behind                   │  ← gentle, not alarming
 │                                                 │
 │ ─────────────────────────────────────────────── │
@@ -129,6 +129,8 @@ Why no sidebar — Linear/Height/Tability all use sidebars. They're the right an
 ## 5. Surface 2 — Inbox (capture + triage)
 
 **Owns:** JBTD-1 (capture), JBTD-2 (triage).
+
+> **Shipped consolidation.** The standalone Inbox list (5a) folded into **Now**'s inline triage in v3 — `/inbox` now redirects to `/`, and the top untriaged item renders as a live card directly on Now (with the next few queued below). The full-screen swipe deck (5b) shipped at `/inbox/triage` for bulk triage. This section keeps the original two-mode design intent; the live build surfaces list-mode inline on Now and reserves the deck for bulk runs.
 
 Two modes on the same route:
 
@@ -208,6 +210,7 @@ The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with key
 - **Past threshold** the card snaps off-screen with rotation; next card rises from y+24.
 - **Counter top-right** ticks `1/N → 2/N → done`. **Esc** exits to list mode mid-flow.
 - **Card front** carries everything needed for fast judgment: time/source/channel · title · synthesis · evidence quote · signal chip + ARR + RICE score + effort sprints · "If we ship —" predicted-outcome callout (sage-soft).
+- **The AI-recommended action is highlighted.** The matching action button (Promote / Defer / Route) carries the accent ✦ "AI's pick" treatment with an "✦ AI recommends {action}" caption, so the PM sees the system's call before acting — and any divergence is logged. (Same treatment on the Now inline triage card.) AI `commit → Promote`, `defer → Defer`, `escalate → Route`.
 - **"Why this" expands inline** (Space or click) without leaving the card. Reveals: full score breakdown, AI's `action_reason`, conflicts to surface, full trade-offs list. Tap again to collapse.
 - **44×44 circular action buttons** sit ~16px below the card — secondary affordances. Defer (red), Route (neutral), Promote (green).
 - A **24px ghost slice** peeks below the active card edge — Tinder's "stack of cards" cue.
@@ -237,7 +240,7 @@ The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with key
 
 ---
 
-## 6. Surface 3 — Prioritize (`/prioritize/[id]`)
+## 6. Surface 3 — Prioritize (`/initiative/[id]`)
 
 **Owns:** JBTD-3 (framework), JBTD-4 (trade-offs).
 
@@ -388,7 +391,7 @@ Click into one (`/stakeholders/sales`) — full artifact renders with materializ
 **Owns:** JBTD-7.
 
 Two-tab structure:
-1. **Decisions** — chronological list of every commit/defer/escalate, with reasoning, framework, predicted outcome, override note (if any).
+1. **Activity** — chronological list of *every* PM action (triage **and** decisions), each annotated with what the system recommended: *"You {Promoted / Committed · Sprint 2 / Deferred / …} → ✦ AI recommended {Commit / Defer / Escalate}."* Divergences (PM chose differently) are highlighted with an accent border + *"↻ Diverged — feeds recalibration"* and the rationale; matches show a quiet *"✓ Matched the system."* A calibration summary (actions logged · followed AI · diverged) frames divergences as the training signal, with a Divergences-only filter to isolate them. **This is the AI-native loop made visible — the gap between recommendation and action is the signal that recalibrates the engine.**
 2. **Predictions** — items where prediction's review window has elapsed. Each card shows "Predicted X. Actual: Y. Note?" with a free-text capture and a "this prediction was wrong because…" prompt that shapes future weights.
 
 System-learning cue: a sage callout — *"You've reviewed 7 predictions. Your accuracy on revenue claims is 71%; on adoption claims, 38%. The system is weighting revenue claims higher in suggestions."*

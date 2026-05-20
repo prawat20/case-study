@@ -5,22 +5,45 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
-  Clock,
-  AlertTriangle,
-  Pencil,
   Sparkles,
   ArrowRight,
   Send,
+  RefreshCw,
 } from "lucide-react";
 import { useDecisions } from "@/lib/use-decisions";
-import { useTriage } from "@/lib/triage";
+import { useTriage, type TriageDecision } from "@/lib/triage";
 import initiativesJson from "@/data/initiatives.json";
-import type { Initiative } from "@/lib/types";
+import type { Initiative, RecommendedAction } from "@/lib/types";
 import type { Decision } from "@/lib/decisions";
+import {
+  ACTION_VERB,
+  TRIAGE_VERB,
+  TRIAGE_TO_AI,
+  realizedActionOf,
+} from "@/lib/ai-reco";
 
 const allInitiatives = initiativesJson as Initiative[];
 
-type Tab = "decisions" | "predictions";
+type Tab = "activity" | "predictions";
+
+/**
+ * A single PM action — triage (promote/route/defer) or a logged decision —
+ * decorated with what the AI recommended and whether the PM diverged. The
+ * unified activity stream is the heart of the calibration loop: every divergence
+ * is a labelled training signal.
+ */
+interface ActivityEntry {
+  id: string;
+  kind: "triage" | "decision";
+  initiative: Initiative;
+  at: string;
+  aiAction: RecommendedAction;
+  pmAction: RecommendedAction | null;
+  diverged: boolean;
+  pmLabel: string;
+  rationale?: string;
+  predicted?: string;
+}
 
 interface PredictionEntry {
   decision: Decision;
@@ -49,37 +72,73 @@ const MOCK_PREDICTION: PredictionEntry | null = MOCK_INITIATIVE
 export function AuditLog() {
   const { decisions, hydrated } = useDecisions();
   const { triage } = useTriage();
-  const [tab, setTab] = useState<Tab>("decisions");
+  const [tab, setTab] = useState<Tab>("activity");
+  const [divergedOnly, setDivergedOnly] = useState(false);
   const [reviewNotes, setReviewNotes] = useState<Record<string, string>>({});
 
-  // Read URL hash on mount to land on the right tab when arriving from
-  // Now → "Predictions due" (which links to /audit/#predictions). Also
-  // respond to hash changes if the user pastes a deep link.
+  // Land on the right tab from a deep link (#predictions from Now →
+  // "Predictions due"). "#activity"/"#decisions" both open Activity.
   useEffect(() => {
     function applyHash() {
       if (typeof window === "undefined") return;
       const h = window.location.hash.replace("#", "").toLowerCase();
       if (h === "predictions") setTab("predictions");
-      else if (h === "decisions") setTab("decisions");
+      else if (h === "activity" || h === "decisions") setTab("activity");
     }
     applyHash();
     window.addEventListener("hashchange", applyHash);
     return () => window.removeEventListener("hashchange", applyHash);
   }, []);
 
-  const decidedDecorated = useMemo(() => {
-    return decisions
-      .map((d) => ({
-        decision: d,
-        initiative: allInitiatives.find((i) => i.id === d.initiative_id),
-      }))
-      .filter((x) => x.initiative)
-      .sort(
-        (a, b) =>
-          new Date(b.decision.decided_at).getTime() -
-          new Date(a.decision.decided_at).getTime(),
-      );
-  }, [decisions]);
+  // Unified activity stream — every PM action (triage + decisions), annotated
+  // with the AI recommendation and whether the PM diverged from it.
+  const activity: ActivityEntry[] = useMemo(() => {
+    const out: ActivityEntry[] = [];
+
+    for (const t of triage as TriageDecision[]) {
+      const ini = allInitiatives.find((i) => i.id === t.initiative_id);
+      if (!ini) continue;
+      const aiAction = ini.ai_recommendation.action;
+      const pmAction = TRIAGE_TO_AI[t.action];
+      out.push({
+        id: `triage_${t.initiative_id}_${t.decided_at}`,
+        kind: "triage",
+        initiative: ini,
+        at: t.decided_at,
+        aiAction,
+        pmAction,
+        diverged: pmAction !== aiAction,
+        pmLabel: TRIAGE_VERB[t.action],
+      });
+    }
+
+    for (const d of decisions) {
+      const ini = allInitiatives.find((i) => i.id === d.initiative_id);
+      if (!ini) continue;
+      const aiAction = ini.ai_recommendation.action;
+      const pmAction = realizedActionOf(d);
+      const diverged = pmAction ? pmAction !== aiAction : d.action === "overridden";
+      out.push({
+        id: `decision_${d.initiative_id}_${d.decided_at}`,
+        kind: "decision",
+        initiative: ini,
+        at: d.decided_at,
+        aiAction,
+        pmAction,
+        diverged,
+        pmLabel: decisionPmLabel(d),
+        rationale: d.human_rationale,
+        predicted: ini.ai_recommendation.predicted_outcome,
+      });
+    }
+
+    return out.sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime());
+  }, [triage, decisions]);
+
+  const divergedEntries = activity.filter((a) => a.diverged);
+  const divergedCount = divergedEntries.length;
+  const matchedCount = activity.length - divergedCount;
+  const visibleActivity = divergedOnly ? divergedEntries : activity;
 
   const predictionEntries: PredictionEntry[] = useMemo(() => {
     const real = decisions
@@ -100,9 +159,6 @@ export function AuditLog() {
     return exists ? real : [...real, MOCK_PREDICTION];
   }, [decisions]);
 
-  const totalOverrides = decisions.filter((d) => d.action === "overridden").length;
-  // Verdict counts from elapsed mock + real entries — only the SAML mock
-  // is "missed" at fresh-load; real predictions stay "pending" until 21d.
   const elapsedEntries = predictionEntries.filter((p) => p.ageDays >= 21);
   const reviewWindowOpen = elapsedEntries.length;
 
@@ -115,36 +171,50 @@ export function AuditLog() {
       >
         Decisions in memory
       </h1>
+      <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+        Every action is logged against what the system recommended. Where you choose
+        differently, that gap becomes a training signal — it recalibrates how the priority
+        engine weights similar items.
+      </p>
 
-      {hydrated && decisions.length > 0 && (
+      {/* Calibration summary */}
+      {hydrated && activity.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.32, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-4 flex items-center gap-3 rounded-lg px-4 py-2.5"
+          className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl px-5 py-3.5"
           style={{
-            background: "var(--color-accent-soft)",
-            border: "1px solid var(--color-accent)",
+            background: "var(--color-elevated)",
+            border: "1px solid var(--color-border)",
+            boxShadow: "var(--shadow-sm)",
           }}
         >
-          <Sparkles size={13} className="shrink-0" style={{ color: "var(--color-accent)" }} />
-          <p className="text-[12.5px]" style={{ color: "var(--color-secondary)" }}>
-            <span style={{ color: "var(--color-primary)", fontWeight: 500 }}>
-              {decisions.length} logged · {totalOverrides} override{totalOverrides === 1 ? "" : "s"} · {triage.length} triaged
-            </span>
-            <span style={{ color: "var(--color-muted)" }}> · </span>
-            {reviewWindowOpen > 0
-              ? <>{reviewWindowOpen} prediction{reviewWindowOpen === 1 ? "" : "s"} due for review</>
-              : <>Predictions accumulate as you commit</>}
-          </p>
+          <Stat value={activity.length} label="actions logged" />
+          <Divider />
+          <Stat value={matchedCount} label="followed AI" tone="var(--color-success)" />
+          <Divider />
+          <Stat value={divergedCount} label="diverged" tone="var(--color-accent)" />
+          <span
+            className="ml-auto text-[12px]"
+            style={{ color: "var(--color-tertiary)" }}
+          >
+            {divergedCount > 0 ? (
+              <>{divergedCount} signal{divergedCount === 1 ? "" : "s"} queued for recalibration</>
+            ) : reviewWindowOpen > 0 ? (
+              <>{reviewWindowOpen} prediction{reviewWindowOpen === 1 ? "" : "s"} due for review</>
+            ) : (
+              <>In step with the system</>
+            )}
+          </span>
         </motion.div>
       )}
 
       <div className="mt-8 flex items-center gap-1">
-        <TabButton active={tab === "decisions"} onClick={() => setTab("decisions")}>
-          Decisions
+        <TabButton active={tab === "activity"} onClick={() => setTab("activity")}>
+          Activity
           <span className="ml-1.5 font-numeric text-[10.5px]" style={{ color: "var(--color-tertiary)" }}>
-            {decidedDecorated.length}
+            {activity.length}
           </span>
         </TabButton>
         <TabButton active={tab === "predictions"} onClick={() => setTab("predictions")}>
@@ -156,30 +226,43 @@ export function AuditLog() {
       </div>
 
       <AnimatePresence mode="wait">
-        {tab === "decisions" && (
+        {tab === "activity" && (
           <motion.div
-            key="decisions"
+            key="activity"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 space-y-3"
+            className="mt-6"
           >
-            {!hydrated ? null : decidedDecorated.length === 0 ? (
+            {!hydrated ? null : activity.length === 0 ? (
               <EmptyCard
-                title="No decisions logged yet."
-                body="Triage → prioritize → commit. Each step lands here."
+                title="No actions logged yet."
+                body="Triage an item or commit a decision. Every action — and every time you diverge from the system — lands here."
                 cta={{ href: "/inbox/triage/", label: "Start triage" }}
               />
             ) : (
-              decidedDecorated.map(({ decision, initiative }, idx) => (
-                <DecisionCard
-                  key={`${decision.initiative_id}_${decision.decided_at}`}
-                  decision={decision}
-                  initiative={initiative!}
-                  index={idx}
-                />
-              ))
+              <>
+                {divergedCount > 0 && (
+                  <div
+                    className="mb-4 inline-flex items-center gap-0.5 rounded-lg p-0.5"
+                    style={{ background: "var(--color-surface-sunken)" }}
+                  >
+                    <FilterChip active={!divergedOnly} onClick={() => setDivergedOnly(false)}>
+                      All
+                    </FilterChip>
+                    <FilterChip active={divergedOnly} onClick={() => setDivergedOnly(true)}>
+                      <RefreshCw size={11} className="mr-1 inline-block" />
+                      Divergences {divergedCount}
+                    </FilterChip>
+                  </div>
+                )}
+                <div className="space-y-3">
+                  {visibleActivity.map((entry, idx) => (
+                    <ActivityCard key={entry.id} entry={entry} index={idx} />
+                  ))}
+                </div>
+              </>
             )}
           </motion.div>
         )}
@@ -253,17 +336,67 @@ function TabButton({
   );
 }
 
-function DecisionCard({
-  decision,
-  initiative,
-  index,
+function Stat({ value, label, tone }: { value: number; label: string; tone?: string }) {
+  return (
+    <span className="inline-flex items-baseline gap-1.5">
+      <span
+        className="font-numeric text-[17px] tabular-nums"
+        style={{ color: tone ?? "var(--color-primary)", fontWeight: 600 }}
+      >
+        {value}
+      </span>
+      <span className="text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+        {label}
+      </span>
+    </span>
+  );
+}
+
+function Divider() {
+  return <span aria-hidden className="h-4 w-px" style={{ background: "var(--color-border)" }} />;
+}
+
+function FilterChip({
+  active,
+  onClick,
+  children,
 }: {
-  decision: Decision;
-  initiative: Initiative;
-  index: number;
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
-  const meta = actionMeta(decision.action);
-  const time = formatDecisionTime(decision.decided_at);
+  return (
+    <button
+      onClick={onClick}
+      className="rounded-md px-2.5 py-1 text-[12px] font-medium transition"
+      style={{
+        background: active ? "var(--color-elevated)" : "transparent",
+        color: active ? "var(--color-primary)" : "var(--color-tertiary)",
+        boxShadow: active ? "var(--shadow-sm)" : "none",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function decisionPmLabel(d: Decision): string {
+  switch (d.action) {
+    case "committed":
+      return d.sequence && d.sequence !== "Deferred" && d.sequence !== "Overridden"
+        ? `Committed · ${d.sequence}`
+        : "Committed";
+    case "deferred":
+      return "Deferred to next quarter";
+    case "escalated":
+      return "Escalated to stakeholders";
+    case "overridden":
+      return d.realized_action ? `Overrode → ${ACTION_VERB[d.realized_action]}` : "Overrode AI";
+  }
+}
+
+function ActivityCard({ entry, index }: { entry: ActivityEntry; index: number }) {
+  const diverged = entry.diverged;
 
   return (
     <motion.div
@@ -274,59 +407,71 @@ function DecisionCard({
       style={{
         background: "var(--color-elevated)",
         border: "1px solid var(--color-border)",
+        borderLeft: diverged ? "3px solid var(--color-accent)" : "1px solid var(--color-border)",
         boxShadow: "var(--shadow-sm)",
       }}
     >
-      <div className="flex items-start gap-3">
-        <div
-          className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md"
-          style={{ background: meta.soft, color: meta.color }}
-        >
-          {meta.icon}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[14.5px] font-medium" style={{ color: "var(--color-primary)" }}>
-              {initiative.title}
-            </p>
-            <span className="font-numeric text-[11.5px] shrink-0" style={{ color: "var(--color-tertiary)" }}>
-              {time}
-            </span>
-          </div>
-          <p className="mt-1 text-[12.5px]" style={{ color: "var(--color-tertiary)" }}>
-            <span style={{ color: meta.color }}>{meta.label}</span>
-            {decision.sequence && decision.sequence !== "Overridden" && decision.sequence !== "Deferred" && (
-              <>
-                {" · "}
-                <span>{decision.sequence}</span>
-              </>
-            )}
+      {/* Header */}
+      <div className="flex items-baseline justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="truncate text-[14.5px] font-medium" style={{ color: "var(--color-primary)" }}>
+            {entry.initiative.title}
           </p>
-          <p className="mt-2 text-[12.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
-            <span style={{ color: "var(--color-tertiary)" }}>AI suggestion —</span>{" "}
-            {decision.ai_suggestion}
-          </p>
-          {decision.human_rationale && (
-            <p
-              className="mt-1.5 rounded-md px-3 py-2 text-[12.5px] leading-relaxed"
-              style={{
-                background: "var(--color-page)",
-                color: "var(--color-secondary)",
-              }}
-            >
-              <span style={{ color: "var(--color-tertiary)" }}>Your rationale —</span>{" "}
-              {decision.human_rationale}
-            </p>
-          )}
-          {initiative.ai_recommendation.predicted_outcome && (
-            <p className="mt-2 text-[12px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
-              <Sparkles size={10} className="mr-1 inline-block" style={{ color: "var(--color-accent)" }} />
-              <span style={{ color: "var(--color-tertiary)" }}>Predicted —</span>{" "}
-              <span style={{ color: "var(--color-secondary)" }}>{initiative.ai_recommendation.predicted_outcome}</span>
-            </p>
-          )}
+          <span
+            className="shrink-0 rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
+            style={{ background: "var(--color-surface-sunken)", color: "var(--color-tertiary)" }}
+          >
+            {entry.kind === "triage" ? "Triage" : "Decision"}
+          </span>
         </div>
+        <span className="font-numeric text-[11.5px] shrink-0" style={{ color: "var(--color-tertiary)" }}>
+          {formatDecisionTime(entry.at)}
+        </span>
       </div>
+
+      {/* You did X · AI recommended Y */}
+      <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px]">
+        <span style={{ color: "var(--color-tertiary)" }}>You</span>
+        <span className="font-medium" style={{ color: "var(--color-primary)" }}>
+          {entry.pmLabel}
+        </span>
+        <ArrowRight size={12} style={{ color: "var(--color-muted)" }} />
+        <Sparkles size={11} style={{ color: "var(--color-accent)" }} />
+        <span style={{ color: "var(--color-tertiary)" }}>AI recommended</span>
+        <span
+          className="font-medium"
+          style={{ color: diverged ? "var(--color-accent)" : "var(--color-secondary)" }}
+        >
+          {ACTION_VERB[entry.aiAction]}
+        </span>
+      </div>
+
+      {/* Verdict */}
+      {diverged ? (
+        <div
+          className="mt-3 flex items-start gap-2 rounded-md px-3 py-2"
+          style={{ background: "var(--color-accent-soft)" }}
+        >
+          <RefreshCw size={12} className="mt-0.5 shrink-0" style={{ color: "var(--color-accent)" }} />
+          <div className="min-w-0">
+            <p className="text-[12px] font-semibold" style={{ color: "var(--color-accent)" }}>
+              Diverged — feeds recalibration
+            </p>
+            <p className="mt-0.5 text-[12px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
+              {entry.rationale
+                ? entry.rationale
+                : "The engine will weight this pattern toward your call on similar items."}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <p
+          className="mt-2.5 inline-flex items-center gap-1.5 text-[11.5px]"
+          style={{ color: "var(--color-success)" }}
+        >
+          <Check size={12} /> Matched the system
+        </p>
+      )}
     </motion.div>
   );
 }
@@ -576,39 +721,6 @@ function EmptyCard({ title, body, cta }: { title: string; body: string; cta: { h
       </Link>
     </div>
   );
-}
-
-function actionMeta(action: Decision["action"]) {
-  switch (action) {
-    case "committed":
-      return {
-        icon: <Check size={13} />,
-        label: "Committed",
-        color: "var(--color-success)",
-        soft: "var(--color-success-soft)",
-      };
-    case "deferred":
-      return {
-        icon: <Clock size={13} />,
-        label: "Deferred",
-        color: "var(--color-tertiary)",
-        soft: "var(--color-surface-sunken)",
-      };
-    case "escalated":
-      return {
-        icon: <AlertTriangle size={13} />,
-        label: "Escalated",
-        color: "var(--color-warning)",
-        soft: "var(--color-warning-soft)",
-      };
-    case "overridden":
-      return {
-        icon: <Pencil size={13} />,
-        label: "Overridden",
-        color: "var(--color-accent)",
-        soft: "var(--color-accent-soft)",
-      };
-  }
 }
 
 function formatDecisionTime(iso: string) {

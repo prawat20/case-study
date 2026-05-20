@@ -1,3 +1,5 @@
+import type { RecommendedAction } from "@/lib/types";
+
 export type DecisionAction =
   | "committed"
   | "deferred"
@@ -11,6 +13,13 @@ export interface Decision {
   human_rationale?: string;
   sequence?: string;
   decided_at: string;
+  /**
+   * The concrete action the PM realised, in the AI's {commit,defer,escalate}
+   * space. Set when `action` is "overridden" (where the realised choice can't
+   * be inferred from `action` alone) so the Audit log can compute AI-vs-PM
+   * divergence without parsing rationale strings. Optional + additive.
+   */
+  realized_action?: RecommendedAction;
 }
 
 const KEY = "qp_decisions_v1";

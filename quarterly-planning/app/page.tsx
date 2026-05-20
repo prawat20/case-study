@@ -15,6 +15,7 @@ import type { Initiative } from "@/lib/types";
 import { Header } from "@/components/Header";
 import { useDecisions } from "@/lib/use-decisions";
 import { useTriage, setTriageAction, type TriageAction } from "@/lib/triage";
+import { recommendedTriageAction, TRIAGE_VERB } from "@/lib/ai-reco";
 import { useCaptures, type Capture } from "@/lib/captures";
 import { useCommandPalette } from "@/components/CommandProvider";
 import { ShortcutKbd } from "@/components/ShortcutKbd";
@@ -498,6 +499,11 @@ function InlineTriageCard({
     ? getScoring(row.data.ai_recommendation.framework, row.data)
     : null;
   const clusterSources = isInitiative ? row.data.cluster_sources : undefined;
+  // The triage action the AI would take — drives the highlighted pill + caption.
+  // Null for captures (no recommendation yet).
+  const aiTriage: TriageAction | null = isInitiative
+    ? recommendedTriageAction(row.data.ai_recommendation.action)
+    : null;
 
   return (
     <motion.div
@@ -579,27 +585,46 @@ function InlineTriageCard({
 
       {/* Action row */}
       <div
-        className="flex items-center justify-between gap-2 border-t px-4 py-3"
+        className="border-t px-4 py-3"
         style={{ borderColor: "var(--color-border)", background: "var(--color-surface-sunken)" }}
       >
-        <div className="flex items-center gap-2">
-          <ActionPill kind="defer" onClick={() => onDecide("defer")} />
-          <ActionPill kind="route" onClick={() => onDecide("route")} />
-          <ActionPill kind="promote" onClick={() => onDecide("promote")} />
+        {aiTriage && (
+          <p className="mb-2 flex items-center gap-1.5 text-[11px]">
+            <Sparkles size={11} style={{ color: "var(--color-accent)" }} />
+            <span style={{ color: "var(--color-tertiary)" }}>AI recommends</span>
+            <span style={{ color: "var(--color-accent)", fontWeight: 600 }}>
+              {TRIAGE_VERB[aiTriage]}
+            </span>
+          </p>
+        )}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <ActionPill kind="defer" recommended={aiTriage === "defer"} onClick={() => onDecide("defer")} />
+            <ActionPill kind="route" recommended={aiTriage === "route"} onClick={() => onDecide("route")} />
+            <ActionPill kind="promote" recommended={aiTriage === "promote"} onClick={() => onDecide("promote")} />
+          </div>
+          <Link
+            href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
+            className="text-[11.5px] transition hover:underline"
+            style={{ color: "var(--color-tertiary)" }}
+          >
+            Why this →
+          </Link>
         </div>
-        <Link
-          href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
-          className="text-[11.5px] transition hover:underline"
-          style={{ color: "var(--color-tertiary)" }}
-        >
-          Why this →
-        </Link>
       </div>
     </motion.div>
   );
 }
 
-function ActionPill({ kind, onClick }: { kind: TriageAction; onClick: () => void }) {
+function ActionPill({
+  kind,
+  onClick,
+  recommended = false,
+}: {
+  kind: TriageAction;
+  onClick: () => void;
+  recommended?: boolean;
+}) {
   const isPromote = kind === "promote";
   const isDefer = kind === "defer";
   const Icon = isPromote ? ArrowRight : isDefer ? ArrowLeft : ArrowUpRight;
@@ -611,17 +636,25 @@ function ActionPill({ kind, onClick }: { kind: TriageAction; onClick: () => void
       ? "var(--color-danger)"
       : "var(--color-tertiary)";
 
+  // The AI-recommended pill takes the brand-accent treatment (the app's
+  // established "✦ = AI's pick" language); the others keep their action tone.
   return (
     <button
       onClick={onClick}
-      aria-label={label}
+      aria-label={recommended ? `${label} — AI recommended` : label}
       className="group inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium transition hover:bg-[var(--color-card-hover)]"
       style={{
-        background: "var(--color-elevated)",
-        border: `1px solid ${tone}`,
-        color: tone,
+        background: recommended ? "var(--color-accent-soft)" : "var(--color-elevated)",
+        border: `1px solid ${recommended ? "var(--color-accent)" : tone}`,
+        color: recommended ? "var(--color-accent)" : tone,
+        boxShadow: recommended ? "0 0 0 2px var(--color-accent-soft)" : "none",
       }}
     >
+      {recommended && (
+        <span aria-hidden className="text-[10px] leading-none" style={{ color: "var(--color-accent)" }}>
+          ✦
+        </span>
+      )}
       <Icon size={13} />
       <span>{label}</span>
       <kbd

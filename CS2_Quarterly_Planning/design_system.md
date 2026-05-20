@@ -221,8 +221,8 @@ Locked component primitives (every surface composes these, no one-offs):
 | `SprintLane` | Calendar sprint container, capacity bar, drop target | Sequence |
 | `InitiativeChip` | Mini-card representing an initiative in calendar context | Sequence |
 | `StakeholderArtifact` | Generated note for one audience, copy-to-Slack/Email/etc. | Communicate |
-| `AuditEntry` | Decision row: rec → choice → reason → predicted → actual | Audit |
-| `Banner` | Strategic context (NSM + pace) and Signal-shift surfaces | Top of Inbox & Sequence |
+| `ActivityCard` | Action row: you did X → AI recommended Y · divergence flagged + "feeds recalibration" note | Audit |
+| `Banner` | Strategic context (NSM + pace) | Top of Now |
 | `CommandPalette` | `Cmd+K` global nav + actions (cmdk-based) | Global |
 
 ---

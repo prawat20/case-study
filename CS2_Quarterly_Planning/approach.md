@@ -121,10 +121,10 @@ The build sequence was: lock POV → lock design system → lock IA + surface ma
 | Surface | JBTD | The opinionated move |
 |---|---|---|
 | Now (`/`) | 1, 2, aggregator | NSM hero in Fraunces 48px · inline triage rows · `⌘N` capture · `Start triage →` CTA. The home is the inbox. |
-| Prioritize (`/prioritize/[id]`) | 3, 4 | Framework picker as first-class control · scorecard re-renders below · commit-confirm shows sprint impact |
+| Prioritize (`/initiative/[id]`) | 3, 4 | Framework picker as first-class control · scorecard re-renders below · commit-confirm shows sprint impact |
 | Calendar (`/calendar`) | 5 | Sprint-by-sprint drag-and-drop puzzle · Drop Planner on overflow with per-item destination control · animated reflow via `motion.div layoutId` |
 | Stakeholders (`/stakeholders`) | 6 | Master/detail with persistent audience rail · *generated* per-audience artifacts (not filtered views) · copy-as-Slack / copy-as-email |
-| Audit (`/audit`) | 7 | Decisions log + Predictions tab · 21-day prediction-vs-actual review with mock SAML prediction always seeded |
+| Audit (`/audit`) | 7 | Activity log (every action vs AI recommendation, divergences flagged as the recalibration signal) + Predictions tab · 21-day prediction-vs-actual review with mock SAML prediction always seeded |
 
 The brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) resolve onto a **single interaction** in the build: drag a rail item onto an over-capacity sprint. The Drop Planner expands inline; each item gets per-destination row buttons; AI's suggestion is pre-selected with a ✦ badge but every row is overridable; live trade-off summary updates per toggle; commit is disabled until capacity matches. AI is advisory, not deciding.
 

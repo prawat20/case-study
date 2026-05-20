@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { CommandPalette } from "@/components/CommandPalette";
 import { CaptureModal } from "@/components/CaptureModal";
+import { OnboardingModal } from "@/components/OnboardingModal";
 
 type Ctx = {
   isOpen: boolean;
@@ -64,6 +65,7 @@ export function CommandPaletteProvider({
       {children}
       <CommandPalette open={isOpen} onClose={() => setIsOpen(false)} />
       <CaptureModal open={isCaptureOpen} onClose={() => setIsCaptureOpen(false)} />
+      <OnboardingModal />
     </CommandPaletteContext.Provider>
   );
 }

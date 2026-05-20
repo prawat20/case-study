@@ -11,7 +11,7 @@ import { clearDecisions, clearFrameworkOverrides } from "@/lib/decisions";
 import { clearTriage } from "@/lib/triage";
 import { clearCaptures } from "@/lib/captures";
 import { clearCalendarState } from "@/lib/calendar-state";
-import { OnboardingModal, openOnboarding } from "@/components/OnboardingModal";
+import { openOnboarding } from "@/components/OnboardingModal";
 
 type NavItem = {
   label: string;
@@ -181,7 +181,6 @@ export function Header() {
           </button>
         </div>
       </div>
-      <OnboardingModal />
 
       {/* Nav — mobile/tablet (second row, scrollable if needed) */}
       <nav

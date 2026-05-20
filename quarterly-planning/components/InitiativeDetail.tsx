@@ -256,6 +256,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
       ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
       human_rationale: isOverride ? `Commit — ${overrideText.trim()}` : undefined,
       sequence: commitImpact.target_sprint_label,
+      realized_action: "commit",
       decided_at: new Date().toISOString(),
     });
     const pushSummary =
@@ -279,6 +280,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
       ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
       human_rationale: asOverride ? `Defer — ${overrideText.trim()}` : undefined,
       sequence: asOverride ? "Overridden" : "Deferred",
+      realized_action: "defer",
       decided_at: new Date().toISOString(),
     });
     setToast("Deferred. Will resurface on context shift.");
@@ -297,6 +299,7 @@ export function InitiativeDetail({ initiative }: { initiative: Initiative }) {
       human_rationale: matched
         ? `Escalated to: ${[...escalateTags].join(", ")}`
         : `Escalate (overrode ${ACTION_LABEL[recAction]}) — sent to ${[...escalateTags].join(", ")}`,
+      realized_action: "escalate",
       decided_at: new Date().toISOString(),
     });
     setToast(`Escalated to ${[...escalateTags].join(", ")}. Awaiting input.`);

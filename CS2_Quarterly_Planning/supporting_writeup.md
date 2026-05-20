@@ -9,7 +9,9 @@
 
 > **Median time from idea-surfaced → decision-logged.**
 
-For a given PM, across all initiatives surfaced in their Priority Stream over a quarter: the median elapsed time between when an idea first appears (surfaced by the engine) and when the PM logs a decision on it (commit / defer / escalate / override).
+> **Two North Stars, two levels — don't conflate them.** The deployed app's hero labels a *North Star* of **Net New ARR ($600k of $2.4M)** — that is the *customer's* business goal, the strategic context the PM plans against (and the pace tension the demo runs on). *This* section defines **Sift's own product North Star**: the metric the Sift team optimises to know the tool is working. Its in-product leading indicator is the **"% of items decided the same day they land"** line shown directly beneath the hero on Now.
+
+For a given PM, across all initiatives surfaced in their Now queue over a quarter: the median elapsed time between when an idea first appears (surfaced by the engine) and when the PM logs a decision on it (commit / defer / escalate / override).
 
 ### Why this metric
 
@@ -35,7 +37,7 @@ The chosen metric — *median time from idea-surfaced to decision-logged* — su
 ### Definition (operational)
 
 - **Numerator events:** `decision_logged` timestamp.
-- **Denominator events:** `idea_surfaced` timestamp (when the engine first places an item on the user's Priority Stream).
+- **Denominator events:** `idea_surfaced` timestamp (when the engine first places an item on the user's Now queue).
 - **Aggregate:** median across all decisions made by a user in the last 30 days. Median, not mean — robust to outliers (the one item the PM left untouched for 3 weeks shouldn't dominate).
 - **Comparison:** longitudinal per-user (is this PM getting faster?) plus a peer-cohort benchmark (how does this PM compare to others at similar org-size, similar role).
 
@@ -50,6 +52,8 @@ The chosen metric — *median time from idea-surfaced to decision-logged* — su
 | Quarterly plan diff drift (% of items unchanged Q-end vs Q-start) | Is reality diverging from the plan? | Early warning for plan invalidation — too high (90%) means the plan was over-fit; too low (20%) means the plan was fiction. |
 
 The North Star and the supporting metrics together form a healthy instrumentation surface — leading + lagging + quality + adoption + safety.
+
+> **Now visible in-product.** The deployed Audit log surfaces every PM action against what the system recommended and flags each *divergence* as a recalibration signal — so the AI-acceptance-rate and override-rate metrics above aren't aspirational. They have a working home: the gap between recommendation and action *is* the training signal.
 
 ---
 
@@ -77,7 +81,7 @@ Each event includes a rationale grounded in *what product decision it informs*. 
 
 ### Event 2: `signal_shift_surfaced`
 
-**Fires when** the SignalShifts banner appears on the home page (i.e., the engine has flagged that re-prioritization is warranted).
+**Fires when** the Dynamic Priority Engine (architecture Layer 3 — the assumed synthesis substrate, not part of this mocked build) flags that re-prioritization is warranted and surfaces it to the PM.
 
 **Properties:**
 - `shift_count` — how many items moved
@@ -91,7 +95,7 @@ Each event includes a rationale grounded in *what product decision it informs*. 
 
 ### Event 3: `audience_render_viewed`
 
-**Fires when** the PM toggles the Quarter view's audience selector (All / Exec / Eng / Sales / CS).
+**Fires when** the PM toggles the Stakeholders view's audience selector (Sales / Exec / Customer / Eng).
 
 **Properties:**
 - `from_audience`, `to_audience`
@@ -116,11 +120,11 @@ Each event includes a rationale grounded in *what product decision it informs*. 
 
 ### Event 5: `plan_shipped`
 
-**Fires when** the PM clicks "Ship to [Audience]" or "Snap as Q3 plan" — the conversion event.
+**Fires when** the PM clicks "Snap as Q3 plan" (Calendar) or copies a stakeholder artifact ("Copy as Slack" / "Copy as email" on the Stakeholders view) — the conversion event.
 
 **Properties:**
-- `audience` — `all | exec | eng | sales | cs`
-- `action` — `ship | snap`
+- `audience` — `sales | exec | customer | eng` (artifact share); `null` for a calendar snap
+- `action` — `ship | snap` (`ship` = stakeholder-artifact share)
 - `decision_count` — how many decisions are in the plan
 - `total_arr_exposure_usd`
 - `time_from_first_decision_to_ship_ms`
@@ -193,8 +197,8 @@ Concrete tool usage tells us the competitive landscape and the workarounds.
 
 Now show the demo, screen by screen, and watch their face.
 
-20. *(Show the Priority Stream)* Imagine the tool surfaces 3 decisions for you each morning. What level of context would you need on each card to make the decision in seconds rather than minutes?
-21. *(Show the Audience Render toggle)* When you communicate a quarterly plan to your exec / eng / sales / CS teams, do you write four different versions? How long does it take? Is what you see here close, or wrong?
+20. *(Show **Now** — the daily decision surface)* Imagine the tool surfaces 3 decisions for you each morning. What level of context would you need on each card to make the decision in seconds rather than minutes?
+21. *(Show the Stakeholders audience render — Sales / Exec / Customer / Eng)* When you communicate a quarterly plan to those teams, do you write four different versions? How long does it take? Is what you see here close, or wrong?
 
 ### What we're listening for (the validation rubric)
 
@@ -212,4 +216,4 @@ Five interviews of mid-stage B2B SaaS PMs is the minimum bar. If 3+ are validati
 
 ## Format note
 
-This document is the brief's three submission deliverables in long form. The product POV (`docs/cs2_product_pov.md`) is the strategic thesis; this is the *operational* layer that complements it. Together with the working experience and the source code, this is the complete submission.
+This document is the brief's three submission deliverables in long form. The product POV (`product_pov.md`) is the strategic thesis; this is the *operational* layer that complements it. Together with the working experience and the source code, this is the complete submission.

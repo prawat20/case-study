@@ -65,10 +65,10 @@ Five destination surfaces aligned to the seven JBTDs. **Now** is the home that a
 | Surface | Owns | Mechanic |
 |---|---|---|
 | Now (`/`) | JBTD-1, JBTD-2, aggregator | NSM hero in Fraunces 48px · inline triage rows · `⌘N` capture · `Start triage →` CTA |
-| Prioritize (`/prioritize/[id]`) | JBTD-3, JBTD-4 | Framework picker (5 chips) as first-class control · scorecard re-renders below · commit-confirm with sprint impact |
+| Prioritize (`/initiative/[id]`) | JBTD-3, JBTD-4 | Framework picker (5 chips) as first-class control · scorecard re-renders below · commit-confirm with sprint impact |
 | Calendar (`/calendar`) | JBTD-5 | Sprint-by-sprint drag-and-drop puzzle · Drop Planner on overflow · animated reflow |
 | Stakeholders (`/stakeholders`) | JBTD-6 | Master/detail · persistent audience rail · generated per-audience artifacts · copy-as-Slack / copy-as-email |
-| Audit (`/audit`) | JBTD-7 | Decisions log + Predictions tab · 21-day prediction-vs-actual review |
+| Audit (`/audit`) | JBTD-7 | Activity log (every action vs AI recommendation, divergences flagged) + Predictions tab · 21-day prediction-vs-actual review |
 
 The Calendar is the most opinionated surface. The interaction model resolves the brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) onto a single drag: when a drop would overflow a sprint, the Drop Planner panel expands inline with per-item destination control. Each item currently in the target sprint gets a row with destination buttons (`Keep | Sprint 1 (Xp free) | Sprint 3 (Yp free) | Defer Q4`); headroom recomputes live as the PM toggles. An AI-suggested plan is pre-selected with a ✦ badge — the PM can override any row. A live trade-off summary updates per toggle (`Freeing 2p of 2p needed ✓ · RICE cost: −0.5 · All deadlines protected`). AI is **advisory, not deciding**.
 
@@ -145,3 +145,24 @@ Underneath this lived a deeper inconsistency: the NSM said `weeks_elapsed=9 of 1
 - **First-visit auto-fire onboarding is more aggressive than it looks.** A modal that opens before the user has done anything reads as a permission demand, not a help offer. Discoverable affordances (a `?` icon) outperform auto-fire UX for case-study contexts where reviewers want to explore first.
 
 Files touched Round 12 (10 files): `components/Header.tsx`, `components/OnboardingModal.tsx` (new, then rebuilt), `components/CalendarPlan.tsx`, `components/InitiativeDetail.tsx`, `app/page.tsx`, `app/inbox/triage/page.tsx`, `app/layout.tsx`, `data/initiatives.json`, `lib/strategic.ts`, `lib/stakeholder-artifacts.ts`. Commits `928a869` (initial UX additions) → `920a661` (onboarding rebuild + funnel simplification) → `357a73e` (shipped-sprint lock + temporal anchor refresh).
+
+---
+
+## Round 13 — Onboarding fix · AI-reco visibility · audit-as-feedback-loop (2026-05-20)
+
+Shipped + deployed to `sift-pm.pages.dev` (deploy `0b7dc8d4`). Four changes; new shared module `lib/ai-reco.ts` (AI↔triage↔decision action maps + divergence helpers); additive `realized_action?` field on the `Decision` model.
+
+**Onboarding `?` showed no content — a CSS containing-block trap.** The Round-12 side panel rendered as a clipped sliver. Root cause: `<OnboardingModal />` was mounted *inside* `<header>`, which has `backdrop-blur`. A `backdrop-filter` (also `filter` / `transform` / `perspective` / `will-change`) ancestor becomes the containing block for `position: fixed` descendants — so the panel's `fixed inset-0` / `h-full` resolved against the 56px header box, not the viewport, and the content scrolled out of view. Fix: mount the panel at the body-level overlay host (`CommandProvider`, alongside the working Command/Capture modals), keep the `?` trigger in the header via a window event. The working modals were the tell — they sat in the body-level provider; the broken one sat in the blurred header.
+
+**AI-recommended action surfaced on the triage card.** The Now triage card showed the predicted outcome but not the AI's recommended *action* — the three pills (Promote / Defer / Route) carried equal weight. The recommended pill now takes the accent ✦ "AI's pick" treatment (the app's established language, already used by the framework chips + Drop Planner) with an "✦ AI recommends {action}" caption. Map: AI `commit → Promote`, `defer → Defer`, `escalate → Route`. The Calendar (rail "AI: Sprint N" + "AI suggests" lane on drag) and the deep Decide view already highlighted the recommendation, so the gap was only the front-door triage card.
+
+**Audit rebuilt as the AI-vs-PM feedback loop.** Was: a "Decisions" list + Predictions tab, with triage merely *counted*. Now the **Activity** tab logs every PM action (triage **and** decisions), each annotated "You {X} → ✦ AI recommended {Y}"; divergences are highlighted (accent border + "↻ Diverged — feeds recalibration" + rationale), matches show "✓ Matched the system." A calibration summary (logged · followed AI · diverged → "N signals queued for recalibration") + a Divergences-only filter. Plumbed `realized_action` onto decisions so an "overridden" decision's actual choice is known without parsing rationale strings. This makes the override-rate / AI-acceptance metrics from `supporting_writeup.md` §1 visible in-product, and is the strongest "AI-native, not AI-bolted" proof in the build — the gap between recommendation and action *is* the training signal.
+
+**Architecture page rebuilt as layers.** The six-layer stack was a flat list of numbered cards. Now grouped into three labeled bands (System learns L6 · You operate L5–4, accent-tinted · System synthesizes L3–1, foundation grounded) with a continuous stack spine through the layer numbers and the **6→3 recalibration loop drawn explicitly** ("overrides flow back to the priority engine") — which visually echoes the new Activity-tab divergence work.
+
+**Process lessons added Round 13:**
+- **`backdrop-filter` / `transform` / `filter` on an ancestor re-roots `position: fixed` to that element, not the viewport.** A fixed overlay that renders clipped or tiny is almost always mounted inside a blurred or transformed container. Mount global overlays at the body level.
+- **AI-vs-PM divergence is the case study's strongest AI-native proof.** Surfacing every action against the recommendation, and treating the gap as the signal that recalibrates the engine, makes the learning loop tangible rather than asserted. The audit stops being a record and becomes the feedback instrument.
+- **Don't add funnel steps to fix a visibility/instrumentation problem.** The flow felt unclear → the fix was surfacing the recommendation (triage) + instrumenting divergence (audit), not a new prioritise stage. (The "keep current flow" call was made explicitly with the user.)
+
+Files touched Round 13: `lib/ai-reco.ts` (new), `lib/decisions.ts` (+`realized_action`), `app/page.tsx` (triage card + ActionPill), `components/InitiativeDetail.tsx` (set `realized_action`), `components/AuditLog.tsx` (Activity stream + divergence), `app/architecture/page.tsx` (layered rebuild), `components/Header.tsx` + `components/CommandProvider.tsx` (onboarding mount move).

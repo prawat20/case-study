@@ -22,7 +22,7 @@
 
 ## The deliverable in one paragraph
 
-CS2 is a five-surface app demonstrating an opinionated end-to-end planning loop: **capture → triage → place → communicate → learn**. The Now home aggregates the loop with an NSM hero and inline triage rows. Capture is a one-keystroke modal (`⌘N`). Triage is a Tinder-style swipe deck. The Calendar is a sprint-by-sprint drag-and-drop puzzle that resolves the brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) onto a single interaction — the Drop Planner, which expands inline on over-capacity drops with per-item destination control. Stakeholders ships generated per-audience artifacts (Sales gets deal-by-deal mapping, Exec gets one paragraph + 3 KPIs, Customer gets plain-language ship list, Engineering gets capacity table + dependency notes) with copy-as-Slack / copy-as-email actions. Audit closes the loop with a 21-day prediction-vs-actual review. AI is **advisory, not deciding** throughout.
+CS2 is a five-surface app demonstrating an opinionated end-to-end planning loop: **capture → triage → place → communicate → learn**. The Now home aggregates the loop with an NSM hero and inline triage rows. Capture is a one-keystroke modal (`⌘N`). Triage is a Tinder-style swipe deck. The Calendar is a sprint-by-sprint drag-and-drop puzzle that resolves the brief's four evaluation criteria (creativity · depth · analytical reasoning · impact) onto a single interaction — the Drop Planner, which expands inline on over-capacity drops with per-item destination control. Stakeholders ships generated per-audience artifacts (Sales gets deal-by-deal mapping, Exec gets one paragraph + 3 KPIs, Customer gets plain-language ship list, Engineering gets capacity table + dependency notes) with copy-as-Slack / copy-as-email actions. Audit closes the loop two ways — an **Activity** log that records every action against what the system recommended and flags each divergence as the recalibration signal, plus a 21-day prediction-vs-actual review. AI is **advisory, not deciding** throughout.
 
 ---
 
@@ -34,7 +34,7 @@ CS2 is a five-surface app demonstrating an opinionated end-to-end planning loop:
 
 3. **Open Inbox (inline on Now)** — captured ask shows under "Just landed" with a `NEW` chip alongside pre-loaded asks. Click **Start triage**.
 
-4. **Triage flow** — Tinder-style swipe card. Card front carries everything: title, synthesis, evidence quote, signal chip + ARR + RICE score + effort, sage callout with the "If we ship —" predicted outcome. Tap **Why this** (or hit Space) for full score breakdown, AI's reasoning, conflicts, trade-offs.
+4. **Triage flow** — Tinder-style swipe card. Card front carries everything: title, synthesis, evidence quote, signal chip + ARR + RICE score + effort, sage callout with the "If we ship —" predicted outcome, and the **AI-recommended action highlighted** (the matching Promote / Defer / Route pill takes the accent ✦ "AI's pick" treatment + an "✦ AI recommends" caption). Tap **Why this** (or hit Space) for full score breakdown, AI's reasoning, conflicts, trade-offs.
    - Drag right (or `→` / `P`) → **Promote**. Card tilts +12°, sage tint emerges, "PROMOTE" stamp fades in.
    - Drag left (or `←` / `D`) → **Defer**. Brick tint + "DEFER" stamp at −12°.
    - Click ↗ or press `R` → **Route**.
@@ -50,7 +50,7 @@ CS2 is a five-surface app demonstrating an opinionated end-to-end planning loop:
 
 6. **Stakeholders** — generated audience artifacts, not filtered views. Master/detail with persistent audience rail (Sales, Exec, Customer, Eng). Pick *For Sales* → lines materialise one by one with 50ms stagger. Each artifact has **Copy as Slack** + **Copy as email**.
 
-7. **Audit → Predictions tab** — the prediction-vs-actual loop. Each committed decision logs what the AI predicted; once 21 days elapse, a "Due for review" pill appears. A mock 21-day-old SAML prediction is always seeded so the loop is visible on a fresh demo.
+7. **Audit** — two tabs. **Activity** logs every action you took against what the system recommended ("You Promoted → ✦ AI recommended Defer"); divergences are highlighted as the recalibration signal, with a calibration summary and a Divergences-only filter. **Predictions** is the prediction-vs-actual loop — each committed decision logs what the AI predicted; once 21 days elapse, a "Due for review" pill appears. A mock 21-day-old SAML prediction is always seeded so the loop is visible on a fresh demo.
 
 8. **⌘K** for power nav — capture, run triage, jump to any surface, generate a stakeholder artifact, switch theme, reset demo.
 
