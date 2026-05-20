@@ -8,37 +8,47 @@ import {
   ArrowUpRight,
   Plus,
   Sparkles,
+  ChevronDown,
+  Send,
+  AlertTriangle,
 } from "lucide-react";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useEffect, useState } from "react";
 import initiativesJson from "@/data/initiatives.json";
-import type { Initiative } from "@/lib/types";
+import type { Initiative, RecommendedAction } from "@/lib/types";
 import { Header } from "@/components/Header";
 import { useDecisions } from "@/lib/use-decisions";
 import { useTriage, setTriageAction, type TriageAction } from "@/lib/triage";
+import { addDecision } from "@/lib/decisions";
 import { recommendedTriageAction, TRIAGE_VERB } from "@/lib/ai-reco";
 import { useCaptures, type Capture } from "@/lib/captures";
 import { useCommandPalette } from "@/components/CommandProvider";
 import { ShortcutKbd } from "@/components/ShortcutKbd";
-import { ClusterChip } from "@/components/ClusterChip";
 import { playTriageTone } from "@/lib/sound";
 import { getScoring } from "@/lib/frameworks";
-import {
-  NORTH_STAR,
-  computeNorthStar,
-  formatMetric,
-} from "@/lib/strategic";
+import { NORTH_STAR } from "@/lib/strategic";
 import {
   formatRelative,
   getChannelLabel,
   getMinutesAgo,
   getSourceLabel,
   signalToKind,
-  JUST_LANDED_CUTOFF_MIN,
 } from "@/lib/inbox-helpers";
-import { useEffect, useState } from "react";
 
 const allInitiatives = initiativesJson as Initiative[];
-const VISIBLE_TRIAGE_ROWS = 4;
+
+// Shared with the full Decide view (InitiativeDetail) — escalate writes the same
+// decision shape from either surface, so the Audit log reads identically.
+const STAKEHOLDER_LABELS: Record<string, string> = {
+  sales: "Sales",
+  cs: "Customer Success",
+  exec: "Exec",
+  eng: "Engineering",
+};
+const ACTION_LABEL: Record<RecommendedAction, string> = {
+  commit: "Commit",
+  defer: "Defer",
+  escalate: "Escalate",
+};
 
 type Row =
   | { kind: "initiative"; data: Initiative; minAgo: number }
@@ -79,9 +89,7 @@ export default function NowPage() {
 
   const triageCount = untriaged.length;
   const top = untriaged[0] ?? null;
-  const queue = untriaged.slice(1, VISIBLE_TRIAGE_ROWS);
-  const overflowCount = Math.max(0, triageCount - VISIBLE_TRIAGE_ROWS);
-  const freshCount = untriaged.filter((r) => r.minAgo <= JUST_LANDED_CUTOFF_MIN).length;
+  const moreCount = Math.max(0, triageCount - 1);
 
   const decideTop = useCallback(
     (action: TriageAction) => {
@@ -92,37 +100,13 @@ export default function NowPage() {
     [top],
   );
 
-  // Keyboard shortcuts — act on the top card directly. Ignore when typing in an
-  // input/textarea or when the command palette is open.
-  useEffect(() => {
-    if (!top) return;
-    function onKey(e: KeyboardEvent) {
-      const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const k = e.key.toLowerCase();
-      if (k === "p" || e.key === "ArrowRight") {
-        e.preventDefault();
-        decideTop("promote");
-      } else if (k === "d" || e.key === "ArrowLeft") {
-        e.preventDefault();
-        decideTop("defer");
-      } else if (k === "e" || e.key === "ArrowUp") {
-        e.preventDefault();
-        decideTop("escalate");
-      }
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [top, decideTop]);
-
-  /* Promoted but not yet placed — feeds the Calendar handoff */
-  const promotedItems = useMemo(
+  /* Promoted but not yet placed — the handoff to Calendar (shown as a quiet link, not a section) */
+  const promotedCount = useMemo(
     () =>
       allInitiatives.filter((i) => {
         const t = triage.find((x) => x.initiative_id === i.id);
         return t?.action === "promote" && !decidedIds.has(i.id);
-      }),
+      }).length,
     [triage, decidedIds],
   );
 
@@ -132,143 +116,62 @@ export default function NowPage() {
     <div className="min-h-screen text-primary" style={{ background: "var(--color-page)" }}>
       <Header />
 
-      <main className="mx-auto max-w-[1040px] px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
-        {/* Top row — date + capture affordance */}
-        <div className="flex items-start justify-between gap-4">
+      {/* One decision in focus. North Star lives on Calendar; the pipeline lives on Inbox.
+          The Now page asks exactly one question: what do you do with the next thing? */}
+      <main className="mx-auto max-w-[600px] px-5 sm:px-6 pt-10 sm:pt-16 pb-24">
+        {/* Quiet top row — where you are, and a way to capture */}
+        <div className="flex items-center justify-between gap-4">
           <DateEyebrow />
           <CaptureButton onClick={openCapture} />
         </div>
 
-        {/* North Star — a calm full-width strip, not a column */}
-        <NSMStrip />
-
-        {/* Master/detail — triage owns the focus on the left; the "Why this" reasoning lives on the right */}
-        <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,380px)] lg:items-start">
-          {/* ───── Triage column (the focus) ───── */}
-          <div className="min-w-0">
-            <div className="flex items-baseline gap-2">
-              <p className="eyebrow">To triage</p>
-              {hydrated && triageCount > 0 && (
-                <>
-                  <span className="font-numeric text-[11px]" style={{ color: "var(--color-tertiary)" }}>
-                    {triageCount}
-                  </span>
-                  {freshCount > 0 && (
-                    <span
-                      className="rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
-                      style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}
-                    >
-                      {freshCount} new
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
-
-            {hydrated && triageCount === 0 ? (
-              <EmptyState
-                message="Nothing waiting on you."
-                sub={
-                  <>
-                    Capture an ask with{" "}
-                    <ShortcutKbd letter="N" />
-                    {" "}when one lands.
-                  </>
-                }
-              />
-            ) : (
-              <div className="mt-4">
-                {/* Top card — act on the next item directly */}
-                <AnimatePresence mode="wait">
-                  {top && (
-                    <InlineTriageCard
-                      key={top.data.id}
-                      row={top}
-                      onDecide={decideTop}
-                    />
-                  )}
-                </AnimatePresence>
-
-                {/* Queue — remaining items as compact rows */}
-                {queue.length > 0 && (
-                  <div className="mt-4 space-y-1">
-                    <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>
-                      Next up
-                    </p>
-                    {queue.map((row, idx) => (
-                      <QueueRow key={row.data.id} row={row} index={idx} />
-                    ))}
-                    {overflowCount > 0 && (
-                      <p className="pl-7 pt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-                        + {overflowCount} more
-                      </p>
-                    )}
-                  </div>
-                )}
-
-                {/* Secondary path — full swipe deck for bulk triage */}
-                <div className="mt-5">
-                  <Link
-                    href="/inbox/triage/"
-                    className="inline-flex items-center gap-1 text-[12px] transition hover:underline"
-                    style={{ color: "var(--color-tertiary)" }}
-                  >
-                    Bulk triage
-                    <ArrowRight size={11} />
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* ─────────── Ready to place ─────────── */}
-            {hydrated && promotedItems.length > 0 && (
-              <>
-                <SectionEyebrow label="Ready to place" count={promotedItems.length} fresh={0} hydrated />
-                <p className="mt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-                  Drop one into a Calendar sprint — that's the commit. Open an item for the full Decide view (framework picker, conflicts, predicted outcome).
-                </p>
-                <div className="mt-4 space-y-1">
-                  {promotedItems.slice(0, 4).map((i, idx) => (
-                    <PromotedRow key={i.id} initiative={i} index={idx} />
-                  ))}
-                  {promotedItems.length > 4 && (
-                    <p className="pl-7 pt-1 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-                      + {promotedItems.length - 4} more promoted
-                    </p>
-                  )}
-                  <div className="mt-5">
-                    <Link
-                      href="/calendar/"
-                      className="inline-flex h-9 items-center gap-1.5 rounded-md px-4 text-[13px] font-medium transition"
-                      style={{
-                        background: "var(--color-elevated)",
-                        border: "1px solid var(--color-accent)",
-                        color: "var(--color-accent)",
-                      }}
-                    >
-                      Open Calendar
-                      <ArrowRight size={14} />
-                    </Link>
-                  </div>
-                </div>
-              </>
-            )}
-
+        {/* The one thing */}
+        {!hydrated ? (
+          <div className="mt-10 h-[180px] rounded-2xl" style={{ background: "var(--color-elevated)", border: "1px solid var(--color-border)" }} />
+        ) : top ? (
+          <div className="mt-10">
+            <AnimatePresence mode="wait">
+              <FocusCard key={top.data.id} row={top} onDecide={decideTop} />
+            </AnimatePresence>
           </div>
+        ) : (
+          <EmptyState
+            message="Nothing waiting on you."
+            sub={
+              <>
+                Capture an ask with <ShortcutKbd letter="N" /> when one lands.
+              </>
+            }
+          />
+        )}
 
-          {/* ───── Why this — the top item's reasoning, on the right (no new screen) ─────
-               Desktop only: below lg the grid collapses to one column, so this would land at
-               the very bottom (under "Ready to place"), far from the card it explains. On
-               mobile the card's own "Why this →" link carries the path into full reasoning. */}
-          <aside className="hidden lg:block lg:sticky lg:top-20">
-            <WhyThisPanel row={top} />
-          </aside>
-        </div>
-
-        <div className="mt-20 flex items-center gap-2 text-[11px]" style={{ color: "var(--color-tertiary)" }}>
-          <span aria-hidden style={{ color: "var(--color-accent)" }}>◆</span>
-          <span>Sift · case study build</span>
-        </div>
+        {/* Quiet exits — the rest of the pipeline, never competing with the decision */}
+        {hydrated && (moreCount > 0 || promotedCount > 0) && (
+          <div className="mt-10 flex flex-col gap-2.5">
+            {moreCount > 0 && (
+              <Link
+                href="/inbox/triage/"
+                className="group inline-flex items-center gap-2 text-[12.5px] transition"
+                style={{ color: "var(--color-tertiary)" }}
+              >
+                <span className="font-numeric">{moreCount}</span>
+                <span>more waiting</span>
+                <ArrowRight size={11} className="transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            )}
+            {promotedCount > 0 && (
+              <Link
+                href="/calendar/"
+                className="group inline-flex items-center gap-2 text-[12.5px] transition"
+                style={{ color: "var(--color-accent)" }}
+              >
+                <span className="font-numeric">{promotedCount}</span>
+                <span>ready to place on the Calendar</span>
+                <ArrowRight size={11} className="transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
@@ -302,11 +205,7 @@ function CaptureButton({ onClick }: { onClick: () => void }) {
     <button
       onClick={onClick}
       className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[12.5px] font-medium transition hover:bg-[var(--color-card-hover)]"
-      style={{
-        background: "var(--color-elevated)",
-        border: "1px solid var(--color-border)",
-        color: "var(--color-secondary)",
-      }}
+      style={{ color: "var(--color-tertiary)" }}
       aria-label="Capture an ask"
     >
       <Plus size={13} />
@@ -316,133 +215,300 @@ function CaptureButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function NSMStrip() {
-  const ns = computeNorthStar(NORTH_STAR);
-  const trendCopy =
-    ns.trend === "behind"
-      ? `${Math.abs(ns.pace_gap_pp)}pp behind`
-      : ns.trend === "ahead"
-        ? `${ns.pace_gap_pp}pp ahead`
-        : "On pace";
-  const trendColor =
-    ns.trend === "behind"
-      ? "var(--color-warning)"
-      : ns.trend === "ahead"
-        ? "var(--color-accent)"
-        : "var(--color-secondary)";
+/* ─── The single focus card ─── */
+
+function FocusCard({
+  row,
+  onDecide,
+}: {
+  row: Row;
+  onDecide: (action: TriageAction) => void;
+}) {
+  const isInitiative = row.kind === "initiative";
+
+  // AI layer — initiatives only. Captures have no scoring yet.
+  const rec = isInitiative ? row.data.ai_recommendation : null;
+  const score = isInitiative ? getScoring(rec!.framework, row.data) : null;
+  const aiTriage: TriageAction | null = isInitiative ? recommendedTriageAction(rec!.action) : null;
+  const arr = isInitiative ? row.data.arr_exposure_usd : undefined;
+
+  const [showWhy, setShowWhy] = useState(false);
+  const [escalating, setEscalating] = useState(false);
+  const [tags, setTags] = useState<Set<string>>(
+    () => new Set(rec?.suggested_escalation?.stakeholders ?? []),
+  );
+  const [message, setMessage] = useState(rec?.suggested_escalation?.draft_message ?? "");
+
+  const openEscalate = useCallback(() => {
+    setShowWhy(false);
+    setEscalating(true);
+  }, []);
+
+  function toggleTag(tag: string) {
+    setTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(tag)) next.delete(tag);
+      else next.add(tag);
+      return next;
+    });
+  }
+
+  // Escalate = a logged decision (not a parked triage), so it shows in the Audit log
+  // exactly like the full Decide-view escalate. Item then leaves Now via decidedIds.
+  function commitEscalate() {
+    if (!rec || tags.size === 0) return;
+    const recAction = rec.action;
+    const matched = recAction === "escalate";
+    const to = [...tags].join(", ");
+    addDecision({
+      initiative_id: row.data.id,
+      action: matched ? "escalated" : "overridden",
+      ai_suggestion: `${ACTION_LABEL[recAction]} · ${rec.sequence}`,
+      human_rationale: matched
+        ? `Escalated to: ${to}`
+        : `Escalate (overrode ${ACTION_LABEL[recAction]}) — sent to ${to}`,
+      realized_action: "escalate",
+      decided_at: new Date().toISOString(),
+    });
+    playTriageTone("escalate");
+  }
+
+  // Keyboard — act on the one card in focus. P/D are one-tap; E opens the escalate
+  // prompt (a considered action). All ignored while typing or while the prompt is open.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === "Escape" && escalating) {
+        e.preventDefault();
+        setEscalating(false);
+        return;
+      }
+      if (escalating) return;
+      const k = e.key.toLowerCase();
+      if (k === "p" || e.key === "ArrowRight") {
+        e.preventDefault();
+        onDecide("promote");
+      } else if (k === "d" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        onDecide("defer");
+      } else if ((k === "e" || e.key === "ArrowUp") && rec) {
+        e.preventDefault();
+        openEscalate();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onDecide, escalating, rec, openEscalate]);
+
+  const meta = isInitiative
+    ? { time: formatRelative(row.minAgo), source: getSourceLabel(row.data), channel: getChannelLabel(row.data) }
+    : { time: formatRelative(row.minAgo), source: row.data.source, channel: row.data.channel };
+  const title = isInitiative ? row.data.title : row.data.text;
+  const signalKind = signalToKind(isInitiative ? row.data.signal_type : row.data.signal);
 
   return (
-    <div
-      className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl px-5 py-3"
+    <motion.div
+      initial={{ opacity: 0, y: 10, scale: 0.99 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.99 }}
+      transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
+      className="rounded-2xl"
       style={{
         background: "var(--color-elevated)",
         border: "1px solid var(--color-border)",
-        boxShadow: "var(--shadow-sm)",
+        boxShadow: "var(--shadow-md)",
       }}
     >
-      {/* North Star — compact, inline (shown, never the loudest thing on the page) */}
-      <div className="flex items-baseline gap-2">
-        <span className="eyebrow" style={{ color: "var(--color-tertiary)" }}>North Star</span>
-        <span
-          className="font-display"
-          style={{ fontSize: 19, lineHeight: 1, letterSpacing: "-0.01em", fontWeight: 500, color: "var(--color-primary)" }}
+      <div className="px-6 pt-6 pb-5">
+        {/* Meta */}
+        <div className="flex flex-wrap items-center gap-1.5 text-[11.5px]" style={{ color: "var(--color-tertiary)" }}>
+          <span className="font-numeric">{meta.time}</span>
+          <Dot />
+          <span>{meta.source}</span>
+          <Dot />
+          <span>{meta.channel}</span>
+          <SignalChip kind={signalKind} />
+          {row.kind === "capture" && (
+            <span
+              className="rounded px-1 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
+              style={{ background: "var(--color-accent-soft)", color: "var(--color-accent)" }}
+            >
+              New
+            </span>
+          )}
+        </div>
+
+        {/* Title */}
+        <h2
+          className="mt-2.5 text-[18px] leading-snug tracking-tight"
+          style={{ color: "var(--color-primary)", fontWeight: 500 }}
         >
-          {formatMetric(NORTH_STAR.current_value, NORTH_STAR.format)}
-        </span>
-        <span className="font-display" style={{ fontSize: 13, fontWeight: 400, color: "var(--color-tertiary)" }}>
-          / {formatMetric(NORTH_STAR.target_value, NORTH_STAR.format)}
-        </span>
-        <span className="hidden sm:inline text-[12px]" style={{ color: "var(--color-tertiary)" }}>
-          Net New ARR
-        </span>
+          {title}
+        </h2>
+
+        {/* The AI's read — one quiet line (the only AI surface until you ask for more) */}
+        {rec && score && (
+          <p className="mt-3 flex flex-wrap items-center gap-1.5 text-[12.5px]">
+            <Sparkles size={12} className="shrink-0" style={{ color: "var(--color-accent)" }} />
+            <span style={{ color: "var(--color-tertiary)" }}>AI recommends</span>
+            <span className="font-semibold" style={{ color: "var(--color-accent)" }}>{TRIAGE_VERB[aiTriage!]}</span>
+            <Dot />
+            <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
+              {score.total.label} {score.total.value}
+            </span>
+            {arr ? (
+              <>
+                <Dot />
+                <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
+                  ${(arr / 1000).toFixed(0)}k ARR
+                </span>
+              </>
+            ) : null}
+          </p>
+        )}
       </div>
 
-      <div className="hidden md:block w-24">
-        <ProgressBar achieved={ns.achieved_pct} elapsed={ns.elapsed_pct} />
-      </div>
+      {/* Actions */}
+      <div className="border-t px-5 py-3.5" style={{ borderColor: "var(--color-border)" }}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <ActionPill kind="defer" recommended={aiTriage === "defer"} onClick={() => onDecide("defer")} />
+            <ActionPill kind="escalate" recommended={aiTriage === "escalate"} active={escalating} onClick={openEscalate} />
+            <ActionPill kind="promote" recommended={aiTriage === "promote"} onClick={() => onDecide("promote")} />
+          </div>
+          {rec && !escalating && (
+            <button
+              onClick={() => setShowWhy((v) => !v)}
+              aria-expanded={showWhy}
+              className="inline-flex items-center gap-1 text-[11.5px] transition hover:text-[var(--color-secondary)]"
+              style={{ color: "var(--color-tertiary)" }}
+            >
+              Why this
+              <ChevronDown
+                size={13}
+                className="transition-transform"
+                style={{ transform: showWhy ? "rotate(180deg)" : "none" }}
+              />
+            </button>
+          )}
+        </div>
 
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px]">
-        <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>{ns.achieved_pct}% achieved</span>
-        <span style={{ color: "var(--color-muted)" }}>·</span>
-        <span className="font-medium" style={{ color: trendColor }}>{trendCopy}</span>
-        <span style={{ color: "var(--color-muted)" }}>·</span>
-        <span style={{ color: "var(--color-tertiary)" }}>
-          <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>67%</span> same-day
-        </span>
-      </div>
+        {/* Escalate — a considered action: who needs to weigh in, and a note. Logs to Audit. */}
+        <AnimatePresence initial={false}>
+          {escalating && rec && (
+            <motion.div
+              key="escalate"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="pt-4 mt-1">
+                <div
+                  className="flex items-start gap-2 rounded-md px-3 py-2 text-[12px]"
+                  style={{ background: "var(--color-warning-soft)", color: "var(--color-secondary)" }}
+                >
+                  <AlertTriangle size={12} className="mt-0.5 shrink-0" style={{ color: "var(--color-warning)" }} />
+                  <span>
+                    <strong style={{ color: "var(--color-primary)" }}>Escalate</strong> means this needs stakeholder input before commit.
+                  </span>
+                </div>
 
-      {/* Predictions due — pushed to the right end */}
-      <Link
-        href="/audit/#predictions"
-        className="group ml-auto inline-flex items-center gap-1.5 text-[12px] transition"
-        style={{ color: "var(--color-tertiary)" }}
-      >
-        <span aria-hidden className="inline-flex h-1.5 w-1.5 rounded-full" style={{ background: "var(--color-warning)" }} />
-        1 prediction due
-        <ArrowRight size={11} className="transition-transform group-hover:translate-x-0.5" />
-      </Link>
-    </div>
+                <p className="eyebrow mt-3" style={{ color: "var(--color-tertiary)" }}>Escalate to</p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {(["sales", "cs", "exec", "eng"] as const).map((tag) => {
+                    const active = tags.has(tag);
+                    const aiSuggested = rec.suggested_escalation?.stakeholders.includes(tag);
+                    return (
+                      <button
+                        key={tag}
+                        onClick={() => toggleTag(tag)}
+                        className="rounded-md px-2.5 py-1 text-[12px] font-medium transition"
+                        style={{
+                          background: active ? "var(--color-accent-soft)" : "var(--color-page)",
+                          color: active ? "var(--color-accent)" : "var(--color-secondary)",
+                          border: "1px solid",
+                          borderColor: active ? "var(--color-accent)" : "var(--color-border)",
+                        }}
+                      >
+                        {STAKEHOLDER_LABELS[tag]}
+                        {aiSuggested && !active && (
+                          <span className="ml-1.5 text-[9.5px]" style={{ color: "var(--color-tertiary)" }}>· AI suggests</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <p className="eyebrow mt-3" style={{ color: "var(--color-tertiary)" }}>Note</p>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows={3}
+                  placeholder="What do you need a call on?"
+                  className="mt-2 w-full resize-none rounded-md px-3 py-2 text-[13px] outline-none"
+                  style={{ background: "var(--color-page)", color: "var(--color-primary)", border: "1px solid var(--color-border)" }}
+                />
+
+                <div className="mt-3 flex items-center gap-2">
+                  <button
+                    onClick={() => setEscalating(false)}
+                    className="rounded-md px-3 py-1.5 text-[12.5px] font-medium transition hover:bg-[var(--color-card-hover)]"
+                    style={{ background: "transparent", color: "var(--color-secondary)", border: "1px solid var(--color-border)" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={commitEscalate}
+                    disabled={tags.size === 0}
+                    className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[12.5px] font-medium transition disabled:opacity-40"
+                    style={{ background: "var(--color-accent)", color: "var(--color-elevated)" }}
+                  >
+                    <Send size={13} />
+                    Send · Awaiting input
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Why this — progressive disclosure. The full reasoning, only when asked. */}
+        <AnimatePresence initial={false}>
+          {showWhy && !escalating && rec && score && (
+            <motion.div
+              key="why"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <WhyThis rec={rec} score={score} initiativeId={row.kind === "initiative" ? row.data.id : ""} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
 }
 
-function WhyThisPanel({ row }: { row: Row | null }) {
-  const panelStyle = {
-    background: "var(--color-elevated)",
-    border: "1px solid var(--color-border)",
-    boxShadow: "var(--shadow-sm)",
-  } as const;
-
-  // No top card — calm empty state.
-  if (!row) {
-    return (
-      <div className="rounded-xl px-5 py-5" style={panelStyle}>
-        <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>Why this</p>
-        <p className="mt-2 text-[13px]" style={{ color: "var(--color-tertiary)" }}>
-          Nothing waiting — your inbox is clear.
-        </p>
-      </div>
-    );
-  }
-
-  // Captures have no AI scoring yet.
-  if (row.kind !== "initiative") {
-    return (
-      <div className="rounded-xl px-5 py-5" style={panelStyle}>
-        <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>Why this</p>
-        <p className="mt-1.5 text-[14px] font-medium leading-snug" style={{ color: "var(--color-primary)" }}>
-          {row.data.text}
-        </p>
-        <p className="mt-3 text-[12.5px] leading-relaxed" style={{ color: "var(--color-tertiary)" }}>
-          Newly captured — no AI scoring yet. Triage it on your read.
-        </p>
-      </div>
-    );
-  }
-
-  const ini = row.data;
-  const rec = ini.ai_recommendation;
-  const score = getScoring(rec.framework, ini);
-  const aiVerb = TRIAGE_VERB[recommendedTriageAction(rec.action)];
-
+function WhyThis({
+  rec,
+  score,
+  initiativeId,
+}: {
+  rec: Initiative["ai_recommendation"];
+  score: ReturnType<typeof getScoring>;
+  initiativeId: string;
+}) {
   return (
-    <div className="rounded-xl px-5 py-5" style={panelStyle}>
-      <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>Why this</p>
-      <p className="mt-1.5 text-[15px] font-medium leading-snug" style={{ color: "var(--color-primary)" }}>
-        {ini.title}
-      </p>
-
-      {/* AI recommendation */}
-      <div
-        className="mt-3 flex items-center gap-1.5 rounded-md px-3 py-2 text-[12.5px]"
-        style={{ background: "var(--color-accent-soft)" }}
-      >
-        <Sparkles size={12} className="shrink-0" style={{ color: "var(--color-accent)" }} />
-        <span style={{ color: "var(--color-tertiary)" }}>AI recommends</span>
-        <span className="font-semibold" style={{ color: "var(--color-accent)" }}>{aiVerb}</span>
-      </div>
-
+    <div className="pt-4 mt-1">
       {/* Score */}
-      <p className="eyebrow mt-4" style={{ color: "var(--color-tertiary)" }}>Score · {score.framework}</p>
+      <p className="eyebrow" style={{ color: "var(--color-tertiary)" }}>Score · {score.framework}</p>
       <div
         className="mt-2 grid gap-2"
         style={{ gridTemplateColumns: `repeat(${score.rows.length + 1}, minmax(0, 1fr))` }}
@@ -459,7 +525,7 @@ function WhyThisPanel({ row }: { row: Row | null }) {
         </div>
       </div>
 
-      {/* AI reasoning */}
+      {/* Reasoning */}
       <p className="eyebrow mt-4" style={{ color: "var(--color-tertiary)" }}>AI reasoning</p>
       <p className="mt-1 text-[12.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>{rec.action_reason}</p>
 
@@ -491,238 +557,34 @@ function WhyThisPanel({ row }: { row: Row | null }) {
         </>
       )}
 
-      <Link
-        href={`/initiative/${ini.id}/`}
-        className="mt-5 inline-flex items-center gap-1 text-[12px] transition hover:underline"
-        style={{ color: "var(--color-accent)" }}
-      >
-        Open full Decide view
-        <ArrowRight size={11} />
-      </Link>
-    </div>
-  );
-}
-
-function ProgressBar({ achieved, elapsed }: { achieved: number; elapsed: number }) {
-  return (
-    <div className="relative">
-      <div
-        className="h-1.5 rounded-full"
-        style={{ background: "var(--color-border)" }}
-      />
-      <motion.div
-        initial={{ width: 0 }}
-        animate={{ width: `${achieved}%` }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-        className="absolute top-0 left-0 h-1.5 rounded-full"
-        style={{ background: "var(--color-accent)" }}
-      />
-      <motion.div
-        initial={{ left: 0, opacity: 0 }}
-        animate={{ left: `${elapsed}%`, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
-        className="absolute -top-1 h-3.5 w-0.5"
-        style={{ background: "var(--color-secondary)" }}
-        aria-label={`Time elapsed marker at ${elapsed}%`}
-      />
-    </div>
-  );
-}
-
-function SectionEyebrow({
-  label,
-  count,
-  fresh,
-  hydrated,
-}: {
-  label: string;
-  count: number;
-  fresh: number;
-  hydrated: boolean;
-}) {
-  return (
-    <div className="mt-12 flex items-baseline gap-2">
-      <p className="eyebrow">{label}</p>
-      {hydrated && count > 0 && (
-        <>
-          <span className="font-numeric text-[11px]" style={{ color: "var(--color-tertiary)" }}>
-            {count}
-          </span>
-          {fresh > 0 && (
-            <span
-              className="rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
-              style={{
-                background: "var(--color-accent-soft)",
-                color: "var(--color-accent)",
-              }}
-            >
-              {fresh} new
-            </span>
-          )}
-        </>
+      {initiativeId && (
+        <Link
+          href={`/initiative/${initiativeId}/`}
+          className="mt-4 inline-flex items-center gap-1 text-[12px] transition hover:underline"
+          style={{ color: "var(--color-accent)" }}
+        >
+          Open full Decide view
+          <ArrowRight size={11} />
+        </Link>
       )}
     </div>
   );
 }
 
-/* ─── Inline Triage Card (top of "To triage") ─── */
-
-function InlineTriageCard({
-  row,
-  onDecide,
-}: {
-  row: Row;
-  onDecide: (action: TriageAction) => void;
-}) {
-  const isInitiative = row.kind === "initiative";
-  const meta = isInitiative
-    ? {
-        time: formatRelative(row.minAgo),
-        source: getSourceLabel(row.data),
-        channel: getChannelLabel(row.data),
-      }
-    : {
-        time: formatRelative(row.minAgo),
-        source: row.data.source,
-        channel: row.data.channel,
-      };
-  const title = isInitiative ? row.data.title : row.data.text;
-  const signalKind = signalToKind(
-    isInitiative ? row.data.signal_type : row.data.signal,
-  );
-  const arr = isInitiative ? row.data.arr_exposure_usd : undefined;
-  const predicted = isInitiative ? row.data.ai_recommendation.predicted_outcome : null;
-  const score = isInitiative
-    ? getScoring(row.data.ai_recommendation.framework, row.data)
-    : null;
-  const clusterSources = isInitiative ? row.data.cluster_sources : undefined;
-  // The triage action the AI would take — drives the highlighted pill + caption.
-  // Null for captures (no recommendation yet).
-  const aiTriage: TriageAction | null = isInitiative
-    ? recommendedTriageAction(row.data.ai_recommendation.action)
-    : null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8, scale: 0.99 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.99 }}
-      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-2xl"
-      style={{
-        background: "var(--color-elevated)",
-        border: "1px solid var(--color-border)",
-        boxShadow: "var(--shadow-md)",
-      }}
-    >
-      <div className="px-5 pt-5 pb-4">
-        {/* Meta */}
-        <div className="flex items-center gap-1.5 text-[11.5px]" style={{ color: "var(--color-tertiary)" }}>
-          <span className="font-numeric">{meta.time}</span>
-          <span style={{ color: "var(--color-muted)" }}>·</span>
-          <span>{meta.source}</span>
-          <span style={{ color: "var(--color-muted)" }}>·</span>
-          <span>{meta.channel}</span>
-          {row.kind === "capture" && (
-            <span
-              className="ml-1 rounded px-1 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider"
-              style={{
-                background: "var(--color-accent-soft)",
-                color: "var(--color-accent)",
-              }}
-            >
-              New
-            </span>
-          )}
-        </div>
-
-        {/* Title */}
-        <h3
-          className="mt-2.5 text-[17px] leading-snug tracking-tight"
-          style={{ color: "var(--color-primary)", fontWeight: 500 }}
-        >
-          {title}
-        </h3>
-
-        {/* Chips row */}
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-[12px]">
-          <SignalChip kind={signalKind} />
-          {arr ? (
-            <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
-              ${(arr / 1000).toFixed(0)}k ARR
-            </span>
-          ) : null}
-          {score && (
-            <>
-              <span style={{ color: "var(--color-muted)" }}>·</span>
-              <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
-                {score.total.label} {score.total.value}
-              </span>
-            </>
-          )}
-          {clusterSources && clusterSources.length >= 2 && (
-            <ClusterChip sources={clusterSources} size="sm" />
-          )}
-        </div>
-
-        {/* Predicted outcome */}
-        {predicted && (
-          <div
-            className="mt-3 flex items-start gap-2 rounded-md px-3 py-2"
-            style={{ background: "var(--color-accent-soft)" }}
-          >
-            <Sparkles size={11} className="mt-0.5 shrink-0" style={{ color: "var(--color-accent)" }} />
-            <span className="text-[12.5px] leading-relaxed" style={{ color: "var(--color-secondary)" }}>
-              <span style={{ color: "var(--color-tertiary)" }}>If we ship —</span>{" "}
-              <span style={{ color: "var(--color-primary)" }}>{predicted}</span>
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Action row */}
-      <div
-        className="border-t px-4 py-3"
-        style={{ borderColor: "var(--color-border)", background: "var(--color-surface-sunken)" }}
-      >
-        {aiTriage && (
-          <p className="mb-2 flex items-center gap-1.5 text-[11px]">
-            <Sparkles size={11} style={{ color: "var(--color-accent)" }} />
-            <span style={{ color: "var(--color-tertiary)" }}>AI recommends</span>
-            <span style={{ color: "var(--color-accent)", fontWeight: 600 }}>
-              {TRIAGE_VERB[aiTriage]}
-            </span>
-          </p>
-        )}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <ActionPill kind="defer" recommended={aiTriage === "defer"} onClick={() => onDecide("defer")} />
-            <ActionPill kind="escalate" recommended={aiTriage === "escalate"} onClick={() => onDecide("escalate")} />
-            <ActionPill kind="promote" recommended={aiTriage === "promote"} onClick={() => onDecide("promote")} />
-          </div>
-          {/* On lg+ the persistent "Why this" panel makes this redundant; keep it for
-              mobile, where the panel is hidden and this is the path into the reasoning. */}
-          <Link
-            href={isInitiative ? `/initiative/${row.data.id}/` : "/inbox/triage/"}
-            className="text-[11.5px] transition hover:underline lg:hidden"
-            style={{ color: "var(--color-tertiary)" }}
-          >
-            Why this →
-          </Link>
-        </div>
-      </div>
-    </motion.div>
-  );
+function Dot() {
+  return <span style={{ color: "var(--color-muted)" }}>·</span>;
 }
 
 function ActionPill({
   kind,
   onClick,
   recommended = false,
+  active = false,
 }: {
   kind: TriageAction;
   onClick: () => void;
   recommended?: boolean;
+  active?: boolean;
 }) {
   const isPromote = kind === "promote";
   const isDefer = kind === "defer";
@@ -735,17 +597,19 @@ function ActionPill({
       ? "var(--color-danger)"
       : "var(--color-tertiary)";
 
-  // The AI-recommended pill takes the brand-accent treatment (the app's
-  // established "✦ = AI's pick" language); the others keep their action tone.
+  // Two emphasis states: `recommended` = the AI's pick (brand-accent ✦); `active` =
+  // this action's panel is currently open (escalate). Otherwise the action tone.
+  const emphasised = recommended || active;
   return (
     <button
       onClick={onClick}
       aria-label={recommended ? `${label} — AI recommended` : label}
+      aria-pressed={active || undefined}
       className="group inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[12px] font-medium transition hover:bg-[var(--color-card-hover)]"
       style={{
-        background: recommended ? "var(--color-accent-soft)" : "var(--color-elevated)",
-        border: `1px solid ${recommended ? "var(--color-accent)" : tone}`,
-        color: recommended ? "var(--color-accent)" : tone,
+        background: emphasised ? "var(--color-accent-soft)" : "var(--color-elevated)",
+        border: `1px solid ${emphasised ? "var(--color-accent)" : tone}`,
+        color: emphasised ? "var(--color-accent)" : tone,
         boxShadow: recommended ? "0 0 0 2px var(--color-accent-soft)" : "none",
       }}
     >
@@ -770,96 +634,6 @@ function ActionPill({
   );
 }
 
-/* ─── Queue row (compact, below the top card) ─── */
-
-function QueueRow({ row, index }: { row: Row; index: number }) {
-  const sourceLabel = row.kind === "initiative" ? getSourceLabel(row.data) : row.data.source;
-  const title = row.kind === "initiative" ? row.data.title : row.data.text;
-  const signalKind = signalToKind(
-    row.kind === "initiative" ? row.data.signal_type : row.data.signal,
-  );
-  const fresh = row.minAgo <= JUST_LANDED_CUTOFF_MIN;
-  const clusterCount =
-    row.kind === "initiative" ? row.data.cluster_sources?.length ?? 0 : 0;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 4 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.24, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-    >
-      <Link
-        href="/inbox/triage/"
-        className="group flex items-center gap-3 rounded-md px-3 py-2 transition hover:bg-[var(--color-card-hover)]"
-      >
-        <span
-          className="inline-flex h-1.5 w-1.5 rounded-full shrink-0"
-          style={{ background: fresh ? "var(--color-accent)" : "var(--color-muted)" }}
-        />
-        <p className="flex-1 min-w-0 truncate text-[13px]" style={{ color: "var(--color-secondary)" }}>
-          {title}
-        </p>
-        {clusterCount >= 2 && (
-          <span
-            className="hidden sm:inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-medium shrink-0"
-            style={{
-              background: "var(--color-accent-soft)",
-              color: "var(--color-accent)",
-            }}
-            title={`Merged from ${clusterCount} sources`}
-          >
-            ⊕{clusterCount}
-          </span>
-        )}
-        <SignalChip kind={signalKind} />
-        <span className="text-[11px] font-numeric shrink-0" style={{ color: "var(--color-tertiary)" }}>
-          {formatRelative(row.minAgo)}
-        </span>
-        <span className="hidden sm:inline text-[11px] shrink-0" style={{ color: "var(--color-muted)" }}>
-          {sourceLabel}
-        </span>
-      </Link>
-    </motion.div>
-  );
-}
-
-function PromotedRow({ initiative, index }: { initiative: Initiative; index: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
-    >
-      <Link
-        href={`/initiative/${initiative.id}/`}
-        className="group flex items-center justify-between rounded-lg px-4 py-2.5 transition hover:bg-[var(--color-card-hover)]"
-        style={{ background: "transparent" }}
-      >
-        <div className="flex items-center gap-3 min-w-0">
-          <span
-            aria-hidden
-            className="inline-flex h-1.5 w-1.5 rounded-full shrink-0"
-            style={{ background: "var(--color-accent)" }}
-          />
-          <p
-            className="text-[14px] truncate"
-            style={{ color: "var(--color-primary)" }}
-          >
-            {initiative.title}
-          </p>
-        </div>
-        <span
-          className="inline-flex items-center gap-1 text-[12.5px] shrink-0 transition-transform group-hover:translate-x-0.5"
-          style={{ color: "var(--color-accent)" }}
-        >
-          Decide
-          <ArrowRight size={12} />
-        </span>
-      </Link>
-    </motion.div>
-  );
-}
-
 function SignalChip({ kind }: { kind: "revenue" | "deals" | "support" | "deadline" | "strategic" }) {
   const bgVar = `var(--color-chip-${kind}-bg)`;
   const fgVar = `var(--color-chip-${kind}-text)`;
@@ -876,7 +650,7 @@ function SignalChip({ kind }: { kind: "revenue" | "deals" | "support" | "deadlin
 function EmptyState({ message, sub }: { message: string; sub: React.ReactNode }) {
   return (
     <div
-      className="mt-6 rounded-xl p-8 text-center"
+      className="mt-12 rounded-2xl p-10 text-center"
       style={{
         background: "var(--color-elevated)",
         border: "1px solid var(--color-border)",
@@ -893,4 +667,3 @@ function EmptyState({ message, sub }: { message: string; sub: React.ReactNode })
     </div>
   );
 }
-

@@ -30,6 +30,7 @@ import {
   type StrategyOption,
 } from "@/lib/sprint-conflict";
 import { getScoring } from "@/lib/frameworks";
+import { NORTH_STAR, computeNorthStar, formatMetric } from "@/lib/strategic";
 import { DropPlanner, type PendingDrop, type PlanChoice } from "@/components/DropPlanner";
 
 const allInitiatives = initiativesJson as Initiative[];
@@ -471,6 +472,9 @@ export function CalendarPlan() {
           <p className="mt-1 text-[11px] md:hidden" style={{ color: "var(--color-muted)" }}>
             Drag-and-drop is desktop-only. Use the swipe deck for mobile triage.
           </p>
+          {/* North Star — the quarter goal everything here ladders up to. Quiet, but anchored
+              on the plan it belongs to (moved off the Now page, which owns one decision only). */}
+          <NorthStarLine />
         </div>
         <div className="flex items-center gap-2 pt-1 shrink-0">
           {!locked ? (
@@ -919,6 +923,40 @@ export function CalendarPlan() {
 }
 
 /* ─────────── Sub-components ─────────── */
+
+function NorthStarLine() {
+  const ns = computeNorthStar(NORTH_STAR);
+  const trendCopy =
+    ns.trend === "behind"
+      ? `${Math.abs(ns.pace_gap_pp)}pp behind pace`
+      : ns.trend === "ahead"
+        ? `${ns.pace_gap_pp}pp ahead of pace`
+        : "On pace";
+  const trendColor =
+    ns.trend === "behind"
+      ? "var(--color-warning)"
+      : ns.trend === "ahead"
+        ? "var(--color-accent)"
+        : "var(--color-secondary)";
+
+  return (
+    <p className="mt-3 flex flex-wrap items-center gap-1.5 text-[12px]" style={{ color: "var(--color-tertiary)" }}>
+      <span className="eyebrow" style={{ color: "var(--color-tertiary)" }}>North Star</span>
+      <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>
+        {formatMetric(NORTH_STAR.current_value, NORTH_STAR.format)}
+      </span>
+      <span style={{ color: "var(--color-muted)" }}>/</span>
+      <span className="font-numeric" style={{ color: "var(--color-tertiary)" }}>
+        {formatMetric(NORTH_STAR.target_value, NORTH_STAR.format)}
+      </span>
+      <span>{NORTH_STAR.metric}</span>
+      <span style={{ color: "var(--color-muted)" }}>·</span>
+      <span className="font-numeric" style={{ color: "var(--color-secondary)" }}>{ns.achieved_pct}%</span>
+      <span style={{ color: "var(--color-muted)" }}>·</span>
+      <span className="font-medium" style={{ color: trendColor }}>{trendCopy}</span>
+    </p>
+  );
+}
 
 function RailCard({
   initiative,
