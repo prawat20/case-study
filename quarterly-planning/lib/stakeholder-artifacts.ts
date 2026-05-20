@@ -82,7 +82,7 @@ function committedItems(ctx: BuildContext): Initiative[] {
 
 function buildSales(ctx: BuildContext): Line[] {
   const lines: Line[] = [];
-  lines.push({ type: "title", text: "Q3 plan — what affects deals" });
+  lines.push({ type: "title", text: "Q2 plan — what affects deals" });
   lines.push({ type: "subtitle", text: `Generated from your committed plan · Week ${NORTH_STAR.weeks_elapsed} of ${NORTH_STAR.weeks_total}` });
   lines.push({ type: "spacer" });
 
@@ -141,13 +141,13 @@ function buildExec(ctx: BuildContext): Line[] {
   const overloaded = Object.entries(sprintLoad).find(([, l]) => l > SPRINT_CAPACITY);
 
   const lines: Line[] = [];
-  lines.push({ type: "title", text: "Q3 read · for Exec" });
+  lines.push({ type: "title", text: "Q2 read · for Exec" });
   lines.push({ type: "subtitle", text: "One-paragraph posture, KPIs, and the risk you should know." });
   lines.push({ type: "spacer" });
 
   lines.push({
     type: "para",
-    text: `We're ${trendPhrase} on Net New ARR (${formatMetric(NORTH_STAR.current_value, NORTH_STAR.format)} of ${formatMetric(NORTH_STAR.target_value, NORTH_STAR.format)} — ${ns.achieved_pct}% achieved against ${ns.elapsed_pct}% elapsed). ${committed.length} initiatives are committed across the four Q3 sprints, weighted toward Enterprise Readiness. The plan trades partner-portal exploration for SAML + bulk-import — both directly tied to in-flight enterprise deals. Recommend we hold this posture; revisit at week 11.`,
+    text: `We're ${trendPhrase} on Net New ARR (${formatMetric(NORTH_STAR.current_value, NORTH_STAR.format)} of ${formatMetric(NORTH_STAR.target_value, NORTH_STAR.format)} — ${ns.achieved_pct}% achieved against ${ns.elapsed_pct}% elapsed). ${committed.length} initiatives are committed across the four Q2 sprints, weighted toward Enterprise Readiness. The plan trades partner-portal exploration for SAML + bulk-import — both directly tied to in-flight enterprise deals. Recommend we hold this posture; revisit at week 11.`,
   });
   lines.push({ type: "spacer" });
 
@@ -162,7 +162,7 @@ function buildExec(ctx: BuildContext): Line[] {
     type: "kpi",
     label: "Sprint capacity utilization",
     value: `${Math.round((Object.values(sprintLoad).reduce((a, b) => a + b, 0) / (SPRINT_CAPACITY * 4)) * 100)}%`,
-    hint: "across Q3",
+    hint: "across Q2",
   });
   lines.push({
     type: "kpi",
@@ -226,7 +226,7 @@ function buildCustomer(ctx: BuildContext): Line[] {
 
 function buildEng(ctx: BuildContext): Line[] {
   const lines: Line[] = [];
-  lines.push({ type: "title", text: "Q3 capacity + dependencies" });
+  lines.push({ type: "title", text: "Q2 capacity + dependencies" });
   lines.push({ type: "subtitle", text: "What's loaded where, and what could push." });
   lines.push({ type: "spacer" });
 

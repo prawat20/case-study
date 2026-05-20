@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * Triage state — promote / route / defer decisions made on Inbox items
+ * Triage state — promote / escalate / defer decisions made on Inbox items
  * before they reach the Prioritize surface. Pre-prioritization layer.
  */
 
 import { useEffect, useState } from "react";
 
-export type TriageAction = "promote" | "route" | "defer";
+export type TriageAction = "promote" | "escalate" | "defer";
 
 export interface TriageDecision {
   initiative_id: string;

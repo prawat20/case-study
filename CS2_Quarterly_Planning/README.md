@@ -34,19 +34,19 @@ CS2 is a five-surface app demonstrating an opinionated end-to-end planning loop:
 
 3. **Open Inbox (inline on Now)** — captured ask shows under "Just landed" with a `NEW` chip alongside pre-loaded asks. Click **Start triage**.
 
-4. **Triage flow** — Tinder-style swipe card. Card front carries everything: title, synthesis, evidence quote, signal chip + ARR + RICE score + effort, sage callout with the "If we ship —" predicted outcome, and the **AI-recommended action highlighted** (the matching Promote / Defer / Route pill takes the accent ✦ "AI's pick" treatment + an "✦ AI recommends" caption). Tap **Why this** (or hit Space) for full score breakdown, AI's reasoning, conflicts, trade-offs.
+4. **Triage flow** — Tinder-style swipe card. Card front carries everything: title, synthesis, evidence quote, signal chip + ARR + RICE score + effort, sage callout with the "If we ship —" predicted outcome, and the **AI-recommended action highlighted** (the matching Promote / Defer / Escalate pill takes the accent ✦ "AI's pick" treatment + an "✦ AI recommends" caption). Tap **Why this** (or hit Space) for full score breakdown, AI's reasoning, conflicts, trade-offs.
    - Drag right (or `→` / `P`) → **Promote**. Card tilts +12°, sage tint emerges, "PROMOTE" stamp fades in.
    - Drag left (or `←` / `D`) → **Defer**. Brick tint + "DEFER" stamp at −12°.
-   - Click ↗ or press `R` → **Route**.
+   - Click ↗ or press `E` → **Escalate**.
    - Velocity-aware threshold; fast flicks trigger earlier.
-   - Done state: *"Inbox cleared."* with promote/route/defer tally and a sage CTA: **Place 3 in calendar →**
+   - Done state: *"Inbox cleared."* with promote/escalate/defer tally and a sage CTA: **Place 3 in calendar →**
 
 5. **Calendar = the puzzle** — placement IS the prioritization, no abstract Commit step.
    - **TO PLACE rail** (sage dashed) at top. Each item shows effort + RICE + AI-suggested-sprint chip.
    - **4 sprint lanes** with capacity bars (12 points each). **Sprint 1 is shipped** — dimmed, read-only, no drop target (the PM can't plan work into a sprint that already closed). Sprint 2 is in flight; Sprints 3 + 4 are planned.
-   - **Drag a rail card into a sprint** = commit. If the sprint goes over capacity, the **Drop Planner** panel expands inline: each item currently in the target sprint gets a destination row (`Keep | Sprint 2 (Xp free) | Sprint 3 (Yp free) | Defer Q4`). AI's suggestion is pre-selected with a ✦ badge — every row overridable. Live trade-off summary updates per toggle.
+   - **Drag a rail card into a sprint** = commit. If the sprint goes over capacity, the **Drop Planner** panel expands inline: each item currently in the target sprint gets a destination row (`Keep | Sprint 2 (Xp free) | Sprint 3 (Yp free) | Defer Q3`). AI's suggestion is pre-selected with a ✦ badge — every row overridable. Live trade-off summary updates per toggle.
    - **Drag any item to the DEFER tray** = pushed to next quarter.
-   - **Snap as Q3 plan** only enables when the rail is empty AND no sprint is over capacity.
+   - **Snap as Q2 plan** only enables when the rail is empty AND no sprint is over capacity.
 
 6. **Stakeholders** — generated audience artifacts, not filtered views. Master/detail with persistent audience rail (Sales, Exec, Customer, Eng). Pick *For Sales* → lines materialise one by one with 50ms stagger. Each artifact has **Copy as Slack** + **Copy as email**.
 

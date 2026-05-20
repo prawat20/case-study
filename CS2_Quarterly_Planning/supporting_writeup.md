@@ -120,7 +120,7 @@ Each event includes a rationale grounded in *what product decision it informs*. 
 
 ### Event 5: `plan_shipped`
 
-**Fires when** the PM clicks "Snap as Q3 plan" (Calendar) or copies a stakeholder artifact ("Copy as Slack" / "Copy as email" on the Stakeholders view) — the conversion event.
+**Fires when** the PM clicks "Snap as Q2 plan" (Calendar) or copies a stakeholder artifact ("Copy as Slack" / "Copy as email" on the Stakeholders view) — the conversion event.
 
 **Properties:**
 - `audience` — `sales | exec | customer | eng` (artifact share); `null` for a calendar snap

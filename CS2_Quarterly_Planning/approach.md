@@ -37,8 +37,8 @@ Three early choices fell out:
 The persona is **Maya, Senior PM at a Series-C B2B SaaS** ($14M ARR, 120 eng, 8 PMs, fictional company "Glide"). The synthesis move is concreteness:
 
 - **Her week, honestly.** 6.2 hrs/day in meetings · ~70 min of usable "deep work" Monday morning · 3-day quarterly planning cycle dominated by *retroactive justification* of intuitive Week-1 decisions.
-- **Her four stakeholders.** Sales lead ("Three enterprise deals blocked on SAML"), CS lead ("Tickets spiking on bulk-import bug"), Eng lead ("If we don't pay down auth refactor, velocity craters Q4"), Exec sponsor ("Where's our AI story?"). Each speaks a different language and weights different evidence.
-- **What "wow" means for her.** *"I closed Q3 planning in 90 minutes, every stakeholder agreed without a second meeting, and when sales asked three weeks later why we deferred partner-portal work, I pulled up the reasoning + predicted outcome in one click."*
+- **Her four stakeholders.** Sales lead ("Three enterprise deals blocked on SAML"), CS lead ("Tickets spiking on bulk-import bug"), Eng lead ("If we don't pay down auth refactor, velocity craters Q3"), Exec sponsor ("Where's our AI story?"). Each speaks a different language and weights different evidence.
+- **What "wow" means for her.** *"I closed Q2 planning in 90 minutes, every stakeholder agreed without a second meeting, and when sales asked three weeks later why we deferred partner-portal work, I pulled up the reasoning + predicted outcome in one click."*
 
 Every design move is checked against that sentence.
 
@@ -60,7 +60,7 @@ These map 1:1 to the five surfaces in the build (JBTD-1 and -2 share Now; JBTD-3
 
 Each JBTD has a paired POV that declares both what the build believes *and* what it rejects. Example — POV-2 (Triage):
 
-> **Believe:** Triage is a *deck of cards* surface, not a list. One card at a time, full screen, three large keyboard targets: `D` defer, `R` route, `P` promote. Spotify-DJ-style — fast, flow-state.
+> **Believe:** Triage is a *deck of cards* surface, not a list. One card at a time, full screen, three large keyboard targets: `D` defer, `E` escalate, `P` promote. Spotify-DJ-style — fast, flow-state.
 >
 > **Reject:** Multi-row tables of un-triaged items (the cognitive cost of seeing the pile makes triage feel infinite). Bulk-action checkboxes (encourage rubber-stamping).
 

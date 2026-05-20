@@ -10,7 +10,7 @@ import { signalToKind } from "@/lib/inbox-helpers";
  * PlanChoice — per-item destination choice in the planner.
  *  - "keep"  → item stays in the target sprint (and contributes to overflow)
  *  - "move"  → item moves to another in-quarter sprint
- *  - "defer" → item is pushed to Q4
+ *  - "defer" → item is pushed to Q3
  */
 export type PlanChoice =
   | { kind: "keep" }
@@ -299,7 +299,7 @@ function PlanRow({
           active={isActive({ kind: "defer" })}
           aiHint={isAISuggestion({ kind: "defer" })}
           onClick={() => onChange({ kind: "defer" })}
-          label="Defer Q4"
+          label="Defer Q3"
           icon={MoonStar}
         />
       </div>

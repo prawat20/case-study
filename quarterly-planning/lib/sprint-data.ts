@@ -1,5 +1,5 @@
 /**
- * Sprint data — synthesizes a Q3 plan from initiatives.json, with
+ * Sprint data — synthesizes a Q2 plan from initiatives.json, with
  * capacity math, status, and date ranges. Lives client-side so the
  * Calendar surface can mutate it locally (drag-to-resequence) without
  * needing a backend.
@@ -34,7 +34,7 @@ export const SPRINTS: Sprint[] = [
   { id: "s4", index: 4, label: "Sprint 4", date_label: "Jun 23 — Jul 4",  capacity: SPRINT_CAPACITY, status: "planned" },
 ];
 
-/** Parse "Q3 Sprint 2" or similar → sprint index. Falls back to 3. */
+/** Parse "Q2 Sprint 2" or similar → sprint index. Falls back to 3. */
 export function parseSequenceToSprint(sequence: string | undefined): number {
   if (!sequence) return 3;
   const m = sequence.match(/Sprint\s*(\d)/i);

@@ -58,7 +58,7 @@ export function CalendarPlan() {
   const [pendingFromSource, setPendingFromSource] = useState<DragSource | null>(null);
 
   const triageMap = useMemo(() => {
-    const m = new Map<string, "promote" | "route" | "defer">();
+    const m = new Map<string, "promote" | "escalate" | "defer">();
     triage.forEach((t) => m.set(t.initiative_id, t.action));
     return m;
   }, [triage]);
@@ -78,7 +78,7 @@ export function CalendarPlan() {
     }
     const triaged = triageMap.get(i.id);
     if (triaged === "defer") return { kind: "deferred" };
-    if (triaged === "route") return { kind: "hidden" };
+    if (triaged === "escalate") return { kind: "hidden" };
     if (triaged === "promote") return { kind: "rail" };
     // Default — soft-placed at AI's sequence (or override)
     const idx = assignments[i.id] ?? parseSequenceToSprint(i.ai_recommendation.sequence);
@@ -421,7 +421,7 @@ export function CalendarPlan() {
     // Friendly toast.
     let msg = `${incoming.title} → ${SPRINTS[targetSprint - 1]?.label ?? `Sprint ${targetSprint}`}.`;
     if (movedCount > 0) msg += ` ${movedCount} item${movedCount === 1 ? "" : "s"} reflowed.`;
-    if (deferredCount > 0) msg += ` ${deferredCount} pushed to Q4.`;
+    if (deferredCount > 0) msg += ` ${deferredCount} pushed to Q3.`;
     setToast(msg);
     setTimeout(() => setToast(null), 3200);
 
@@ -436,7 +436,7 @@ export function CalendarPlan() {
     saveLocked(true);
     playSnapChime();
     setSnapPulse(true);
-    setToast("Q3 plan locked. Stakeholder views updated.");
+    setToast("Q2 plan locked. Stakeholder views updated.");
     setTimeout(() => setSnapPulse(false), 800);
     setTimeout(() => setToast(null), 2400);
   }
@@ -452,15 +452,15 @@ export function CalendarPlan() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
         <div className="min-w-0">
-          <p className="eyebrow">Calendar · Q3 2026</p>
+          <p className="eyebrow">Calendar · Q2 2026</p>
           <h1
             className="font-display mt-2 text-[24px] sm:text-[28px] leading-tight tracking-tight"
             style={{ color: "var(--color-primary)", fontWeight: 500 }}
           >
             {railEmpty
               ? locked
-                ? "Q3 plan, locked"
-                : "Q3 plan"
+                ? "Q2 plan, locked"
+                : "Q2 plan"
               : `Place ${railItems.length} item${railItems.length === 1 ? "" : "s"}`}
           </h1>
           <p className="mt-2 text-[13px]" style={{ color: "var(--color-tertiary)" }}>
@@ -491,7 +491,7 @@ export function CalendarPlan() {
                 boxShadow: canSnap ? "var(--shadow-sm)" : "none",
               }}
             >
-              Snap as Q3 plan
+              Snap as Q2 plan
               <ArrowRight size={14} />
             </button>
           ) : (
@@ -838,7 +838,7 @@ export function CalendarPlan() {
         </div>
         {deferredItems.length === 0 ? (
           <p className="mt-2 text-[12px]" style={{ color: "var(--color-muted)" }}>
-            Drag any item here to push it out of Q3.
+            Drag any item here to push it out of Q2.
           </p>
         ) : (
           <div className="mt-3 flex flex-wrap gap-2">
@@ -1081,7 +1081,7 @@ function DeferredCard({
         textDecoration: "line-through",
         textDecorationColor: "var(--color-muted)",
       }}
-      title="Drag back to a sprint to bring into Q3"
+      title="Drag back to a sprint to bring into Q2"
     >
       {initiative.title}
     </div>
@@ -1358,7 +1358,7 @@ function TradeOffPanel({
                         <Clock size={10} style={{ color: "var(--color-warning)" }} />
                         <span className="truncate">{p.title}</span>
                         <span className="font-numeric shrink-0" style={{ color: "var(--color-warning)" }}>
-                          → Q4
+                          → Q3
                         </span>
                       </li>
                     ))}

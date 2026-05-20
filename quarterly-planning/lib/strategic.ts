@@ -27,7 +27,7 @@ export interface OKR {
   key_results: string[];
 }
 
-// Q3 2026 — early-quarter anchor. Sprint 1 has shipped; Sprint 2 is in
+// Q2 2026 — early-quarter anchor. Sprint 1 has shipped; Sprint 2 is in
 // flight; Sprints 3 + 4 are planned. The 6pp "behind pace" trend is
 // deliberate demo tension (NSM 25% achieved vs 31% elapsed).
 export const NORTH_STAR: NorthStar = {
@@ -35,7 +35,7 @@ export const NORTH_STAR: NorthStar = {
   current_value: 600_000,
   target_value: 2_400_000,
   format: "usd",
-  period: "Q3 2026",
+  period: "Q2 2026",
   weeks_elapsed: 4,
   weeks_total: 13,
 };
@@ -53,7 +53,7 @@ export const QUARTERLY_OKRS: OKR[] = [
   {
     id: "enterprise_readiness",
     label: "Enterprise Readiness",
-    objective: "Close $1.5M ARR in enterprise pipeline by Q3 end",
+    objective: "Close $1.5M ARR in enterprise pipeline by Q2 end",
     key_results: [
       "3+ enterprise deals closed (>$200k ARR each)",
       "SAML SSO live and adopted by 2+ enterprise accounts",
@@ -73,7 +73,7 @@ export const QUARTERLY_OKRS: OKR[] = [
   {
     id: "compliance",
     label: "Compliance Posture",
-    objective: "Pass SOC2 Type II audit in October — unlock $1.2M enterprise pipeline",
+    objective: "Pass SOC2 Type II audit in July — unlock $1.2M enterprise pipeline",
     key_results: [
       "Audit log export capability shipped",
       "Encryption at rest verified across all data stores",

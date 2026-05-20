@@ -27,7 +27,7 @@ const allInitiatives = initiativesJson as Initiative[];
 type Tab = "activity" | "predictions";
 
 /**
- * A single PM action — triage (promote/route/defer) or a logged decision —
+ * A single PM action — triage (promote/escalate/defer) or a logged decision —
  * decorated with what the AI recommended and whether the PM diverged. The
  * unified activity stream is the heart of the calibration loop: every divergence
  * is a labelled training signal.
@@ -59,8 +59,8 @@ const MOCK_PREDICTION: PredictionEntry | null = MOCK_INITIATIVE
       decision: {
         initiative_id: "init_saml_sso",
         action: "committed",
-        ai_suggestion: "Commit · Q3 Sprint 2",
-        sequence: "Q3 Sprint 2",
+        ai_suggestion: "Commit · Q2 Sprint 2",
+        sequence: "Q2 Sprint 2",
         decided_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
       },
       initiative: MOCK_INITIATIVE,
@@ -164,7 +164,7 @@ export function AuditLog() {
 
   return (
     <main className="mx-auto max-w-[720px] px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
-      <p className="eyebrow">Audit · Q3 2026</p>
+      <p className="eyebrow">Audit · Q2 2026</p>
       <h1
         className="font-display mt-2 text-[28px] leading-tight tracking-tight"
         style={{ color: "var(--color-primary)", fontWeight: 500 }}

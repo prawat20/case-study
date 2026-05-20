@@ -34,7 +34,7 @@ Not a generic "product manager." Concrete to the point that we can stress-test d
 
 1. **Sales lead** — "Three enterprise deals are blocked on SAML."
 2. **CS lead** — "Tickets are spiking on the bulk-import bug."
-3. **Eng lead** — "If we don't pay down the auth refactor, velocity craters in Q4."
+3. **Eng lead** — "If we don't pay down the auth refactor, velocity craters in Q3."
 4. **Exec sponsor (CPO)** — "Where's our AI story?"
 
 Each speaks a different language and weights different evidence. Maya's job is not to pick a winner — it's to make a defensible plan and *get all four to nod*.
@@ -43,7 +43,7 @@ Each speaks a different language and weights different evidence. Maya's job is n
 
 Not "look how minimal." It's:
 
-> "I closed Q3 planning in 90 minutes, every stakeholder agreed without a second meeting, and when sales asked three weeks later why we deferred the partner-portal work, I pulled up the reasoning + predicted outcome in one click."
+> "I closed Q2 planning in 90 minutes, every stakeholder agreed without a second meeting, and when sales asked three weeks later why we deferred the partner-portal work, I pulled up the reasoning + predicted outcome in one click."
 
 If a design move doesn't move her toward that sentence, it's decoration.
 
@@ -61,7 +61,7 @@ Listed in the order they fire across the loop — these become the surfaces in �
 **Pain today:** PMs use 4-6 capture surfaces (Linear, Notion inbox, Slack saved-items, personal notes, email stars). Items get lost.
 
 ### JBTD-2: Triage a pile, fast
-> **When** I sit down to review the inbox, **I want to** decide each item's fate (route / defer / promote to "needs deciding" / kill) in <30 seconds per item, **so I can** clear 30 items in 15 minutes instead of an afternoon.
+> **When** I sit down to review the inbox, **I want to** decide each item's fate (escalate / defer / promote to "needs deciding" / kill) in <30 seconds per item, **so I can** clear 30 items in 15 minutes instead of an afternoon.
 
 **Pain today:** Triage is invisible work. PMs do it in their head while context-switching, so it never feels done.
 
@@ -124,7 +124,7 @@ Each POV is a design rubric. When a designer/coder hesitates, they re-read these
 **Reject:** Long forms with required fields. Pre-flight categorization. "Choose a project before you can capture."
 
 ### POV-2 (Triage)
-**Believe:** Triage is a *deck of cards* surface, not a list. One card at a time, full screen, three large keyboard targets: `D` defer, `R` route, `P` promote. Spotify-DJ-style — fast, flow-state, the next card is queued and the previous fades out. The system *suggests* the action but never makes it for you.
+**Believe:** Triage is a *deck of cards* surface, not a list. One card at a time, full screen, three large keyboard targets: `D` defer, `E` escalate, `P` promote. Spotify-DJ-style — fast, flow-state, the next card is queued and the previous fades out. The system *suggests* the action but never makes it for you.
 
 **Reject:** Multi-row tables of un-triaged items (the cognitive cost of seeing the pile is what makes triage feel infinite). Bulk-action checkboxes (encourage rubber-stamping).
 
@@ -144,7 +144,7 @@ Each POV is a design rubric. When a designer/coder hesitates, they re-read these
 **Reject:** Gantt charts (too dense, too IT-PM, anti-DfD). Quarter-grids that don't show capacity. "Roadmap as Notion table."
 
 ### POV-6 (Communicate — stakeholder views)
-**Believe:** Audience views are *generated artifacts*, not just toggled lenses on the same data. Pick "for Sales" → see a generated note ("Here's what's coming in Q3 that affects deals: SAML lands Sprint 2, partner-portal in Q4 not Q3 because…") with a "copy as Slack" / "copy as email" CTA. The format meets the audience where they are — sales gets deal-by-deal mapping, exec gets one paragraph + one chart.
+**Believe:** Audience views are *generated artifacts*, not just toggled lenses on the same data. Pick "for Sales" → see a generated note ("Here's what's coming in Q2 that affects deals: SAML lands Sprint 2, partner-portal in Q3 not Q2 because…") with a "copy as Slack" / "copy as email" CTA. The format meets the audience where they are — sales gets deal-by-deal mapping, exec gets one paragraph + one chart.
 
 **Reject:** Same data, different filters. "Here's the roadmap, tell me what you think." Demanding the audience translate PM-shaped output.
 

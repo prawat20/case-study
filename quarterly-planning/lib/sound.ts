@@ -41,10 +41,10 @@ export function playCaptureChime() {
 }
 
 /* ───────── Triage tones by action ───────── */
-export function playTriageTone(action: "promote" | "route" | "defer") {
+export function playTriageTone(action: "promote" | "escalate" | "defer") {
   const map = {
     defer: 392.0, // G4
-    route: 493.88, // B4
+    escalate: 493.88, // B4
     promote: 587.33, // D5
   };
   tone({ freq: map[action], start: 0, dur: 0.16, gain: 0.05 });

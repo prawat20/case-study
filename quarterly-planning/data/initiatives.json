@@ -14,7 +14,7 @@
     "ai_recommendation": {
       "action": "commit",
       "action_reason": "Direct line to Enterprise Readiness OKR. Unblocks $480k ARR in active deals. No conflicts; eng capacity available for Sprint 2.",
-      "sequence": "Q3 Sprint 2",
+      "sequence": "Q2 Sprint 2",
       "effort_sprints": 3,
       "eng_confidence": "medium",
       "addresses": ["3 of top 5 enterprise blockers"],
@@ -28,7 +28,7 @@
       "okr_contribution": "Contributes ~$480k toward $1.5M Enterprise OKR target.",
       "framework": "RICE",
       "framework_rationale": "Revenue-anchored deal blocker — RICE balances reach (3 active deals), impact ($480k unblocked), confidence (sales-validated 2x), and effort (3 sprints).",
-      "predicted_outcome": "If sequenced Q3 Sprint 2: ~$480k ARR closes by end of Q3, onboarding-objection rate drops ~60% on enterprise demos."
+      "predicted_outcome": "If sequenced Q2 Sprint 2: ~$480k ARR closes by end of Q2, onboarding-objection rate drops ~60% on enterprise demos."
     },
     "status": "needs_decision",
     "signal_type": "deal_blocker",
@@ -67,20 +67,20 @@
     "id": "init_saml_sso",
     "title": "SSO via SAML",
     "synthesis_oneliner": "Required for 2 enterprise renewals — $340k ARR at risk.",
-    "rationale_narrative": "Two enterprise renewals in Q4 are conditional on SAML SSO. This is table-stakes for enterprise; without it, we churn $340k ARR. The implementation is well-scoped.",
+    "rationale_narrative": "Two enterprise renewals in Q3 are conditional on SAML SSO. This is table-stakes for enterprise; without it, we churn $340k ARR. The implementation is well-scoped.",
     "evidence": [
-      { "metric": "$340k", "label": "renewal at risk", "source": "Salesforce, Q4 renewals", "kind": "revenue" },
+      { "metric": "$340k", "label": "renewal at risk", "source": "Salesforce, Q3 renewals", "kind": "revenue" },
       { "metric": "2", "label": "renewals gated", "source": "CS escalations", "kind": "deals" },
       { "metric": "7", "label": "feature requests", "source": "Productboard", "kind": "deals" },
       { "metric": "6", "label": "competitors have it", "source": "Competitive scan", "kind": "strategic" }
     ],
     "ai_recommendation": {
       "action": "commit",
-      "action_reason": "Direct line to Enterprise Readiness OKR. $340k Q4 renewals are time-bound. Implementation is clean (2 sprints, high eng confidence). No conflicts.",
-      "sequence": "Q3 Sprint 2",
+      "action_reason": "Direct line to Enterprise Readiness OKR. $340k Q3 renewals are time-bound. Implementation is clean (2 sprints, high eng confidence). No conflicts.",
+      "sequence": "Q2 Sprint 2",
       "effort_sprints": 2,
       "eng_confidence": "high",
-      "addresses": ["2 enterprise renewals", "Q4 expansion pipeline"],
+      "addresses": ["2 enterprise renewals", "Q3 expansion pipeline"],
       "conflicts": [],
       "tradeoffs": [
         "Pairs naturally with Bulk CSV in Sprint 2 — same eng team, same enterprise theme.",
@@ -90,7 +90,7 @@
       "okr_contribution": "Contributes ~$340k toward $1.5M Enterprise OKR target.",
       "framework": "RICE",
       "framework_rationale": "Renewal-anchored, well-scoped — RICE math is clean: reach (2 accounts), impact ($340k retained), confidence (high; CS validated), effort (2 sprints).",
-      "predicted_outcome": "If shipped by end of Q3: 2 enterprise renewals retained ($340k ARR), enterprise sales cycle shortens ~1-2 weeks."
+      "predicted_outcome": "If shipped by end of Q2: 2 enterprise renewals retained ($340k ARR), enterprise sales cycle shortens ~1-2 weeks."
     },
     "status": "needs_decision",
     "signal_type": "deal_blocker",
@@ -102,7 +102,7 @@
       {
         "source": "Sales · Initech renewal",
         "channel": "Salesforce note",
-        "quote": "SAML/SSO is a hard requirement for Q3 renewal — IT security flagged it as blocker.",
+        "quote": "SAML/SSO is a hard requirement for Q2 renewal — IT security flagged it as blocker.",
         "captured_at": "2026-05-07T08:31:00Z"
       },
       {
@@ -113,7 +113,7 @@
       },
       {
         "source": "CS · Quarterly renewal review",
-        "channel": "Notion — Q3 renewal risks",
+        "channel": "Notion — Q2 renewal risks",
         "quote": "Two accounts at risk. Both cite SSO. Single root cause across both.",
         "captured_at": "2026-05-10T09:45:00Z"
       }
@@ -122,23 +122,23 @@
   {
     "id": "init_audit_log",
     "title": "Audit log export for SOC2",
-    "synthesis_oneliner": "October audit window — $1.2M pipeline gated on compliance.",
-    "rationale_narrative": "Required for SOC2 Type II compliance. Audit window is October — we need export-ready audit logs by end of Q3 to be safe. No customer pull yet, but compliance is non-negotiable for enterprise expansion.",
+    "synthesis_oneliner": "July audit window — $1.2M pipeline gated on compliance.",
+    "rationale_narrative": "Required for SOC2 Type II compliance. Audit window is July — we need export-ready audit logs by end of Q2 to be safe. No customer pull yet, but compliance is non-negotiable for enterprise expansion.",
     "evidence": [
-      { "metric": "Oct '26", "label": "audit window", "source": "Compliance lead", "kind": "deadline" },
+      { "metric": "Jul '26", "label": "audit window", "source": "Compliance lead", "kind": "deadline" },
       { "metric": "$1.2M", "label": "pipeline gated", "source": "Sales: enterprise prospects requiring SOC2", "kind": "revenue" },
       { "metric": "0", "label": "customer requests", "source": "Productboard", "kind": "strategic" }
     ],
     "ai_recommendation": {
       "action": "escalate",
-      "action_reason": "Hard October deadline meets eng-capacity uncertainty. $1.2M pipeline is gated. Need exec input on whether to compress timeline (parallelize) or hire compliance contractor. Above PM pay grade.",
-      "sequence": "Q3 Sprint 3",
+      "action_reason": "Hard July deadline meets eng-capacity uncertainty. $1.2M pipeline is gated. Need exec input on whether to compress timeline (parallelize) or hire compliance contractor. Above PM pay grade.",
+      "sequence": "Q2 Sprint 3",
       "effort_sprints": 2,
       "eng_confidence": "medium",
       "addresses": ["SOC2 Type II prep", "$1.2M enterprise pipeline"],
       "conflicts": ["Tight handoff: Bulk CSV wraps in Sprint 2; if it slips, eng capacity for SOC2 in Sprint 3 thins"],
       "tradeoffs": [
-        "Sprint 3 sequencing leaves 4 weeks buffer before October audit — minimum safe margin.",
+        "Sprint 3 sequencing leaves 4 weeks buffer before July audit — minimum safe margin.",
         "Compressing to Sprint 2 requires either delaying Webhook fix OR hiring compliance contractor (~$30k).",
         "Missing the window means $1.2M pipeline stalls until next audit cycle (~6 months)."
       ],
@@ -146,10 +146,10 @@
       "okr_contribution": "Sole driver of Compliance OKR. Indirect $1.2M unlock for Enterprise OKR.",
       "framework": "Strategic Bet",
       "framework_rationale": "Compliance is non-negotiable; RICE math doesn't help when the answer is 'we need this to exist as a company.' Treating as a strategic bet — the question is timing + resourcing, not whether.",
-      "predicted_outcome": "If shipped before Oct audit: $1.2M enterprise pipeline unblocks Q4. Miss the window: pipeline stalls ~6 months until next audit cycle.",
+      "predicted_outcome": "If shipped before Jul audit: $1.2M enterprise pipeline unblocks Q3. Miss the window: pipeline stalls ~6 months until next audit cycle.",
       "suggested_escalation": {
         "stakeholders": ["exec", "eng"],
-        "draft_message": "Quick call: SOC2 audit-log work needs sequencing decision. Hard October window, $1.2M pipeline gated. Two paths: (1) Sprint 3 with current eng team, ~4-week buffer to audit, OR (2) compress to Sprint 2 by deferring webhook retries OR hiring a compliance contractor (~$30k). Preference?"
+        "draft_message": "Quick call: SOC2 audit-log work needs sequencing decision. Hard July window, $1.2M pipeline gated. Two paths: (1) Sprint 3 with current eng team, ~4-week buffer to audit, OR (2) compress to Sprint 2 by deferring webhook retries OR hiring a compliance contractor (~$30k). Preference?"
       }
     },
     "status": "needs_decision",
@@ -172,22 +172,22 @@
     ],
     "ai_recommendation": {
       "action": "defer",
-      "action_reason": "Real pain but capped impact. $92k ARR mentioned vs $2M+ in Q3 priorities (Enterprise + SOC2). Recommend Q4 — keeps Reliability OKR alive without crowding out higher-ROI work.",
-      "sequence": "Q4 Sprint 1",
+      "action_reason": "Real pain but capped impact. $92k ARR mentioned vs $2M+ in Q2 priorities (Enterprise + SOC2). Recommend Q3 — keeps Reliability OKR alive without crowding out higher-ROI work.",
+      "sequence": "Q3 Sprint 1",
       "effort_sprints": 1,
       "eng_confidence": "high",
       "addresses": ["#1 reliability complaint"],
       "conflicts": [],
       "tradeoffs": [
-        "Deferring Q3 → Q4 frees 1 sprint-effort in Sprint 2, providing buffer for Bulk CSV slippage.",
-        "CS team will push back — they've been promising customers a Q3 fix.",
-        "If support volume keeps climbing, we may need to revisit mid-Q3."
+        "Deferring Q2 → Q3 frees 1 sprint-effort in Sprint 2, providing buffer for Bulk CSV slippage.",
+        "CS team will push back — they've been promising customers a Q2 fix.",
+        "If support volume keeps climbing, we may need to revisit mid-Q2."
       ],
       "okr_alignment": ["reliability"],
       "okr_contribution": "Reliability OKR partial credit — but the ticket-volume KR depends on this.",
       "framework": "Value/Effort",
-      "framework_rationale": "Small effort (1 sprint, high eng confidence) but moderate value ($92k ARR exposure). Value/Effort 2×2 lands it in 'do later' relative to Q3's $2M+ enterprise priorities.",
-      "predicted_outcome": "If deferred to Q4: 18 open tickets accumulate ~+30% in Q3 (CS friction). $92k ARR remains exposed. If volume spikes mid-Q3, AI will resurface for review."
+      "framework_rationale": "Small effort (1 sprint, high eng confidence) but moderate value ($92k ARR exposure). Value/Effort 2×2 lands it in 'do later' relative to Q2's $2M+ enterprise priorities.",
+      "predicted_outcome": "If deferred to Q3: 18 open tickets accumulate ~+30% in Q2 (CS friction). $92k ARR remains exposed. If volume spikes mid-Q2, AI will resurface for review."
     },
     "status": "needs_decision",
     "signal_type": "support_pain",
@@ -208,17 +208,17 @@
     ],
     "ai_recommendation": {
       "action": "defer",
-      "action_reason": "High volume but low-ARR audience. Better fit for Q4 Activation push.",
-      "sequence": "Q4 — defer",
+      "action_reason": "High volume but low-ARR audience. Better fit for Q3 Activation push.",
+      "sequence": "Q3 — defer",
       "effort_sprints": 2,
       "eng_confidence": "high",
       "addresses": ["High-volume CS request"],
       "conflicts": ["Lower ROI than enterprise items in same window"],
-      "tradeoffs": ["Q4 pairs well with Custom Fields rollout for SMB activation push."],
+      "tradeoffs": ["Q3 pairs well with Custom Fields rollout for SMB activation push."],
       "okr_alignment": [],
       "framework": "Value/Effort",
-      "framework_rationale": "High volume of requests (24) but low MRR exposure — Value/Effort places this in the 'fast-follow / Q4 batch' quadrant, not Q3 priority.",
-      "predicted_outcome": "If deferred to Q4: pairs with Custom Fields for SMB activation push. ~150 daily-active accounts lifted."
+      "framework_rationale": "High volume of requests (24) but low MRR exposure — Value/Effort places this in the 'fast-follow / Q3 batch' quadrant, not Q2 priority.",
+      "predicted_outcome": "If deferred to Q3: pairs with Custom Fields for SMB activation push. ~150 daily-active accounts lifted."
     },
     "status": "monitoring",
     "signal_type": "support_pain",
@@ -239,7 +239,7 @@
     "ai_recommendation": {
       "action": "commit",
       "action_reason": "Mid-market scaling — confirmed pull from $50k+ accounts. Already sequenced.",
-      "sequence": "Q3 Sprint 4",
+      "sequence": "Q2 Sprint 4",
       "effort_sprints": 2,
       "eng_confidence": "medium",
       "addresses": ["Mid-market scaling"],
@@ -261,7 +261,7 @@
     "id": "init_mobile_push",
     "title": "Mobile push notifications",
     "synthesis_oneliner": "Low signal — 4 requests, no revenue tie. Defer.",
-    "rationale_narrative": "Mobile push has been requested 4 times but with no revenue tie and no support volume. Recommend monitoring; not worth Q3 capacity.",
+    "rationale_narrative": "Mobile push has been requested 4 times but with no revenue tie and no support volume. Recommend monitoring; not worth Q2 capacity.",
     "evidence": [
       { "metric": "4", "label": "requests", "source": "Productboard", "kind": "deals" },
       { "metric": "0", "label": "revenue tie", "source": "Cross-ref", "kind": "revenue" }
@@ -290,24 +290,24 @@
     "id": "init_custom_fields",
     "title": "Custom field types in workflows",
     "synthesis_oneliner": "Growing pull — 14 requests, themes consolidating.",
-    "rationale_narrative": "Custom field types (date, dropdown, multi-select) are a growing request across mid-market and enterprise. Themes are consolidating; worth scoping for Q4.",
+    "rationale_narrative": "Custom field types (date, dropdown, multi-select) are a growing request across mid-market and enterprise. Themes are consolidating; worth scoping for Q3.",
     "evidence": [
       { "metric": "14", "label": "requests", "source": "Productboard, growing trend", "kind": "deals" },
       { "metric": "$180k", "label": "ARR mentioned", "source": "Cross-ref", "kind": "revenue" }
     ],
     "ai_recommendation": {
       "action": "commit",
-      "action_reason": "Growing signal, fits Q4 Activation. Pre-scoping for Q4 Sprint 1.",
-      "sequence": "Q4 Sprint 1",
+      "action_reason": "Growing signal, fits Q3 Activation. Pre-scoping for Q3 Sprint 1.",
+      "sequence": "Q3 Sprint 1",
       "effort_sprints": 3,
       "eng_confidence": "medium",
       "addresses": ["Mid-market workflow flexibility"],
       "conflicts": [],
-      "tradeoffs": ["Pairs with Slack v2 for Q4 Activation push."],
+      "tradeoffs": ["Pairs with Slack v2 for Q3 Activation push."],
       "okr_alignment": [],
       "framework": "Value/Effort",
       "framework_rationale": "Growing pull but moderate effort (3 sprints) — Value/Effort places this in 'plan for next cycle.'",
-      "predicted_outcome": "If shipped Q4 Sprint 1: closes a competitive feature gap; affects ~200 mid-market accounts."
+      "predicted_outcome": "If shipped Q3 Sprint 1: closes a competitive feature gap; affects ~200 mid-market accounts."
     },
     "status": "monitoring",
     "signal_type": "strategic",

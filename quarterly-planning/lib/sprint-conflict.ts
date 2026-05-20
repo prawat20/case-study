@@ -15,7 +15,7 @@
  *                                push lowest-priority items downstream
  *   • minimise_deadline_risk  — keep deadline/compliance items in place,
  *                                push non-deadline items first
- *   • defer                    — don't reflow within Q3 at all; displaced
+ *   • defer                    — don't reflow within Q2 at all; displaced
  *                                items get deferred to next quarter
  */
 
@@ -40,7 +40,7 @@ export interface PushedItem {
   initiative_id: string;
   title: string;
   from_sprint: number;
-  to_sprint: number; // DEFERRED_SPRINT (-1) if pushed out of Q3 entirely
+  to_sprint: number; // DEFERRED_SPRINT (-1) if pushed out of Q2 entirely
   effort_points: number;
   deferred?: boolean;
 }
@@ -174,7 +174,7 @@ export function computeCommitImpact(args: ComputeArgs): CommitImpact {
     const pushEffort = effortPoints(pushTarget);
 
     if (strategy === "defer") {
-      // Push out of Q3 entirely — no in-quarter cascade.
+      // Push out of Q2 entirely — no in-quarter cascade.
       sprintLoads[targetSprint] = (sprintLoads[targetSprint] ?? 0) - pushEffort;
       delete finalAssignments[pushTarget.id];
       workingItems[targetSprint] = workingItems[targetSprint].filter(
@@ -264,7 +264,7 @@ const STRATEGY_RATIONALE: Record<StrategyKind, string> = {
   minimise_deadline_risk:
     "Protect deadline-sensitive items (compliance, time-bound). Push everything else first.",
   defer:
-    "Don't reflow within Q3. Move displaced items to next quarter instead.",
+    "Don't reflow within Q2. Move displaced items to next quarter instead.",
 };
 
 export function computeStrategyOptions(args: ComputeArgs): StrategyOption[] {

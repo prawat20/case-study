@@ -107,9 +107,9 @@ export default function NowPage() {
       } else if (k === "d" || e.key === "ArrowLeft") {
         e.preventDefault();
         decideTop("defer");
-      } else if (k === "r" || e.key === "ArrowUp") {
+      } else if (k === "e" || e.key === "ArrowUp") {
         e.preventDefault();
-        decideTop("route");
+        decideTop("escalate");
       }
     }
     window.addEventListener("keydown", onKey);
@@ -600,7 +600,7 @@ function InlineTriageCard({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <ActionPill kind="defer" recommended={aiTriage === "defer"} onClick={() => onDecide("defer")} />
-            <ActionPill kind="route" recommended={aiTriage === "route"} onClick={() => onDecide("route")} />
+            <ActionPill kind="escalate" recommended={aiTriage === "escalate"} onClick={() => onDecide("escalate")} />
             <ActionPill kind="promote" recommended={aiTriage === "promote"} onClick={() => onDecide("promote")} />
           </div>
           <Link
@@ -628,8 +628,8 @@ function ActionPill({
   const isPromote = kind === "promote";
   const isDefer = kind === "defer";
   const Icon = isPromote ? ArrowRight : isDefer ? ArrowLeft : ArrowUpRight;
-  const key = isPromote ? "P" : isDefer ? "D" : "R";
-  const label = isPromote ? "Promote" : isDefer ? "Defer" : "Route";
+  const key = isPromote ? "P" : isDefer ? "D" : "E";
+  const label = isPromote ? "Promote" : isDefer ? "Defer" : "Escalate";
   const tone = isPromote
     ? "var(--color-success)"
     : isDefer

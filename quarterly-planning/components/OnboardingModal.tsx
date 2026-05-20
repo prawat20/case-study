@@ -131,7 +131,7 @@ export function OnboardingModal() {
                   icon={<Inbox size={12} />}
                   num="2"
                   title="Triage"
-                  body="On Now, act on the top card: Promote / Defer / Route. Or open Bulk triage for the swipe deck."
+                  body="On Now, act on the top card: Promote / Defer / Escalate. Or open Bulk triage for the swipe deck."
                 />
                 <Step
                   icon={<CalendarIcon size={12} />}
@@ -170,7 +170,7 @@ export function OnboardingModal() {
                 <ShortcutRow keys={["⌘", "N"]} label="Capture an ask" />
                 <ShortcutRow keys={["P"]} label="Promote top card on Now" />
                 <ShortcutRow keys={["D"]} label="Defer top card on Now" />
-                <ShortcutRow keys={["R"]} label="Route top card on Now" />
+                <ShortcutRow keys={["E"]} label="Escalate top card on Now" />
                 <ShortcutRow keys={["Esc"]} label="Close any modal / panel" />
               </div>
 

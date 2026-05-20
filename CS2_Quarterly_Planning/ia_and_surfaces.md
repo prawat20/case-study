@@ -43,7 +43,7 @@ The seven JBTDs map to five destination surfaces plus an off-loop case-study art
 
 When a drag would overflow a sprint, a Drop Planner panel expands inline with per-item destination control:
 
-- Each item currently in the target sprint gets a row with destination buttons: `Keep | Sprint 1 (Xp free) | Sprint 3 (Yp free) | Sprint 4 (Zp free) | Defer Q4`. Headroom recomputes live as the PM toggles.
+- Each item currently in the target sprint gets a row with destination buttons: `Keep | Sprint 1 (Xp free) | Sprint 3 (Yp free) | Sprint 4 (Zp free) | Defer Q3`. Headroom recomputes live as the PM toggles.
 - An AI-suggested plan is pre-selected on each row with a ✦ badge on the suggested destination — the PM can override any row.
 - A live trade-off summary updates per toggle: `Freeing 2p of 2p needed ✓ · RICE cost: −0.5 · All deadlines protected`.
 - Commit is disabled until capacity matches; cancel reverts cleanly.
@@ -105,7 +105,7 @@ Why no sidebar — Linear/Height/Tability all use sidebars. They're the right an
 │  └───────────────────────────────────────────┘  │
 │                                                 │
 │  ┌───────────────────────────────────────────┐  │
-│  │ Sprint 2 of Q3, 4 items in flight         │  │  ← Calendar peek card
+│  │ Sprint 2 of Q2, 4 items in flight         │  │  ← Calendar peek card
 │  │ Capacity: 87%      Risk: SAML on track    │  │
 │  │                              Open plan →  │  │
 │  └───────────────────────────────────────────┘  │
@@ -122,7 +122,7 @@ Why no sidebar — Linear/Height/Tability all use sidebars. They're the right an
 - The NSM number uses `Display-NSM` (40px Fraunces). Single hero number on the page.
 - Three "do today" cards stack vertically — never a grid. Each card is one decision worth making this hour.
 - "% same-day decided" leading indicator lives next to NSM in small caption — Maya's planning-flow health metric.
-- Empty state (no inbox, no predictions due): "Inbox is clear. Q3 is on pace." + a single sage `Plan ahead →` link to Calendar.
+- Empty state (no inbox, no predictions due): "Inbox is clear. Q2 is on pace." + a single sage `Plan ahead →` link to Calendar.
 
 ---
 
@@ -141,7 +141,7 @@ What Maya sees when she opens Inbox without committing to triage. Stack of un-tr
 ```
 ┌──────────────────────────────────────────────────┐
 │  Inbox                                           │
-│  5 to triage  ·  3 routed  ·  2 promoted today  │
+│  5 to triage  ·  3 escalated  ·  2 promoted today  │
 │                                                  │
 │  [Start triage]              + New (⌘N)          │
 │                                                  │
@@ -173,7 +173,7 @@ What Maya sees when she opens Inbox without committing to triage. Stack of un-tr
 
 The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with keyboard fallback.
 
-> **Funnel framing.** Triage actions are **Promote / Defer / Route** (the sort step). Decide is **Commit / Defer / Escalate** and happens in two places — (a) the **Calendar drop** (dragging a promoted item into a sprint = commit; the Drop Planner fires on overflow), or (b) the **Initiative Detail** page (the deeper view with framework picker, conflicts, predicted outcome). The Now page's "Ready to place" section surfaces both paths explicitly — clicking a row opens Decide; the "Open Calendar" CTA goes to drop-and-commit.
+> **Funnel framing.** Triage actions are **Promote / Defer / Escalate** (the sort step — Escalate here means "flag for input before I can sort it"). Decide is **Commit / Defer / Escalate** and happens in two places — (a) the **Calendar drop** (dragging a promoted item into a sprint = commit; the Drop Planner fires on overflow), or (b) the **Initiative Detail** page (the deeper view with framework picker, conflicts, predicted outcome). The Now page's "Ready to place" section surfaces both paths explicitly — clicking a row opens Decide; the "Open Calendar" CTA goes to drop-and-commit.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -197,7 +197,7 @@ The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with key
 │              └──────────────────────────────┘            │
 │                                                          │
 │              ⊘   ↗   →                                   │
-│             Defer Route Promote                          │
+│           Defer Escalate Promote                         │
 │                                                          │
 │              Swipe · click button · keyboard             │
 └──────────────────────────────────────────────────────────┘
@@ -205,16 +205,16 @@ The wow moment. Full-screen, single card, **Tinder-style swipe-driven** with key
 
 - **Drag right (or `→` / `P`) → Promote.** Card tilts +12°, sage tint emerges from right edge, "PROMOTE" stamp at +12° fades in.
 - **Drag left (or `←` / `D`) → Defer.** Brick tint, "DEFER" stamp at -12°.
-- **Click ↗ button or press `R` → Route.** Rare; "someone else owns this." Doesn't deserve a primary gesture.
+- **Click ↗ button or press `E` → Escalate.** Rare; "needs input before I can commit." Doesn't deserve a primary gesture.
 - **Velocity-aware threshold** — fast flick triggers earlier than slow drag; below threshold the card springs back to center.
 - **Past threshold** the card snaps off-screen with rotation; next card rises from y+24.
 - **Counter top-right** ticks `1/N → 2/N → done`. **Esc** exits to list mode mid-flow.
 - **Card front** carries everything needed for fast judgment: time/source/channel · title · synthesis · evidence quote · signal chip + ARR + RICE score + effort sprints · "If we ship —" predicted-outcome callout (sage-soft).
-- **The AI-recommended action is highlighted.** The matching action button (Promote / Defer / Route) carries the accent ✦ "AI's pick" treatment with an "✦ AI recommends {action}" caption, so the PM sees the system's call before acting — and any divergence is logged. (Same treatment on the Now inline triage card.) AI `commit → Promote`, `defer → Defer`, `escalate → Route`.
+- **The AI-recommended action is highlighted.** The matching action button (Promote / Defer / Escalate) carries the accent ✦ "AI's pick" treatment with an "✦ AI recommends {action}" caption, so the PM sees the system's call before acting — and any divergence is logged. (Same treatment on the Now inline triage card.) AI `commit → Promote`, `defer → Defer`, `escalate → Escalate`.
 - **"Why this" expands inline** (Space or click) without leaving the card. Reveals: full score breakdown, AI's `action_reason`, conflicts to surface, full trade-offs list. Tap again to collapse.
-- **44×44 circular action buttons** sit ~16px below the card — secondary affordances. Defer (red), Route (neutral), Promote (green).
+- **44×44 circular action buttons** sit ~16px below the card — secondary affordances. Defer (red), Escalate (neutral), Promote (green).
 - A **24px ghost slice** peeks below the active card edge — Tinder's "stack of cards" cue.
-- **Done state**: *"Inbox cleared."* with promoted/routed/deferred tally. Sage CTA: **Place N in calendar →** when promotions exist.
+- **Done state**: *"Inbox cleared."* with promoted/escalated/deferred tally. Sage CTA: **Place N in calendar →** when promotions exist.
 
 ### Capture — `Cmd+N` modal (global)
 
@@ -296,7 +296,7 @@ Sprint-by-sprint vertical timeline. Each sprint is a horizontal lane (~120px tal
 
 ```
 ┌───────────────────────────────────────────────────────────────┐
-│  Q3 2026 · Week 9 of 13                  Snap as Q3 plan ▸   │
+│  Q2 2026 · Week 9 of 13                  Snap as Q2 plan ▸   │
 │                                                               │
 │ ─────────────────────────────────────────────────────────── │
 │                                                               │
@@ -326,7 +326,7 @@ Sprint-by-sprint vertical timeline. Each sprint is a horizontal lane (~120px tal
 - Sprint headers are eyebrow-style. Capacity bar inline (sage = ok, amber = tight or overflow).
 - Items are chips with title + effort-points badge tinted by signal kind.
 - Drag chip between sprints — capacity bars animate live.
-- "Snap as Q3 plan" CTA top-right — fires snap chime, locks plan, surfaces sage callout linking to Stakeholders.
+- "Snap as Q2 plan" CTA top-right — fires snap chime, locks plan, surfaces sage callout linking to Stakeholders.
 
 ### What actually shipped — the **puzzle** model
 
@@ -334,13 +334,13 @@ The implementation evolved past a pure "calendar with drag." Per user direction 
 
 1. **TO PLACE rail** at the top (sage dashed border) — items promoted via triage but not yet placed in a sprint. Each rail card shows title, effort points, RICE score, and AI's suggested-sprint chip. **The rail is the queue from triage.** It hides itself when empty.
 2. **Four sprint lanes** as above. The AI-suggested sprint outlines softly while a card is being dragged ("AI suggests" pill on the sprint header).
-3. **DEFER tray** at the bottom (warm dashed border) — drop any item here to push it out of Q3. Drag a deferred item back to a sprint to bring it into Q3 again.
+3. **DEFER tray** at the bottom (warm dashed border) — drop any item here to push it out of Q2. Drag a deferred item back to a sprint to bring it into Q2 again.
 
 **Drag = decide.** Drag rail → sprint commits the item (logs a `committed` decision via `addDecision`). Drag rail → defer tray records a `deferred` decision. Drag sprint → sprint just resequences. **No abstract Commit button on Calendar** — the placement IS the commit (per JBTD-4).
 
 **Auto-reflow on overflow**: dropping into a full sprint fires `lib/sprint-conflict.computeCommitImpact`. Lower-priority items push to the next available sprint with a quiet toast announcing the chain. PM is free to drag pushed items back if they don't like the choice.
 
-**Snap as Q3 plan** only enables when the rail is empty AND no sprint is over capacity. Forces the puzzle to actually be solved before the plan locks.
+**Snap as Q2 plan** only enables when the rail is empty AND no sprint is over capacity. Forces the puzzle to actually be solved before the plan locks.
 
 **Visual state** the PM can read at a glance:
 - **Soft-placed** (AI-suggested, PM hasn't touched): dashed border
@@ -365,7 +365,7 @@ Hub showing four audience artifacts. Each is a *generated note*, not a filtered 
 ```
 ┌──────────────────────────────────────────────────┐
 │  Stakeholders                                    │
-│  Generated from your committed Q3 plan           │
+│  Generated from your committed Q2 plan           │
 │                                                  │
 │  ┌─────────────┬─────────────┬─────────────┐    │
 │  │ Sales       │ Exec        │ Customer    │    │

@@ -3,7 +3,7 @@
  *
  * The AI always recommends in the {commit, defer, escalate} space
  * (RecommendedAction). The PM acts in two other vocabularies:
- *   • Triage (Now card / swipe deck): promote | route | defer
+ *   • Triage (Now card / swipe deck): promote | escalate | defer
  *   • Decisions (commit-confirm / calendar / escalate): committed | deferred
  *     | escalated | overridden
  *
@@ -28,7 +28,7 @@ export const ACTION_VERB: Record<RecommendedAction, string> = {
 export const TRIAGE_VERB: Record<TriageAction, string> = {
   promote: "Promote",
   defer: "Defer",
-  route: "Route",
+  escalate: "Escalate",
 };
 
 /* ── cross-vocabulary maps ── */
@@ -37,14 +37,14 @@ export const TRIAGE_VERB: Record<TriageAction, string> = {
 export const AI_TO_TRIAGE: Record<RecommendedAction, TriageAction> = {
   commit: "promote",
   defer: "defer",
-  escalate: "route",
+  escalate: "escalate",
 };
 
 /** Triage action → the AI-space action it corresponds to. */
 export const TRIAGE_TO_AI: Record<TriageAction, RecommendedAction> = {
   promote: "commit",
   defer: "defer",
-  route: "escalate",
+  escalate: "escalate",
 };
 
 /** The triage action the AI would take for a given recommendation. */

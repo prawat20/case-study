@@ -53,7 +53,7 @@ function MasterDetail() {
         One plan, four shapes.
       </h1>
       <p className="mt-2 max-w-[560px] text-[14px]" style={{ color: "var(--color-secondary)" }}>
-        Each artifact is generated from your committed Q3 plan — written for the audience, not just filtered for them. Pick an audience to switch the right pane.
+        Each artifact is generated from your committed Q2 plan — written for the audience, not just filtered for them. Pick an audience to switch the right pane.
       </p>
 
       {/* Master / Detail grid */}
@@ -85,7 +85,7 @@ function MasterDetail() {
             >
               open Calendar
             </Link>{" "}
-            → Snap as Q3 plan) so artifacts reflect the latest sequencing.
+            → Snap as Q2 plan) so artifacts reflect the latest sequencing.
           </p>
         </aside>
 

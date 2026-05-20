@@ -49,7 +49,7 @@ type QueueItem =
 
 const ACTION_LABEL: Record<TriageAction, string> = {
   promote: "Promote",
-  route: "Route",
+  escalate: "Escalate",
   defer: "Defer",
 };
 
@@ -68,7 +68,7 @@ const cardExitVariants: Variants = {
       return { opacity: 0, x: 600, rotate: 18, transition: { duration: 0.28, ease: [0.4, 0, 0.84, 0.4] } };
     if (action === "defer")
       return { opacity: 0, x: -600, rotate: -18, transition: { duration: 0.28, ease: [0.4, 0, 0.84, 0.4] } };
-    if (action === "route")
+    if (action === "escalate")
       return { opacity: 0, y: -600, rotate: 0, transition: { duration: 0.28, ease: [0.4, 0, 0.84, 0.4] } };
     return { opacity: 0, y: 24, transition: { duration: 0.18 } };
   },
@@ -113,7 +113,7 @@ export default function TriagePage() {
   const [lastAction, setLastAction] = useState<TriageAction | null>(null);
   const [tally, setTally] = useState<Record<TriageAction, number>>({
     promote: 0,
-    route: 0,
+    escalate: 0,
     defer: 0,
   });
   const [expanded, setExpanded] = useState(false);
@@ -161,9 +161,9 @@ export default function TriagePage() {
       } else if (k === "d" || e.key === "ArrowLeft") {
         e.preventDefault();
         decide("defer");
-      } else if (k === "r" || e.key === "ArrowUp") {
+      } else if (k === "e" || e.key === "ArrowUp") {
         e.preventDefault();
-        decide("route");
+        decide("escalate");
       }
     }
     window.addEventListener("keydown", onKey);
@@ -182,7 +182,7 @@ export default function TriagePage() {
 
   /* ─── Done state ─── */
   if (done) {
-    const totalDecided = tally.promote + tally.route + tally.defer;
+    const totalDecided = tally.promote + tally.escalate + tally.defer;
     return (
       <div
         className="min-h-screen flex flex-col items-center justify-center px-6"
@@ -223,7 +223,7 @@ export default function TriagePage() {
 
           <div className="mt-8 grid grid-cols-3 gap-3">
             <Stat label="Promoted" value={tally.promote} accent />
-            <Stat label="Routed" value={tally.route} />
+            <Stat label="Escalated" value={tally.escalate} />
             <Stat label="Deferred" value={tally.defer} />
           </div>
 
@@ -341,7 +341,7 @@ export default function TriagePage() {
         {/* Action buttons — sit right under the card */}
         <div className="mt-4 flex items-center gap-3">
           <ActionButton kind="defer" onClick={() => decide("defer")} />
-          <ActionButton kind="route" onClick={() => decide("route")} />
+          <ActionButton kind="escalate" onClick={() => decide("escalate")} />
           <ActionButton kind="promote" onClick={() => decide("promote")} />
         </div>
 
@@ -754,13 +754,13 @@ function ExpandedDetail({ initiative }: { initiative: Initiative }) {
 
 const ACTION_INTENT: Record<TriageAction, string> = {
   defer: "not this quarter",
-  route: "someone else owns this",
+  escalate: "needs input before committing",
   promote: "needs my decision",
 };
 
 function ActionButton({ kind, onClick }: { kind: TriageAction; onClick: () => void }) {
-  const Icon = kind === "defer" ? ArrowLeft : kind === "route" ? ArrowUpRight : ArrowRightIcon;
-  const key = kind === "defer" ? "←" : kind === "route" ? "R" : "→";
+  const Icon = kind === "defer" ? ArrowLeft : kind === "escalate" ? ArrowUpRight : ArrowRightIcon;
+  const key = kind === "defer" ? "←" : kind === "escalate" ? "E" : "→";
   const isPromote = kind === "promote";
   const isDefer = kind === "defer";
 
