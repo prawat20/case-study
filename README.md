@@ -1,6 +1,6 @@
 # Case Study Submission · Pravesh Rawat
 
-> Two product case studies for the Director of Product role at Momentum. Three deliverables across two briefs: a Growth Hacking submission (two caselets, both as print-ready PDFs) and a Quarterly Planning submission (a working AI-native tool with a written supporting writeup).
+> Two product case studies for the Director of Product role at Momentum. Three deliverables across two briefs: a Growth Hacking submission (two caselets, both as print-ready PDFs) and a Quarterly Planning submission (a working AI-native tool with a print-ready supporting writeup).
 
 ---
 
@@ -11,7 +11,7 @@
 | Brief 1 · Growth Hacking | **Caselet 1 — Revolut Primacy** | 31-page A4 PDF | [`/CS1_Caselet1_Revolut_Primacy.pdf`](CS1_Caselet1_Revolut_Primacy.pdf) |
 | Brief 1 · Growth Hacking | **Caselet 2 — Plottwyst pitch** | 13-page A4 PDF | [`/CS1_Caselet2_Plottwyst.pdf`](CS1_Caselet2_Plottwyst.pdf) |
 | Brief 2 · Quarterly Planning | **Working tool** | Next.js app (Cloudflare Pages) | [sift-pm.pages.dev](https://sift-pm.pages.dev/) |
-| Brief 2 · Quarterly Planning | **Supporting writeup** (NSM · 5 events · interview bank) | Markdown | [`CS2_Quarterly_Planning/supporting_writeup.md`](CS2_Quarterly_Planning/supporting_writeup.md) |
+| Brief 2 · Quarterly Planning | **Supporting writeup** (NSM · 5 events · interview bank) | 11-page A4 PDF | [`/CS2_Supporting_Writeup.pdf`](CS2_Supporting_Writeup.pdf) |
 
 ---
 
@@ -53,6 +53,7 @@ Case Study/
 │
 ├── CS1_Caselet1_Revolut_Primacy.pdf       Brief 1, Caselet 1 — final deliverable
 ├── CS1_Caselet2_Plottwyst.pdf             Brief 1, Caselet 2 — final deliverable
+├── CS2_Supporting_Writeup.pdf             Brief 2, supporting writeup — final deliverable
 │
 ├── CS1_Growth_Hacking/                    Brief 1 working tree
 │   ├── README.md                          What's in this folder, in what order
@@ -70,7 +71,8 @@ Case Study/
 │   ├── product_pov.md                     Persona · 7 JBTDs · POV per JBTD
 │   ├── design_system.md                   Palette · type · spacing · motion · sound
 │   ├── ia_and_surfaces.md                 Surface map · routes · Drop Planner spec
-│   ├── supporting_writeup.md              Brief's 3 written deliverables
+│   ├── supporting_writeup.md              Brief's 3 written deliverables (renders to PDF)
+│   ├── build/                             Markdown → A4 PDF pipeline (supporting writeup)
 │   └── research/                          PM pain-points research
 │
 └── quarterly-planning/                    The Next.js source code for the CS2 tool

@@ -66,7 +66,8 @@ CS2_Quarterly_Planning/
 ├── product_pov.md                     Persona · 7 JBTDs · POV per JBTD · NSM principle
 ├── design_system.md                   Palette · type · spacing · motion · sound
 ├── ia_and_surfaces.md                 Five-surface map · route table · Drop Planner spec
-├── supporting_writeup.md              Brief's 3 written deliverables (NSM · events · interview bank)
+├── supporting_writeup.md              Brief's 3 written deliverables (NSM · events · interview bank) → renders to PDF
+├── build/                             Markdown → A4 PDF pipeline (build_pdf_supporting.py)
 └── research/
     └── pm_pain_points.md              Six-stage workflow synthesis · tool-landscape gap
 ```
@@ -84,6 +85,23 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+---
+
+## Rebuilding the supporting-writeup PDF
+
+The PDF deliverable [`/CS2_Supporting_Writeup.pdf`](../CS2_Supporting_Writeup.pdf) renders from `supporting_writeup.md` via the same pipeline as the CS1 caselets:
+
+```bash
+cd build
+python3 build_pdf_supporting.py    # writes supporting_writeup.html
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --headless --disable-gpu --no-pdf-header-footer \
+  --print-to-pdf="../../CS2_Supporting_Writeup.pdf" \
+  "file://$(pwd)/supporting_writeup.html"
+```
+
+Dependencies: Python 3, `markdown` package (`pip install markdown`). Edit the markdown, rerun to keep the PDF in sync.
 
 ---
 

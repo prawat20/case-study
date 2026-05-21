@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>CS2 · Quarterly Planning · Supporting Writeup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@page {
+  size: A4;
+  margin: 22mm 18mm 22mm 18mm;
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-size: 9pt;
+    color: #8a8a8a;
+  }
+  @bottom-left {
+    content: "Pravesh Rawat  ·  CS2  ·  Quarterly Planning  ·  Supporting Writeup";
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.5pt;
+    color: #8a8a8a;
+  }
+}
+@page :first {
+  margin: 0;
+  @bottom-center { content: none; }
+  @bottom-left { content: none; }
+}
+
+:root {
+  --ink: #181818;
+  --muted: #5a5a5a;
+  --soft: #8a8a8a;
+  --rule: #d8d2c7;
+  --bg-soft: #f7f4ee;
+  --bg-code: #f4efe6;
+  --accent: #142a4f;
+  --accent-2: #6b2d2d;
+}
+
+html, body { background: white; color: var(--ink); }
+body {
+  font-family: "Source Serif Pro", "Source Serif 4", "Charter", Georgia, "Times New Roman", serif;
+  font-size: 10.5pt;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+/* ---------- Cover ---------- */
+.cover {
+  page-break-after: always;
+  height: 297mm;
+  width: 210mm;
+  margin: 0;
+  padding: 32mm 22mm;
+  box-sizing: border-box;
+  position: relative;
+  background: linear-gradient(180deg, #fafaf7 0%, #f1ece2 100%);
+  display: flex;
+  flex-direction: column;
+}
+.cover .eyebrow {
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 9.5pt;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: 24mm;
+}
+.cover h1 {
+  font-family: "Source Serif Pro", "Source Serif 4", "Charter", Georgia, serif;
+  font-weight: 600;
+  font-size: 42pt;
+  line-height: 1.08;
+  color: var(--ink);
+  margin: 0 0 4mm 0;
+}
+.cover h1 em { font-style: italic; color: var(--accent); font-weight: 500; }
+.cover .subtitle {
+  font-family: "Source Serif Pro", "Charter", Georgia, serif;
+  font-style: italic;
+  font-size: 14pt;
+  color: var(--muted);
+  max-width: 130mm;
+  margin: 0 0 18mm 0;
+  line-height: 1.4;
+}
+.cover .rule { width: 40mm; border-top: 1.5px solid var(--accent-2); margin: 0 0 10mm 0; }
+.cover .meta {
+  font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10pt;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.cover .meta b { color: var(--ink); font-weight: 600; }
+.cover .footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-family: "Inter", sans-serif;
+  font-size: 9pt;
+  color: var(--soft);
+  letter-spacing: 0.04em;
+}
+.cover .footer .tag { text-transform: uppercase; letter-spacing: 0.18em; }
+
+/* ---------- Body typography ---------- */
+main { max-width: 170mm; margin: 0 auto; padding: 0; }
+h1, h2, h3, h4 {
+  font-family: "Source Serif Pro", "Source Serif 4", "Charter", Georgia, serif;
+  color: var(--ink);
+  page-break-after: avoid;
+}
+h2.section {
+  font-size: 22pt;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  border-top: 1px solid var(--rule);
+  padding-top: 8mm;
+  margin-top: 10mm;
+  margin-bottom: 5mm;
+  page-break-before: always;
+}
+h2.section:first-of-type {
+  page-break-before: auto;
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+h3 { font-size: 14pt; font-weight: 600; margin-top: 8mm; margin-bottom: 2mm; color: var(--accent); }
+h4 { font-size: 11.5pt; font-weight: 600; margin-top: 5mm; margin-bottom: 1.5mm; color: var(--ink); }
+p { margin: 0 0 3.5mm 0; orphans: 3; widows: 3; }
+strong { color: var(--ink); font-weight: 700; }
+em { color: #2a2a2a; }
+a { color: var(--accent); text-decoration: none; border-bottom: 0.5px solid rgba(20,42,79,0.3); }
+ul, ol { margin: 0 0 4mm 0; padding-left: 6mm; }
+li { margin-bottom: 1.5mm; }
+li > p { margin: 0; }
+
+blockquote {
+  margin: 4mm 0 4mm 0;
+  padding: 2mm 5mm;
+  border-left: 2px solid var(--accent-2);
+  color: var(--muted);
+  font-style: italic;
+  font-size: 10.5pt;
+  background: linear-gradient(90deg, rgba(107,45,45,0.04), transparent 90%);
+  page-break-inside: avoid;
+}
+blockquote p { margin-bottom: 2mm; }
+blockquote p:last-child { margin-bottom: 0; }
+blockquote strong { color: var(--accent-2); }
+
+hr { border: none; border-top: 1px solid var(--rule); margin: 8mm 0; }
+
+/* ---------- Code ---------- */
+pre {
+  background: var(--bg-code);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 4mm 5mm;
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
+  font-size: 8.5pt;
+  line-height: 1.45;
+  color: #2a2a2a;
+  page-break-inside: avoid;
+  white-space: pre;
+  margin: 4mm 0;
+}
+pre code { font: inherit; background: none; padding: 0; color: inherit; }
+code {
+  font-family: "JetBrains Mono", "SF Mono", "Menlo", monospace;
+  font-size: 9.5pt;
+  background: rgba(107,45,45,0.06);
+  padding: 0.5pt 3pt;
+  border-radius: 2px;
+  color: var(--accent-2);
+}
+
+/* ---------- Tables ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 4mm 0 5mm 0;
+  font-size: 9.5pt;
+  page-break-inside: avoid;
+}
+thead th {
+  background: var(--bg-soft);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  text-align: left;
+  padding: 2.5mm 3mm;
+  border-bottom: 1px solid var(--rule);
+  font-size: 9pt;
+  letter-spacing: 0.01em;
+}
+tbody td { padding: 2.5mm 3mm; border-bottom: 0.5px solid #e8e3d8; vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody td:first-child { font-weight: 600; color: var(--ink); }
+table strong { font-weight: 700; }
+/* 3-column comparison tables: even weight on cols 2-3 */
+table:has(th:nth-child(3):last-child) tbody td:nth-child(2),
+table:has(th:nth-child(3):last-child) tbody td:nth-child(3) { font-weight: normal; }
+
+/* ---------- Break control ---------- */
+h2, h3, h4 { break-after: avoid-page; }
+pre, table, blockquote { break-inside: avoid-page; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="eyebrow">Case Study · Brief 2 · Quarterly Planning</div>
+  <h1>Supporting Writeup <em>— Sift</em></h1>
+  <p class="subtitle">The operational layer behind the working tool: a product North Star
+  metric, five events worth instrumenting, and a 21-question PM-interview validation bank.</p>
+  <div class="rule"></div>
+  <div class="meta">
+    <div><b>Author</b> &nbsp; Pravesh Rawat</div>
+    <div><b>Date</b> &nbsp; May 2026</div>
+    <div><b>Companion to</b> &nbsp; the working tool at sift-pm.pages.dev</div>
+  </div>
+  <div class="footer">
+    <span class="tag">Submission deliverable</span>
+    <span>North Star &nbsp;·&nbsp; Five Events &nbsp;·&nbsp; Interview Bank</span>
+  </div>
+</section>
+
+<main>
+<h2 class="section" id="1-north-star-metric">1. North Star Metric</h2>
+<blockquote>
+<p><strong>Median time from idea-surfaced → decision-logged.</strong></p>
+<p><strong>Two North Stars, at two levels.</strong> The deployed app&rsquo;s hero labels a <em>North Star</em> of <strong>Net New ARR ($600k of $2.4M)</strong> — that is the <em>customer&rsquo;s</em> business goal: the strategic context the PM plans against (and the pace tension the demo runs on). This section defines <strong>Sift&rsquo;s own product North Star</strong> — the metric Sift optimizes against to know the tool is working. Its in-product leading indicator is the <strong>&rdquo;% of items decided the same day they land&rdquo;</strong> line shown directly beneath the hero on Now.</p>
+</blockquote>
+<p>For a given PM, across all initiatives surfaced in their Now queue over a quarter: the median elapsed time between when an idea first appears (surfaced by the engine) and when the PM logs a decision on it (commit / defer / escalate / override).</p>
+<h3 id="why-this-metric">Why this metric</h3>
+<p>Most planning tools optimize for the wrong thing. The candidates I considered and rejected:</p>
+<table>
+<thead>
+<tr>
+<th>Candidate</th>
+<th>Why I rejected it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plans shipped per quarter</td>
+<td>Lagging, gameable, conflates throughput with quality.</td>
+</tr>
+<tr>
+<td>User satisfaction (NPS / CSAT)</td>
+<td>Soft, hard to act on, noisy at small N.</td>
+</tr>
+<tr>
+<td>% roadmap items traceable to validated organizational signals</td>
+<td>Quality indicator, but slow to measure and a <em>plan-quality</em> signal — not a <em>PM-throughput</em> signal. Better as a supporting metric.</td>
+</tr>
+<tr>
+<td>Active users / DAU</td>
+<td>Vanity metric. PMs may open the tool daily without making decisions.</td>
+</tr>
+<tr>
+<td>Decisions logged per quarter</td>
+<td>Closer, but a count metric inflates with chaos — the wrong thing to optimize for.</td>
+</tr>
+</tbody>
+</table>
+<p>The chosen metric — <em>median time from idea-surfaced to decision-logged</em> — survives every test:</p>
+<ul>
+<li><strong>It captures the founding framing.</strong> The &ldquo;speed of thought&rdquo; thesis — compressing the elapsed time between <em>the system surfacing context</em> and <em>the PM acting on it</em> — collapses cleanly onto this metric.</li>
+<li><strong>It captures the product thesis.</strong> The product POV reframes quarterly planning as a <em>context-synthesis and decision-orchestration</em> problem. If the synthesis is automated and the decision is fast, this metric goes down. If either is broken, it goes up.</li>
+<li><strong>It is leading, not lagging.</strong> A drop in this metric shows the tool is doing its job <em>today</em> — independent of whether the resulting quarterly plan turns out to be &ldquo;good.&rdquo; Plan quality is downstream and slower to measure; it&rsquo;s triangulated via the supporting metrics.</li>
+<li><strong>It is measurable from day one.</strong> Both endpoints are timestamps the system already records. No external attribution, no panel surveys, no quarterly retros required.</li>
+<li><strong>It is independent of input volume.</strong> A PM with 20 surfaced ideas and one with 200 should both see the metric improve as they get faster — median is robust to volume.</li>
+<li><strong>It pairs with the override-rate signal.</strong> A PM who decides quickly <em>and</em> overrides AI 80% of the time is a warning sign — the AI is wrong. A PM who decides quickly <em>and</em> mostly accepts AI is the success state. The NSM and override rate together separate &ldquo;fast and good&rdquo; from &ldquo;fast and noisy.&rdquo;</li>
+</ul>
+<h3 id="definition-operational">Definition (operational)</h3>
+<ul>
+<li><strong>Numerator events:</strong> <code>decision_logged</code> timestamp.</li>
+<li><strong>Denominator events:</strong> <code>idea_surfaced</code> timestamp (when the engine first places an item on the user&rsquo;s Now queue).</li>
+<li><strong>Aggregate:</strong> median across all decisions made by a user in the last 30 days. Median, not mean — robust to outliers (the one item the PM left untouched for 3 weeks shouldn&rsquo;t dominate).</li>
+<li><strong>Comparison:</strong> longitudinal per-user (is this PM getting faster?) plus a peer-cohort benchmark (how does this PM compare to others at similar org-size, similar role).</li>
+</ul>
+<h3 id="supporting-metrics-the-quality-safety-net">Supporting metrics (the quality / safety net)</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>What it reveals</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI recommendation acceptance rate</td>
+<td>Is the synthesis trustworthy?</td>
+<td>If acceptance is high but NSM is high, AI is fine but the surface is slow. If acceptance is low, AI itself is wrong.</td>
+</tr>
+<tr>
+<td>Stakeholder alignment latency (hours from conflict-flagged to resolved)</td>
+<td>Is the coordination loop compressing?</td>
+<td>The 2025 SOPM finding: AI saves time, coordination eats it. This catches when Sift itself makes that worse.</td>
+</tr>
+<tr>
+<td>Priority churn rate (re-sequences per quarter)</td>
+<td>Is continuous synthesis creating chaos?</td>
+<td>Continuous re-prioritization sounds great until stakeholders lose trust in the plan. Churn rate is the safety net.</td>
+</tr>
+<tr>
+<td>Decision audit fidelity (% of decisions with logged rationale)</td>
+<td>Is organizational memory accumulating?</td>
+<td>If overrides happen without rationale, the system can&rsquo;t learn.</td>
+</tr>
+<tr>
+<td>Quarterly plan diff drift (% of items unchanged Q-end vs Q-start)</td>
+<td>Is reality diverging from the plan?</td>
+<td>Early warning for plan invalidation — too high (90%) means the plan was over-fit; too low (20%) means the plan was fiction.</td>
+</tr>
+</tbody>
+</table>
+<p>The North Star and the supporting metrics together form a healthy instrumentation surface — leading + lagging + quality + adoption + safety.</p>
+<blockquote>
+<p><strong>Now visible in-product.</strong> The deployed Audit log surfaces every PM action against what the system recommended and flags each <em>divergence</em> as a recalibration signal — so the AI-acceptance-rate and override-rate metrics above aren&rsquo;t aspirational. They have a working home: the gap between recommendation and action <em>is</em> the training signal.</p>
+</blockquote>
+<hr />
+<h2 class="section" id="2-five-events-to-instrument">2. Five Events to Instrument</h2>
+<p>Each event carries a rationale grounded in <em>the product decision it informs</em>. Any event that doesn&rsquo;t inform a decision is left out.</p>
+<h3 id="event-1-decision-logged">Event 1: <code>decision_logged</code></h3>
+<p><strong>Fires when</strong> the PM commits, defers, escalates, or overrides on any initiative.</p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>initiative_id</code></li>
+<li><code>action</code> — <code>commit | defer | escalate | overridden</code></li>
+<li><code>ai_recommended_action</code> — <code>commit | defer | escalate</code></li>
+<li><code>was_override</code> — boolean (did the PM choose differently from AI)</li>
+<li><code>time_to_decide_ms</code> — from <code>idea_surfaced</code> to this event</li>
+<li><code>framework_used</code> — <code>RICE | ICE | Value/Effort | Strategic Bet | WSJF</code></li>
+<li><code>framework_was_overridden</code> — boolean (did PM change framework from AI default)</li>
+<li><code>has_rationale</code> — boolean</li>
+<li><code>rationale_text_length</code> — int (privacy: don&rsquo;t store text by default; length is a cheap proxy for &ldquo;PM took time to explain&rdquo;)</li>
+<li><code>initiative_theme</code>, <code>initiative_arr_exposure</code>, <code>initiative_signal_type</code></li>
+</ul>
+<p><strong>Why this event:</strong> It powers the North Star (<code>time_to_decide_ms</code>) and the most important supporting metric (override rate). Slicing by theme/signal-type shows where the AI is consistently wrong. Slicing by <code>framework_was_overridden</code> shows whether AI&rsquo;s framework picker is trusted.</p>
+<h3 id="event-2-signal-shift-surfaced">Event 2: <code>signal_shift_surfaced</code></h3>
+<p><strong>Fires when</strong> the Dynamic Priority Engine (architecture Layer 3 — the assumed synthesis substrate, beyond the scope of this prototype) flags that re-prioritization is warranted and surfaces it to the PM.</p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>shift_count</code> — how many items moved</li>
+<li><code>shift_directions</code> — <code>up[] | down[]</code></li>
+<li><code>shift_initiative_ids[]</code></li>
+<li><code>time_since_last_shift_event_hours</code></li>
+<li><code>was_dismissed</code> — boolean (did the PM expand it or just scroll past)</li>
+<li><code>was_actioned</code> — did the PM open any of the flagged items within 5 minutes</li>
+</ul>
+<p><strong>Why this event:</strong> Sift&rsquo;s Dynamic Priority Engine claims to flag re-prioritization continuously. This event reveals whether the flags are <em>useful</em> (PMs act on them) or <em>noise</em> (PMs ignore them). If the <code>was_actioned</code> rate falls below 30%, the engine is generating noise and the threshold should tighten. The metric directly defends — or kills — the most ambitious capability claim.</p>
+<h3 id="event-3-audience-render-viewed">Event 3: <code>audience_render_viewed</code></h3>
+<p><strong>Fires when</strong> the PM toggles the Stakeholders view&rsquo;s audience selector (Sales / Exec / Customer / Eng).</p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>from_audience</code>, <code>to_audience</code></li>
+<li><code>dwell_time_ms</code> — how long they spent on the previous view before switching</li>
+<li><code>triggered_by</code> — <code>manual_click | cmd_k_command | first_load</code></li>
+<li><code>quarter_decision_count</code> — how many decisions are in the plan being rendered</li>
+</ul>
+<p><strong>Why this event:</strong> The audience render is one of two surfaces that win the demo. This event reveals <em>which</em> audience renders PMs actually use. If the Sales view is opened once a quarter while the Exec view is opened weekly, copy quality goes into Exec and Sales stays a stub. If no one ever toggles, the capability is over-engineered and should be cut. A critical product decision.</p>
+<h3 id="event-4-framework-overridden">Event 4: <code>framework_overridden</code></h3>
+<p><strong>Fires when</strong> the PM picks a framework different from the AI&rsquo;s default (the &ldquo;framework of the user&rsquo;s choice&rdquo; requirement).</p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>initiative_id</code></li>
+<li><code>ai_recommended_framework</code></li>
+<li><code>pm_chose_framework</code></li>
+<li><code>initiative_theme</code></li>
+<li><code>was_decision_immediately_after</code> — boolean (did the PM commit/defer right after the framework switch, suggesting the AI&rsquo;s framework was actively unhelpful)</li>
+</ul>
+<p><strong>Why this event:</strong> Closes the loop on the &ldquo;framework of the user&rsquo;s choice&rdquo; requirement. Aggregated, it shows whether the AI&rsquo;s per-item framework picker matches PM intuition or fights it. If <code>Strategic Bet</code> is consistently overridden to <code>RICE</code> for compliance items, the framework heuristic needs adjustment. This is the <em>learning fuel</em> for the framework picker specifically.</p>
+<h3 id="event-5-plan-shipped">Event 5: <code>plan_shipped</code></h3>
+<p><strong>Fires when</strong> the PM clicks &ldquo;Snap as Q2 plan&rdquo; (Calendar) or copies a stakeholder artifact (&ldquo;Copy as Slack&rdquo; / &ldquo;Copy as email&rdquo; on the Stakeholders view) — the conversion event.</p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>audience</code> — <code>sales | exec | customer | eng</code> (artifact share); <code>null</code> for a calendar snap</li>
+<li><code>action</code> — <code>ship | snap</code> (<code>ship</code> = stakeholder-artifact share)</li>
+<li><code>decision_count</code> — how many decisions are in the plan</li>
+<li><code>total_arr_exposure_usd</code></li>
+<li><code>time_from_first_decision_to_ship_ms</code></li>
+<li><code>decisions_overridden_count</code> — how many AI recommendations the PM overrode in this batch</li>
+<li><code>quarter_completion_pct</code> — how far into the quarter when shipping</li>
+</ul>
+<p><strong>Why this event:</strong> This is the <strong>conversion event</strong> — did the daily decision loop close into a published plan, or did the PM decide-decide-decide and never ship? Without this, every other metric describes activity, not outcomes. <code>time_from_first_decision_to_ship_ms</code> divided by <code>decision_count</code> gives the <em>throughput</em> metric — decisions per unit of cycle time.</p>
+<h3 id="what-i-deliberately-didn-rsquo-t-instrument-and-why">What I deliberately didn&rsquo;t instrument (and why)</h3>
+<p>Five events is a deliberately tight budget. The discipline is in what&rsquo;s cut:</p>
+<ul>
+<li>❌ <code>page_view</code> — too generic, says nothing about whether the tool <em>worked</em>. Rejected.</li>
+<li>❌ <code>cmd_k_opened</code> — interesting but downstream. If <code>decision_logged.triggered_by_cmdk = true</code> matters, it becomes a property on Event 1, not a separate event.</li>
+<li>❌ <code>evidence_chip_expanded</code> — micro-interaction, doesn&rsquo;t drive a product decision.</li>
+<li>❌ <code>priority_stream_card_hovered</code> — same. Hover ≠ intent.</li>
+<li>❌ <code>escalation_message_drafted</code> — covered by <code>decision_logged.action = "escalate"</code>.</li>
+<li>❌ <code>feedback_submitted</code> — premature; there&rsquo;s no feedback surface yet.</li>
+</ul>
+<p>A sixth event, with budget, would be <code>decision_outcome_observed</code> — fired quarterly when a committed decision&rsquo;s predicted outcome is compared to actuals. But it requires real outcome-data ingestion, which is out of scope here, so it&rsquo;s deferred.</p>
+<hr />
+<h2 class="section" id="3-pm-interview-question-bank">3. PM Interview Question Bank</h2>
+<p>Goal: validate the product premise <em>before</em> broader build. Test whether the wedge actually resonates with the persona (mid-stage B2B SaaS PM, Series B-D, 5-15 PMs in the org).</p>
+<p>Five sections, ~21 questions. Designed for a 45-minute conversation. Open-ended throughout — no leading questions. The questions are sequenced to build context before testing reactions.</p>
+<h3 id="section-a-their-current-workflow-10-minutes">Section A — Their current workflow (10 minutes)</h3>
+<p>Establish how they actually plan today before testing the solution. <em>Don&rsquo;t lead.</em></p>
+<ol>
+<li>Walk me through your last quarterly planning cycle. Where did you start? What was the very first thing you did?</li>
+<li>How long did the cycle take, end to end — when did it start, when did the plan ship to your team?</li>
+<li>Which tools did you touch? In what order?</li>
+<li>Roughly how many feature requests did you sift through? Where did they come from? <em>(Sales? Support? Customer interviews? Internal? Analytics?)</em></li>
+<li>How did you decide what to commit, defer, or escalate? Was the process explicit (a framework, a meeting), or mostly gut?</li>
+</ol>
+<h3 id="section-b-pain-points-10-minutes">Section B — Pain points (10 minutes)</h3>
+<p>Probe for the acute pain. <em>Listen for the exact words they use.</em></p>
+<ol start="6">
+<li>What&rsquo;s the single most frustrating part of quarterly planning for you?</li>
+<li>What part of the cycle do you spend the most time on? Why does it take so long?</li>
+<li>What&rsquo;s a part of planning you wish someone else would just <em>do for you</em>?</li>
+<li>What part of the plan always changes mid-quarter? Why does it change?</li>
+<li>Tell me about a time you were wrong about a quarterly priority. What did you miss? What signal would have caught it earlier?</li>
+</ol>
+<h3 id="section-c-tools-they-use-8-minutes">Section C — Tools they use (8 minutes)</h3>
+<p>Concrete tool usage reveals the competitive landscape and the workarounds.</p>
+<ol start="11">
+<li>What&rsquo;s your current prioritization tool or setup?</li>
+<li>What do you like about it? What keeps you using it?</li>
+<li>What&rsquo;s missing? What do you do in spreadsheets or Notion that the tool doesn&rsquo;t support?</li>
+<li>If you could change one thing about your current tool, what would it be?</li>
+<li>Have you tried Productboard, Aha!, Airfocus, or Jira Product Discovery? What made you stay or leave?</li>
+</ol>
+<h3 id="section-d-reaction-to-the-thesis-10-minutes">Section D — Reaction to the thesis (10 minutes)</h3>
+<p>Test the wedge here — without showing the product yet.</p>
+<ol start="16">
+<li>If a tool could give you back your thinking time — what would you actually spend it on? Be specific.</li>
+<li>If an AI told you &ldquo;you should commit this initiative in Sprint 1&rdquo; — would you trust it? What would have to be true for you to trust it?</li>
+<li>When you override an AI&rsquo;s recommendation, what do you wish the system would do with that information?</li>
+<li><em>(Stress test)</em> If the AI was right 80% of the time and wrong 20% — would you use it daily? At what accuracy do you give up on it?</li>
+</ol>
+<h3 id="section-e-reaction-to-specific-features-7-minutes">Section E — Reaction to specific features (7 minutes)</h3>
+<p>Show the demo, screen by screen, and note their reaction.</p>
+<ol start="20">
+<li><em>(Show </em><em>Now</em><em> — the daily decision surface)</em> Imagine the tool surfaces 3 decisions for you each morning. What level of context would you need on each card to make the decision in seconds rather than minutes?</li>
+<li><em>(Show the Stakeholders audience render — Sales / Exec / Customer / Eng)</em> When you communicate a quarterly plan to those teams, do you write four different versions? How long does it take? Is what you see here close, or wrong?</li>
+</ol>
+<h3 id="what-to-listen-for-the-validation-rubric">What to listen for (the validation rubric)</h3>
+<p>This isn&rsquo;t a survey — these conversations validate or kill the product thesis. After each interview, score on three dimensions:</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Validating signal</th>
+<th>Killing signal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pain is acute</strong></td>
+<td>Specific stories about losing time, getting it wrong, fighting tools</td>
+<td>Vague complaints, no specific examples</td>
+</tr>
+<tr>
+<td><strong>Wedge resonates</strong></td>
+<td>&ldquo;Yes, that&rsquo;s exactly what I want&rdquo; — unprompted, in their words</td>
+<td>Polite interest, &ldquo;could be useful,&rdquo; no urgency</td>
+</tr>
+<tr>
+<td><strong>Tool reaction</strong></td>
+<td>Wants to use it tomorrow, asks about pricing, opens it during the call</td>
+<td>Polite &ldquo;I&rsquo;d try it,&rdquo; no urgency to follow up</td>
+</tr>
+</tbody>
+</table>
+<p>Five interviews with mid-stage B2B SaaS PMs is the minimum bar. If three or more validate across all three dimensions, the wedge holds. If fewer, the thesis gets re-framed and re-tested.</p>
+<hr />
+<h2 class="section" id="format-note">Format note</h2>
+<p>This document presents the three deliverables — North Star metric, instrumentation plan, and interview guide — in full. The product POV (<code>product_pov.md</code>) carries the strategic thesis; this is the <em>operational</em> layer beneath it. Together with the working product and the source code, it completes the submission.</p>
+</main>
+</body>
+</html>
