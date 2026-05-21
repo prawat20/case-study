@@ -11,14 +11,14 @@
 
 **Thesis.** Revolut's primacy gap is not an acquisition problem — 52M global / 13M UK users and Trustpilot 4.5/5 prove the love is there. It's a *salary-mandate* problem: average UK consumer deposit is **£575/mo at Revolut vs £811 at Monzo and £2,944 at Starling**, and the 2024 Annual Report dodges the absolute primacy number, disclosing only 59% YoY growth. The wedge: users have rationally settled into a **two-bank cohabitation** — Revolut for spending + FX + crypto, high-street for the salary. Primacy will only move when the cohabitation deal is broken.
 
-**The asymmetry in the pain space.** Of the five macro pains, **two have no current vitamin counter** in the live product — P1 *perceived operational risk* (the AML-hold-on-payday fear; Reddit's highest-engagement primacy thread is *"Can't access my salary. I am suing."*, 1,006 upvotes) and P5 *primacy-hostile product surface* (Home is optimised for cross-sell, salary-aware components like Pockets and Payday exist but aren't merchandised). The other three pains are either structural (bank licence, branch, lock-in products) or partly mistargeted. **That asymmetry IS the strategic idea space.**
+**The asymmetry in the pain space.** Of the five macro pains, **two have no current vitamin counter** in the live product — P1 *perceived operational risk* (the AML-hold-on-payday fear; Reddit's highest-engagement primacy thread is *"Can't access my salary. I am suing."*, 1,006 upvotes) and P5 *primacy-hostile product surface* (Home is optimized for cross-sell, salary-aware components like Pockets and Payday exist but aren't merchandised). The other three pains are either structural (bank licence, branch, lock-in products) or partly mistargeted. **That asymmetry IS the strategic idea space.**
 
 **The two ideas — a push-pull pair, both true growth-hacks (no new financial products, no licensing dependency), neither pays for primacy:**
 
 |  | **Idea 1 · Confidence Period** | **Idea 2 · Locked Insights** |
 |---|---|---|
 | **Type** | Push — migration de-risk | Pull — only-on-primary value |
-| **Mechanic** | 3-salary-cycle parallel-run via Open Banking + auto-mirror % back to the old bank + **Live Clearance** reassurance layer (real-time "Salary cleared in N minutes" push the instant AML completes, 24h pre-payday confidence reminder, public historical AML-clearance stats card on profile) | Visible-but-locked Insights surface — real cards with blurred numbers + a one-time sample peek with example data; primary unlocks subscription audit, cashflow forecast, DD payday optimisation, anomaly detection. Built on Revolut's existing Analytics infrastructure (subscription detection, spending categorisation already live) — only the locked-state UI + sample peek + Open Banking population for non-primary peek is new |
+| **Mechanic** | 3-salary-cycle parallel-run via Open Banking + auto-mirror % back to the old bank + **Live Clearance** reassurance layer (real-time "Salary cleared in N minutes" push the instant AML completes, 24h pre-payday confidence reminder, public historical AML-clearance stats card on profile) | Visible-but-locked Insights surface — real cards with blurred numbers + a one-time sample peek with example data; primary unlocks subscription audit, cashflow forecast, DD payday optimization, anomaly detection. Built on Revolut's existing Analytics infrastructure (subscription detection, spending categorization already live) — only the locked-state UI + sample peek + Open Banking population for non-primary peek is new |
 | **Attacks pain** | P1 + P4 | P5 + V2 mistarget |
 | **Build** | ~3 months — pure UX + existing AISP + existing analytics; no licensing dependency | ~2-3 months — locked-state UI + sample peek + thin salary-aware logic on existing analytics |
 | **Y1 impact** | ~4pp UK primacy lift (≈400k incremental primary users at 10M UK base) | 2-3pp standalone · ~5pp paired with Idea 1 |
@@ -58,7 +58,7 @@ This caselet attacks both — one push idea, one pull idea, sized to compound.
 
 ## Section 1 — Macro pain categories
 
-> Why a Revolut user does *not* exhibit primacy behaviour today. Five macro categories. Each anchored to the strongest single signal.
+> Why a Revolut user does *not* exhibit primacy behavior today. Five macro categories. Each anchored to the strongest single signal.
 
 <div class="tldr" markdown="1">
 
@@ -103,7 +103,7 @@ Two sides of the same competitive coin:
 
 ### P4. **Switching friction & incentive gap — user-side AND employer-side**
 
-Friction is two-axis. UK pain centres on the user-side chore + incentive gap; EU pain layers an employer-side wall on top.
+Friction is two-axis. UK pain centers on the user-side chore + incentive gap; EU pain layers an employer-side wall on top.
 
 **4a) User-side:** the mechanical chore of moving the salary mandate + DDs + payees, combined with an economic disincentive: high street pays £150-£750 to switch in (HSBC Premier £750, NatWest Premier £250); Revolut pays a £20 referral. **Existing primacy users get nothing** — the 12-month-Metal promo targets only new conversions.
 
@@ -119,7 +119,7 @@ Friction is two-axis. UK pain centres on the user-side chore + incentive gap; EU
 
 ### P5. **Primacy-hostile product surface**
 
-Revolut's home is optimised for *cross-sell* (crypto · stocks · commodities · hotels · lifestyle · eSIM · gold), not for the primary-account daily ritual: balance + recent transactions + bill-pay + reassurance. Salary-aware features (Pockets, Payday, instant transfers, real-time categorisation) *exist* but aren't merchandised as the primacy hook. The same multi-product density that wins acquisition fights primacy.
+Revolut's home is optimized for *cross-sell* (crypto · stocks · commodities · hotels · lifestyle · eSIM · gold), not for the primary-account daily ritual: balance + recent transactions + bill-pay + reassurance. Salary-aware features (Pockets, Payday, instant transfers, real-time categorization) *exist* but aren't merchandised as the primacy hook. The same multi-product density that wins acquisition fights primacy.
 
 - *"The app feels cluttered with crypto, stocks, hotel bookings, and dozens of other features"* vs Monzo's simplicity. — Chyshkala 2026.
 - *Monzo's Salary Sorter + Bills Pots (Sept 2019)* is *the* explicit primary-account product surface in the UK challenger set. Revolut has parity components but no equivalent merchandising.
@@ -134,7 +134,7 @@ Revolut's home is optimised for *cross-sell* (crypto · stocks · commodities ·
 
 <div class="tldr" markdown="1">
 
-<span class="tldr-label">TL;DR</span> Five vitamins. **V2 salary-aware intelligence** is the most under-leveraged — Pockets, Payday, real-time categorisation are all shipped, none merchandised into a primacy moment. **V3 primacy-only economics** is mistargeted at perks rather than salary value. The first finding sets up Idea 2; the second is why neither idea pays for primacy.
+<span class="tldr-label">TL;DR</span> Five vitamins. **V2 salary-aware intelligence** is the most under-leveraged — Pockets, Payday, real-time categorization are all shipped, none merchandised into a primacy moment. **V3 primacy-only economics** is mistargeted at perks rather than salary value. The first finding sets up Idea 2; the second is why neither idea pays for primacy.
 
 </div>
 
@@ -200,7 +200,7 @@ Two pains have **no current vitamin counter** in the live product surface (P1 pe
 | **Cohort focus** | C3 + C4 | C2 + C3 |
 | **Wedge mechanic** | Open-Banking parallel-run + auto-mirror % to old bank + Live Clearance reassurance layer (real-time salary-cleared push, pre-payday confidence reminder, historical AML-stats card) | Visible-but-locked intelligence surface; data envy as conversion driver |
 | **Brief constraint** | Not paying for primacy — Revolut removes operational-risk *fear* via UX-only reassurance + parallel-run safety net | Not paying for primacy — value comes from intelligence only Revolut can produce |
-| **Build window** | **~3 months** — pure UX + existing AISP (Revolut already has Open Banking for Vault) + existing AML pipeline data; no licensing dependency, no new financial product | **~2-3 months** — locked-state UI + sample peek + thin salary-aware logic layered on Revolut's existing Analytics infrastructure (subscription detection + spending categorisation already live) |
+| **Build window** | **~3 months** — pure UX + existing AISP (Revolut already has Open Banking for Vault) + existing AML pipeline data; no licensing dependency, no new financial product | **~2-3 months** — locked-state UI + sample peek + thin salary-aware logic layered on Revolut's existing Analytics infrastructure (subscription detection + spending categorization already live) |
 | **Estimated impact** | ~4pp UK primacy lift Y1 (~4% of C3 ≈ 400k users converted) | 2-3pp standalone; ~5pp paired with #1 |
 
 ---
@@ -615,22 +615,22 @@ Cmd-K equivalent / Settings → *"Reverse Confidence Period"* → one-screen CAS
 
 <div class="tldr" markdown="1">
 
-<span class="tldr-label">TL;DR</span> The pull idea — only-on-primary value. Insights sits in the bottom nav for every user. Non-primary sees real cards with blurred numbers and a one-time sample peek; primary unlocks subscription audits, cashflow forecasts, DD optimisation, anomaly detection. Structural moat: only Revolut's full-income visibility produces these insights — Monzo, Starling, Chase can't match it. Closes P5 and activates V2. **~2-3 months to build · 2-3pp standalone Year 1 · ~5pp paired with Idea 1.**
+<span class="tldr-label">TL;DR</span> The pull idea — only-on-primary value. Insights sits in the bottom nav for every user. Non-primary sees real cards with blurred numbers and a one-time sample peek; primary unlocks subscription audits, cashflow forecasts, DD optimization, anomaly detection. Structural moat: only Revolut's full-income visibility produces these insights — Monzo, Starling, Chase can't match it. Closes P5 and activates V2. **~2-3 months to build · 2-3pp standalone Year 1 · ~5pp paired with Idea 1.**
 
 </div>
 
 ### What it is
 
-A salary-aware intelligence surface that **only functions with the user's full income visible**. Non-primary users see the *shapes* of insights — real cards in the Insights tab with blurred numbers — with a single CTA to unlock by making Revolut primary. Primary users see fully populated cards updating in real time: subscription audits, payday-cashflow nudges, DD-payday optimisation, projected-shortfall auto-vault-pull, bill anomalies.
+A salary-aware intelligence surface that **only functions with the user's full income visible**. Non-primary users see the *shapes* of insights — real cards in the Insights tab with blurred numbers — with a single CTA to unlock by making Revolut primary. Primary users see fully populated cards updating in real time: subscription audits, payday-cashflow nudges, DD-payday optimization, projected-shortfall auto-vault-pull, bill anomalies.
 
 The conversion driver is **data envy**. The user sees what they're missing *in their own currency, on their own data*.
 
-**Why ~2-3 months and not longer.** Revolut's Analytics tab already ships the data backbone — subscription detection, spending categorisation, transaction tagging — as of 2025. The new build is thin: the locked-state UI (blurred cards + sample peek + "Connect your full income to unlock" CTA), a salary-aware logic layer on top of existing analytics (DD-payday optimisation, anomaly detection rules, anniversary-style anchors), and the Open Banking peek path for non-primary users (already infrastructure-present for Vault). No new financial product. No licensing surface. Growth-hack discipline.
+**Why ~2-3 months and not longer.** Revolut's Analytics tab already ships the data backbone — subscription detection, spending categorization, transaction tagging — as of 2025. The new build is thin: the locked-state UI (blurred cards + sample peek + "Connect your full income to unlock" CTA), a salary-aware logic layer on top of existing analytics (DD-payday optimization, anomaly detection rules, anniversary-style anchors), and the Open Banking peek path for non-primary users (already infrastructure-present for Vault). No new financial product. No licensing surface. Growth-hack discipline.
 
 ### Why this attacks the deepest under-served vitamin
 
-- **V2 (Salary-aware intelligence)** is the most under-leveraged existing vitamin in the live product. Pockets · Payday · instant transfers · real-time categorisation — Revolut has every component already shipped. The product hasn't *assembled* them into a primacy-conversion surface.
-- **P5 (Primacy-hostile surface)** — Locked Insights is the antidote. The Home tab today is optimised for cross-sell; Locked Insights gives it a daily-ritual reason to open that depends *specifically* on primacy.
+- **V2 (Salary-aware intelligence)** is the most under-leveraged existing vitamin in the live product. Pockets · Payday · instant transfers · real-time categorization — Revolut has every component already shipped. The product hasn't *assembled* them into a primacy-conversion surface.
+- **P5 (Primacy-hostile surface)** — Locked Insights is the antidote. The Home tab today is optimized for cross-sell; Locked Insights gives it a daily-ritual reason to open that depends *specifically* on primacy.
 - **Structural defensibility.** Insights are derived from cross-product signal across the full income stream — exactly the kind of correlation only Revolut's all-in-one balance can do. Monzo can't match this; Starling can't; Chase can't. Differentiation is structural, not skin-deep.
 
 ### a) Step-by-step UX flow
@@ -759,7 +759,7 @@ Notes on craft:
     <div class="sb-section-label">Where it came from</div>
     <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/></svg></span><span class="yir-name">Subscription audit</span><span class="yir-amt-sm">£217</span></div>
     <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg></span><span class="yir-name">Cashflow forecast</span><span class="yir-amt-sm">£94</span></div>
-    <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></span><span class="yir-name">DD payday optimisation</span><span class="yir-amt-sm">£72</span></div>
+    <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></span><span class="yir-name">DD payday optimization</span><span class="yir-amt-sm">£72</span></div>
     <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></span><span class="yir-name">Bill anomalies</span><span class="yir-amt-sm">£48</span></div>
     <div class="yir-row"><span class="yir-icon"><svg class="ico" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7l-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></svg></span><span class="yir-name">Salary-aware investing</span><span class="yir-amt-sm">£32</span></div>
     <div class="sb-section-label">Manage your insight types</div>

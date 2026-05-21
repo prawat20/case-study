@@ -29,7 +29,7 @@ The foundation was evidence anchoring before any synthesis. Sources fell into fi
 | **Comparator forums** | Trustpilot, MoneySavingExpert, Askaboutmoney, Bonkers.ie, Chyshkala 2026 analysis. |
 | **Competitive context** | Monzo blog (Sept 2019 Salary Sorter launch, Jan 2020 partial-switch onramp), 11FS N26 exit analysis, Be Clever With Your Cash UK switching-incentive comparator. |
 
-The output structure was: TL;DR wedge · 5-stage switching journey · pain points by stage (P1–P11) · vitamin categories (V1–V7) · 6 behavioural cohorts (C1–C6) · competitive teardown · signals bibliography.
+The output structure was: TL;DR wedge · 5-stage switching journey · pain points by stage (P1–P11) · vitamin categories (V1–V7) · 6 behavioral cohorts (C1–C6) · competitive teardown · signals bibliography.
 
 **The wedge insight that emerged.** Revolut's primacy problem is as much a *public-narrative problem* as an operational one. Two-bank cohabitation (Revolut for spending + FX + crypto, high-street for salary) is the rational user equilibrium. The freeze narrative crystallises at the salary-deposit moment — *"if Revolut froze right now, what's the worst case?"* — and the answer ("can't pay rent, no branch, no phone, AI bot loop") kills the switch even for users who love the product.
 
@@ -78,7 +78,7 @@ Submission structure aligned 1:1 to the brief:
 | §3 Two ideas — overview table | Push-pull pair contrast |
 | §4 Confidence Period (deep) | 7-screen flow + 8 contextual hooks + 4-stakeholder comms lifecycle + 16 metrics |
 | §5 Locked Insights (deep) | 4-screen flow + 9 contextual hooks + 6 comms paths + 12 metrics |
-| §6 Rubric defence | Mapped to brief's 4 evaluation criteria |
+| §6 Rubric defense | Mapped to brief's 4 evaluation criteria |
 | Appendix | Evidence sources |
 
 Two layers of post-Stage-4 polish landed in the final PDF:
@@ -102,7 +102,7 @@ The deliverable was treated as a publication, not a doc dump. The [`build/build_
 - **A4 cover** with Source Serif Pro + Inter + JetBrains Mono via Google Fonts, data-vintage callout, executive-summary panel.
 - **Page-break-before each H2** so every major section starts on a fresh page.
 - **14 high-fidelity HTML phone mockups in 2-up grids** across all seven flows (Confidence Period 1–7 + post-activation, Locked Insights 1–4). Each phone is a real iOS-feel surface — slider, segment control, toggle, DD checklist, letter-card, ledger, year-in-review hero, sample banner — not an ASCII sketch.
-- **Inline-SVG icon set** using `currentColor` + 1em sizing, replacing 15 emoji occurrences. Lucide-style stroked icons match the card text colour automatically.
+- **Inline-SVG icon set** using `currentColor` + 1em sizing, replacing 15 emoji occurrences. Lucide-style stroked icons match the card text color automatically.
 - **Section-level TL;DR callouts** at the top of §1, §2, §4, §5 — accent border-left, subtle gradient, caps label, declarative body, cost/payoff anchor at the close. A senior reader extracts the thesis in ~90 seconds; depth below stays available as proof.
 - **CSS-blurred numbers** on the locked-state Insights cards. Real `filter: blur()` over real three-digit money fields communicates the loss concretely; `???` placeholders would have read as a paywall.
 
@@ -122,7 +122,7 @@ Caselet 2 used a tighter 3-stage process because the source domain was a live pr
 
 ### The persona decision
 
-The brief asked for "Persona" singular + "list of Problems" plural. Plottwyst's platform thesis is *one engine, two surfaces, two demand vectors* — so the section is structured as two persona blocks, each owning its own problem list, closed by a "why two personas, not one" bridge into the platform argument. The split mirrors the product architecture rather than a marketing convenience: **Multiplayer Host** (friend-group + corporate event organiser) needs bounded social variance; **Daily Puzzle Player** (Wordle-shaped) needs bounded solo variance. Both unmet needs trace to one supply-side gap: *content scaled, gameplay systems didn't.*
+The brief asked for "Persona" singular + "list of Problems" plural. Plottwyst's platform thesis is *one engine, two surfaces, two demand vectors* — so the section is structured as two persona blocks, each owning its own problem list, closed by a "why two personas, not one" bridge into the platform argument. The split mirrors the product architecture rather than a marketing convenience: **Multiplayer Host** (friend-group + corporate event organizer) needs bounded social variance; **Daily Puzzle Player** (Wordle-shaped) needs bounded solo variance. Both unmet needs trace to one supply-side gap: *content scaled, gameplay systems didn't.*
 
 ### Submission structure
 

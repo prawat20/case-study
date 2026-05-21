@@ -189,7 +189,7 @@ Five synthesised chimes, gain tuned ~30% softer than a typical dark-context UI �
 | Event | Sound | Rationale |
 |---|---|---|
 | Capture (new ask saved) | Single soft pluck, A5, 120ms | Confirms entry, doesn't punctuate |
-| Triage decision (D/R/P) | Three pitches by action — D=G4, R=B4, P=D5 | Audible decision colour |
+| Triage decision (D/R/P) | Three pitches by action — D=G4, R=B4, P=D5 | Audible decision color |
 | Commit | Two-tone D5+A5, fuller envelope, soft attack | Decision-lands beat |
 | Snap-as-plan | Three-note C5+E5+G5, slight rev sweep | Full celebration |
 | Override prompt fires | No sound | Speech-bubble appearance only — sound here would feel like correction |

@@ -9,14 +9,14 @@
 The brief asks for a working AI-native quarterly-planning tool that a PM would use to decide *what to ship next quarter and why*. Three constraints were locked before any work began:
 
 - **Ingestion is solved upstream.** The brief explicitly assumes data ingestion is not the build. The deliverable covers the post-ingestion slice — capture → triage → place → communicate → learn. That's also where the PM's actual day lives.
-- **Decision orchestration, not record keeping.** Most existing prioritization tools (Productboard, Aha!, Airfocus, Jira Product Discovery) are *systems of record* — they store the prioritised list after the PM has already done the thinking. The brief invites an AI-native tool to make the *thinking* faster, not the storing.
+- **Decision orchestration, not record keeping.** Most existing prioritization tools (Productboard, Aha!, Airfocus, Jira Product Discovery) are *systems of record* — they store the prioritized list after the PM has already done the thinking. The brief invites an AI-native tool to make the *thinking* faster, not the storing.
 - **A PM should be able to use it on Day 1.** The tool has to demo end-to-end as a single calm flow; surfaces that don't connect to the loop don't ship.
 
 Three early choices fell out:
 
 1. **POV before pixels.** A persona + seven JBTDs + per-JBTD design rubric had to be locked before any surface design. Without it, the build defaults to feature laundry.
 2. **One opinionated app, not a tour.** Five destination surfaces, each doing one job exceptionally, beat a feature-comparison tool that does fifteen things adequately.
-3. **AI as advisor, not actor.** Black-box prioritisation ("AI says priority 73") is rejected up-front. The system suggests and shows its reasoning; the PM decides.
+3. **AI as advisor, not actor.** Black-box prioritization ("AI says priority 73") is rejected up-front. The system suggests and shows its reasoning; the PM decides.
 
 ---
 
@@ -50,7 +50,7 @@ Every design move is checked against that sentence.
 | 2 | Triage | When I sit down to the inbox → decide each item's fate in <30s → clear 30 items in 15 minutes |
 | 3 | Prioritize | When evaluating an item → apply the framework that fits its type → stop retrofitting one hammer to every nail |
 | 4 | Resolve trade-offs | When committing A means deferring B → see the trade-off at decision time → decide consciously |
-| 5 | Sequence | When N items are prioritised → drop them into a capacity-aware sprint timeline → confirm the plan is executable |
+| 5 | Sequence | When N items are prioritized → drop them into a capacity-aware sprint timeline → confirm the plan is executable |
 | 6 | Communicate | When the plan is set → generate a stakeholder-shaped view per audience → align four audiences without four meetings |
 | 7 | Audit + learn | When challenged 3 weeks later → retrieve reasoning + predicted outcome in one click → make conversation about adjustment, not interrogation |
 
@@ -80,7 +80,7 @@ When a design choice gets ambiguous mid-build, the POV is the tiebreaker. This p
 | NPS / CSAT | Soft, hard to act on, noisy at small N |
 | % roadmap items traceable to validated org signals | Quality indicator but slow; better as supporting metric |
 | Active users / DAU | Vanity — a PM can open the tool daily without making decisions |
-| Decisions logged per quarter | A count metric inflates with chaos — not what we want to optimise |
+| Decisions logged per quarter | A count metric inflates with chaos — not what we want to optimize |
 
 Median time idea→decision survives every test: captures the founder's "speed of thought" framing, captures the product thesis (context-synthesis and decision-orchestration), is leading not lagging, is measurable from day one, is independent of input volume. **It pairs with the AI override rate as a safety net** — a PM who decides quickly *and* overrides AI 80% of the time is a warning sign (AI is wrong); a PM who decides quickly *and* mostly accepts AI is the success state.
 

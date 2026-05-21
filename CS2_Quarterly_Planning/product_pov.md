@@ -10,8 +10,8 @@
 
 The PM's quarterly-planning week is dominated by three failure modes that every existing tool inherits:
 
-1. **The pile is invisible.** Real PM days start with un-triaged asks across Slack, email, calls, customer interviews, exec hallway questions. "Smart inboxes of pre-prioritised cards" skip the triage moment that *is* the work.
-2. **There is no end-to-end loop.** Capture, triage, prioritise, sequence, communicate, and audit live in separate tools. The PM holds the loop together in their head.
+1. **The pile is invisible.** Real PM days start with un-triaged asks across Slack, email, calls, customer interviews, exec hallway questions. "Smart inboxes of pre-prioritized cards" skip the triage moment that *is* the work.
+2. **There is no end-to-end loop.** Capture, triage, prioritize, sequence, communicate, and audit live in separate tools. The PM holds the loop together in their head.
 3. **The surface is cold.** Competent dark-theme minimalism reads as a Bloomberg terminal. Planning should feel like Cron's calendar drag or Amie's gentle motion — calm but warm.
 
 The seven JBTDs below are the loop. Each design move on each surface serves one of them.

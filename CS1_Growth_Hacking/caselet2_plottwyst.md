@@ -13,7 +13,7 @@
 
 **The product.** Plottwyst is a system, not a game — one engine that generates and *validates* a fresh narrative case in under 60 seconds at sub-1¢ inference cost, then runs it as a playable game across two surfaces (Discord + Web) and two modes (Daily solo + Multiplayer group). Two genres ship today (Murder Mystery + Heist) on the same engine; each new genre is a template declaration, not a rewrite.
 
-**Two personas the same engine serves.** *Multiplayer Host* (friend-group + corporate event organiser) needs **bounded social variance** — a new shared session per gathering, group-sized, 30–60 min, memorable outcome. *Daily Puzzle Player* (Wordle-shaped) needs **bounded solo variance** — a new individual experience per day, 5–10 min, shareable badge. One supply-side gap, two demand vectors, one engine.
+**Two personas the same engine serves.** *Multiplayer Host* (friend-group + corporate event organizer) needs **bounded social variance** — a new shared session per gathering, group-sized, 30–60 min, memorable outcome. *Daily Puzzle Player* (Wordle-shaped) needs **bounded solo variance** — a new individual experience per day, 5–10 min, shareable badge. One supply-side gap, two demand vectors, one engine.
 
 **Live today, zero paid acquisition.** 297 cases generated · 467 games played · 50% daily solve rate · 94% generation success · ~15s median generation time · 30+ countries · 14 Discord servers · 1-in-4 return rate. The MVP is the smallest configuration that lets a reviewer disprove the platform thesis.
 
@@ -29,15 +29,15 @@
 
 <div class="tldr" markdown="1">
 
-<span class="tldr-label">TL;DR</span> Two personas: the **Multiplayer Host** (friend-group + corporate event organiser) and the **Daily Puzzle Player** (Wordle-shaped). Different session shapes; same underlying tension — content scaled, gameplay systems didn't. Both unmet needs trace to a single supply-side gap that no incumbent solves.
+<span class="tldr-label">TL;DR</span> Two personas: the **Multiplayer Host** (friend-group + corporate event organizer) and the **Daily Puzzle Player** (Wordle-shaped). Different session shapes; same underlying tension — content scaled, gameplay systems didn't. Both unmet needs trace to a single supply-side gap that no incumbent solves.
 
 </div>
 
 ### Persona A — The Multiplayer Host
 
-**Who they are.** The person in the group who organises the session. Two flavours of one archetype:
+**Who they are.** The person in the group who organizes the session. Two flavours of one archetype:
 
-- **Friend-group host** — the recurring Saturday-night Zoom planner, the bachelorette organiser, the cousin who runs family game night. Owns the calendar invite. Picks the game. Feels the social cost when it falls flat.
+- **Friend-group host** — the recurring Saturday-night Zoom planner, the bachelorette organizer, the cousin who runs family game night. Owns the calendar invite. Picks the game. Feels the social cost when it falls flat.
 - **Corporate event host** — manager, People Ops lead, EA tasked with the offsite or virtual team-building session. Has a budget line and a "did the team enjoy it?" survey to answer for. Same person at a different scale.
 
 Both share one job-to-be-done: *give a group of 4–12 people a memorable shared session that isn't a repeat of the last one.*
@@ -59,9 +59,9 @@ This persona owns commute, lunch-break, and "between meetings" minutes — slots
 
 **The Problems.**
 
-1. **Genre fatigue under the surface.** Wordle, Connections, Strands, Mini Crossword, Spelling Bee — all letter/grid puzzles with the same underlying constraint. After 200 Wordles a player has optimised the starter word and variance drops. The genre exhausted its design space three years in.
+1. **Genre fatigue under the surface.** Wordle, Connections, Strands, Mini Crossword, Spelling Bee — all letter/grid puzzles with the same underlying constraint. After 200 Wordles a player has optimized the starter word and variance drops. The genre exhausted its design space three years in.
 2. **No narrative payoff.** The daily ritual gives five minutes of *"I solved something"* — but no story, no character, no consequence. Just letters. The dopamine plateau is real and well-documented on the Connections subreddit.
-3. **Spoiler-hostile sharing.** Wordle's coloured-square share solved this for *outcome* sharing — but you cannot share *what happened* without spoiling tomorrow's puzzle for someone in a different timezone. Narrative content has the same problem at 10×.
+3. **Spoiler-hostile sharing.** Wordle's colored-square share solved this for *outcome* sharing — but you cannot share *what happened* without spoiling tomorrow's puzzle for someone in a different timezone. Narrative content has the same problem at 10×.
 4. **Streak addiction without depth.** The streak counter is the only retention mechanic; the game underneath has not meaningfully changed since 2021. Players know it. Replay value is pure ritual, not surprise.
 5. **Single-mode trap.** The morning daily ritual is a walled garden. It does not extend into evening play, group play, or any longer-form experience for the same player when they want more. Players who want depth switch products entirely — and most don't bother.
 
@@ -184,6 +184,6 @@ The window for a narrative-native game platform is open — briefly. Incumbents 
 
 <div class="data-vintage" markdown="1">
 
-**Data vintage.** Production metrics (297 cases · 467 games · 50% solve · 94% generation success · ~15s median generation · ~$0.001 NE cost · 30+ countries · 14 Discord servers · 1-in-4 return) refreshed **2026-05-11** from generation_log and Cloudflare zone analytics. TAM components anchored to the most recent published figures: Among Us downloads (1B+, Innersloth), Roblox creator payouts ($1.5B+ in 2025, public reporting), escape-room market projection ($18B by 2028, IBISWorld / industry trade). All claims about live behaviour are derived from the deployed product, not projected.
+**Data vintage.** Production metrics (297 cases · 467 games · 50% solve · 94% generation success · ~15s median generation · ~$0.001 NE cost · 30+ countries · 14 Discord servers · 1-in-4 return) refreshed **2026-05-11** from generation_log and Cloudflare zone analytics. TAM components anchored to the most recent published figures: Among Us downloads (1B+, Innersloth), Roblox creator payouts ($1.5B+ in 2025, public reporting), escape-room market projection ($18B by 2028, IBISWorld / industry trade). All claims about live behavior are derived from the deployed product, not projected.
 
 </div>

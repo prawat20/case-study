@@ -32,9 +32,9 @@ This persona owns commute-time, lunch-break, and "between meetings" minutes — 
 
 **The Problems they face.**
 
-1. **Genre fatigue under the surface.** Wordle, Connections, Strands, Mini Crossword, Spelling Bee — all letter/grid puzzles with the same underlying constraint. Once a player has solved 200 Wordles, the starter word is optimised and variance drops. The genre exhausted its design space three years in.
+1. **Genre fatigue under the surface.** Wordle, Connections, Strands, Mini Crossword, Spelling Bee — all letter/grid puzzles with the same underlying constraint. Once a player has solved 200 Wordles, the starter word is optimized and variance drops. The genre exhausted its design space three years in.
 2. **No narrative payoff.** The daily ritual gives 5 minutes of *"I solved something"* — but no story, no character, no consequence. Just letters. The dopamine plateau is real and well-documented in the Connections subreddit.
-3. **Spoiler-hostile sharing.** Wordle's coloured-square share solved this for *outcome* sharing — but you can't share *what happened* without spoiling tomorrow's puzzle for someone in a different timezone. Narrative content has the same problem at 10×.
+3. **Spoiler-hostile sharing.** Wordle's colored-square share solved this for *outcome* sharing — but you can't share *what happened* without spoiling tomorrow's puzzle for someone in a different timezone. Narrative content has the same problem at 10×.
 4. **Streak addiction without depth.** The streak counter is the only retention mechanic; the game underneath has not meaningfully changed since 2021. Players know it. The replay value is pure ritual, not surprise.
 5. **Single-mode trap.** The morning daily ritual is a walled garden. It doesn't extend into evening play, group play, or any longer-form experience for the same player when they want more. Players who want depth have to switch products entirely — and most don't bother.
 

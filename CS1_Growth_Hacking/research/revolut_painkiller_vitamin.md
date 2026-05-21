@@ -6,7 +6,7 @@
 
 ## TL;DR — the synthesis read
 
-Five macro pain categories, five macro vitamin categories. Critically — **two of the five pains have NO current vitamin counter inside Revolut's product surface today** (perceived operational risk, primacy-hostile UX). That asymmetry IS the idea space for Stage 3. Everything Revolut has built so far attacks switching cost or rewards cross-border behaviour; almost nothing in the live product directly addresses the freeze-narrative or merchandises the salary-mandate-as-ritual.
+Five macro pain categories, five macro vitamin categories. Critically — **two of the five pains have NO current vitamin counter inside Revolut's product surface today** (perceived operational risk, primacy-hostile UX). That asymmetry IS the idea space for Stage 3. Everything Revolut has built so far attacks switching cost or rewards cross-border behavior; almost nothing in the live product directly addresses the freeze-narrative or merchandises the salary-mandate-as-ritual.
 
 Within PLG control (3-12 months, no licensing changes): **P1 (perceived operational risk), P4 (switching friction), P5 (primacy-hostile UX)**. Out of scope for PLG and assumed table-stakes-coming: P2 (structural trust gaps that need branches / capital), P3 (lock-in lending products tied to the bank-licence rollout).
 
@@ -14,7 +14,7 @@ The brief's "depth not breadth" rubric points at the under-served pains, not the
 
 ---
 
-## Five macro pain categories — WHY users don't exhibit primacy behaviour
+## Five macro pain categories — WHY users don't exhibit primacy behavior
 
 > Naming convention: each category absorbs 1-N pain-points from the research doc (P1-P11). The "lead signal" cell is the strongest single quote/data point that proves the category at interview level.
 
@@ -84,7 +84,7 @@ The brief's "depth not breadth" rubric points at the under-served pains, not the
 
 ### Pain 5 — PRIMACY-HOSTILE PRODUCT SURFACE
 
-**Definition.** Revolut's home is optimised for cross-sell (crypto, stocks, commodities, hotels, lifestyle, eSIM, gold, NFTs at peak), not for the primary-account *daily ritual*: balance + recent transactions + bill-pay + reassurance. The same multi-product density that wins acquisition fights primacy. Plus: salary-aware features (Pockets, salary-sort, cashflow) exist but aren't merchandised as the primary-account hook.
+**Definition.** Revolut's home is optimized for cross-sell (crypto, stocks, commodities, hotels, lifestyle, eSIM, gold, NFTs at peak), not for the primary-account *daily ritual*: balance + recent transactions + bill-pay + reassurance. The same multi-product density that wins acquisition fights primacy. Plus: salary-aware features (Pockets, salary-sort, cashflow) exist but aren't merchandised as the primary-account hook.
 
 **Absorbs from research:** P10 (UI overload as silent settle-in killer) · t01 partial-primacy framing · the cohabitation equilibrium pattern.
 
@@ -125,7 +125,7 @@ The brief's "depth not breadth" rubric points at the under-served pains, not the
 - *Revolut help centre:* 1-day-early salary auto for all UK BACS recipients (parity with Monzo). Payday advance up to 50% at £1.50 flat.
 - *Pockets exist as a parity feature* but are not merchandised as a primacy hook.
 
-**Strategic note.** Most under-leveraged vitamin in the current product. Revolut HAS the components (Pockets, Payday, instant transfers, real-time categorisation) — it has not assembled them into a primacy-conversion surface the way Monzo has with Salary Sorter.
+**Strategic note.** Most under-leveraged vitamin in the current product. Revolut HAS the components (Pockets, Payday, instant transfers, real-time categorization) — it has not assembled them into a primacy-conversion surface the way Monzo has with Salary Sorter.
 
 ---
 

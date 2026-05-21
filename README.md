@@ -17,7 +17,7 @@
 
 ## How to navigate this repo
 
-This repo is organised as two case-study folders, each self-contained. The submission deliverables sit at the top level; the supporting work lives inside each brief's folder.
+This repo is organized as two case-study folders, each self-contained. The submission deliverables sit at the top level; the supporting work lives inside each brief's folder.
 
 ### If you want to read the submissions only
 

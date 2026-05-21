@@ -24,7 +24,7 @@ CS2 was built **POV-first, surface-last**. The persona, seven JBTDs, and per-JBT
 
 ## Layer 1 — Research
 
-The wedge surfaced from the workflow synthesis was: **the problem is not that PMs lack frameworks or tools; the problem is that every existing tool is a system of record — it stores the prioritised list after the PM has already done the thinking.** The thinking is what's painful, slow, and political, and that's where AI-native software should compress.
+The wedge surfaced from the workflow synthesis was: **the problem is not that PMs lack frameworks or tools; the problem is that every existing tool is a system of record — it stores the prioritized list after the PM has already done the thinking.** The thinking is what's painful, slow, and political, and that's where AI-native software should compress.
 
 The strongest evidence anchor: ~60% of PMs still use Notion + spreadsheets despite paid alternatives (Productboard, Aha!, Airfocus, JPD, ProductPlan). The paid tools haven't earned the actual workflow.
 
@@ -138,7 +138,7 @@ Underneath this lived a deeper inconsistency: the NSM said `weeks_elapsed=9 of 1
 **Submission package now PDF-only.** Independent decision earlier in the session: the live deck link (`plottwyst.app/deck/momentum`) was removed from the case-study submission package (PDF + repo + supporting writeup). Reviewer doesn't need to chase a second URL; the deliverable is the PDF. Pre-send checklist updated. (The deck remains live for direct sharing if someone asks.)
 
 **Process lessons added Round 12:**
-- **Reviewer-discoverability ≠ daily-user discoverability.** The same UI serves two audiences with different goals — a case-study reviewer needs to find the capability map fast; a daily PM needs Now + Calendar to be uncluttered. When the audiences conflict, decide which one shipped *this build* is optimised for. CS2 shipped for the reviewer first.
+- **Reviewer-discoverability ≠ daily-user discoverability.** The same UI serves two audiences with different goals — a case-study reviewer needs to find the capability map fast; a daily PM needs Now + Calendar to be uncluttered. When the audiences conflict, decide which one shipped *this build* is optimized for. CS2 shipped for the reviewer first.
 - **Cross-referencing eyebrows are a smell when the referenced surface has multiple paths.** The first Sort/Decide eyebrow promised "deeper Decide on the initiative page" — but Promote actually had two downstream paths. Eyebrow cross-references only work when the next-step is singular. When it's plural, surface both paths or none.
 - **Center modals at full viewport height clip on short screens.** Side panels are safer for "reference content" — they sit beside the page, the page stays usable, no clip risk. Use modals only for *blocking* interactions (capture, confirm-and-commit). Reserve them for moments where the user genuinely can't proceed without responding.
 - **Surface-level data must agree with global temporal anchors.** Sprint status, NSM week count, AI recommendation sequence, and decision-log dates all reference the same imaginary clock. Moving one without checking the others produces a quiet internal lie that a sharp reviewer will catch (the user caught this one with a single sentence). Pattern: when shifting a temporal anchor, grep for `weeks_elapsed`, all `Sprint N` references, all hard-coded percentages, all hard-coded dates.
@@ -163,7 +163,7 @@ Shipped + deployed to `sift-pm.pages.dev` (deploy `0b7dc8d4`). Four changes; new
 **Process lessons added Round 13:**
 - **`backdrop-filter` / `transform` / `filter` on an ancestor re-roots `position: fixed` to that element, not the viewport.** A fixed overlay that renders clipped or tiny is almost always mounted inside a blurred or transformed container. Mount global overlays at the body level.
 - **AI-vs-PM divergence is the case study's strongest AI-native proof.** Surfacing every action against the recommendation, and treating the gap as the signal that recalibrates the engine, makes the learning loop tangible rather than asserted. The audit stops being a record and becomes the feedback instrument.
-- **Don't add funnel steps to fix a visibility/instrumentation problem.** The flow felt unclear → the fix was surfacing the recommendation (triage) + instrumenting divergence (audit), not a new prioritise stage. (The "keep current flow" call was made explicitly with the user.)
+- **Don't add funnel steps to fix a visibility/instrumentation problem.** The flow felt unclear → the fix was surfacing the recommendation (triage) + instrumenting divergence (audit), not a new prioritize stage. (The "keep current flow" call was made explicitly with the user.)
 
 Files touched Round 13: `lib/ai-reco.ts` (new), `lib/decisions.ts` (+`realized_action`), `app/page.tsx` (triage card + ActionPill), `components/InitiativeDetail.tsx` (set `realized_action`), `components/AuditLog.tsx` (Activity stream + divergence), `app/architecture/page.tsx` (layered rebuild), `components/Header.tsx` + `components/CommandProvider.tsx` (onboarding mount move).
 

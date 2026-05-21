@@ -35,7 +35,7 @@ The seven JBTDs map to five destination surfaces plus an off-loop case-study art
 
 ### Vocabulary choices
 
-- **Inbox** rather than "Priority Stream." Nothing is prioritised until the PM triages it; the name should not pre-commit the outcome.
+- **Inbox** rather than "Priority Stream." Nothing is prioritized until the PM triages it; the name should not pre-commit the outcome.
 - **Prioritize** rather than "Initiative Detail." Detail is description-mode; Prioritize is decision-mode. Vocabulary should reveal intent.
 - **Calendar** rather than "Quarterly Simulation." Planning here should feel as natural as Cron, not like a simulation.
 
