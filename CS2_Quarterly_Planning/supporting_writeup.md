@@ -9,9 +9,9 @@
 
 > **Median time from idea-surfaced → decision-logged.**
 
-> **Two North Stars, at two levels.** The deployed app's hero labels a *North Star* of **Net New ARR ($600k of $2.4M)** — that is the *customer's* business goal: the strategic context the PM plans against (and the pace tension the demo runs on). This section defines **Sift's own product North Star** — the metric Sift optimizes against to know the tool is working. Its in-product leading indicator is the **"% of items decided the same day they land"** line shown directly beneath the hero on Now.
+> **Two North Stars, at two levels.** The deployed app anchors the *customer's* business goal — **Net New ARR ($600k of $2.4M)** — as a quiet North Star line on the Calendar: the strategic context the PM plans against, and the pace tension the demo runs on. This section defines **Sift's own product North Star** — the metric Sift optimizes against to know the tool itself is working — a different thing at a different level, measured from the events instrumented in Section 2.
 
-For a given PM, across all initiatives surfaced in their Now queue over a quarter: the median elapsed time between when an idea first appears (surfaced by the engine) and when the PM logs a decision on it (commit / defer / escalate / override).
+For a given PM, across all initiatives surfaced into their Inbox over a quarter: the median elapsed time between when an idea first appears (surfaced by the engine) and when the PM logs a decision on it (commit / defer / escalate / override).
 
 ### Why this metric
 
@@ -37,7 +37,7 @@ The chosen metric — *median time from idea-surfaced to decision-logged* — su
 ### Definition (operational)
 
 - **Numerator events:** `decision_logged` timestamp.
-- **Denominator events:** `idea_surfaced` timestamp (when the engine first places an item on the user's Now queue).
+- **Denominator events:** `idea_surfaced` timestamp (when the engine first surfaces an item into the user's Inbox).
 - **Aggregate:** median across all decisions made by a user in the last 30 days. Median, not mean — robust to outliers (the one item the PM left untouched for 3 weeks shouldn't dominate).
 - **Comparison:** longitudinal per-user (is this PM getting faster?) plus a peer-cohort benchmark (how does this PM compare to others at similar org-size, similar role).
 

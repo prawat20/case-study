@@ -236,9 +236,9 @@ pre, table, blockquote { break-inside: avoid-page; }
 <h2 class="section" id="1-north-star-metric">1. North Star Metric</h2>
 <blockquote>
 <p><strong>Median time from idea-surfaced → decision-logged.</strong></p>
-<p><strong>Two North Stars, at two levels.</strong> The deployed app&rsquo;s hero labels a <em>North Star</em> of <strong>Net New ARR ($600k of $2.4M)</strong> — that is the <em>customer&rsquo;s</em> business goal: the strategic context the PM plans against (and the pace tension the demo runs on). This section defines <strong>Sift&rsquo;s own product North Star</strong> — the metric Sift optimizes against to know the tool is working. Its in-product leading indicator is the <strong>&rdquo;% of items decided the same day they land&rdquo;</strong> line shown directly beneath the hero on Now.</p>
+<p><strong>Two North Stars, at two levels.</strong> The deployed app anchors the <em>customer&rsquo;s</em> business goal — <strong>Net New ARR ($600k of $2.4M)</strong> — as a quiet North Star line on the Calendar: the strategic context the PM plans against, and the pace tension the demo runs on. This section defines <strong>Sift&rsquo;s own product North Star</strong> — the metric Sift optimizes against to know the tool itself is working — a different thing at a different level, measured from the events instrumented in Section 2.</p>
 </blockquote>
-<p>For a given PM, across all initiatives surfaced in their Now queue over a quarter: the median elapsed time between when an idea first appears (surfaced by the engine) and when the PM logs a decision on it (commit / defer / escalate / override).</p>
+<p>For a given PM, across all initiatives surfaced into their Inbox over a quarter: the median elapsed time between when an idea first appears (surfaced by the engine) and when the PM logs a decision on it (commit / defer / escalate / override).</p>
 <h3 id="why-this-metric">Why this metric</h3>
 <p>Most planning tools optimize for the wrong thing. The candidates I considered and rejected:</p>
 <table>
@@ -283,7 +283,7 @@ pre, table, blockquote { break-inside: avoid-page; }
 <h3 id="definition-operational">Definition (operational)</h3>
 <ul>
 <li><strong>Numerator events:</strong> <code>decision_logged</code> timestamp.</li>
-<li><strong>Denominator events:</strong> <code>idea_surfaced</code> timestamp (when the engine first places an item on the user&rsquo;s Now queue).</li>
+<li><strong>Denominator events:</strong> <code>idea_surfaced</code> timestamp (when the engine first surfaces an item into the user&rsquo;s Inbox).</li>
 <li><strong>Aggregate:</strong> median across all decisions made by a user in the last 30 days. Median, not mean — robust to outliers (the one item the PM left untouched for 3 weeks shouldn&rsquo;t dominate).</li>
 <li><strong>Comparison:</strong> longitudinal per-user (is this PM getting faster?) plus a peer-cohort benchmark (how does this PM compare to others at similar org-size, similar role).</li>
 </ul>
