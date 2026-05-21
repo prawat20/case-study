@@ -8,6 +8,8 @@
 
 The seven JBTDs map to five destination surfaces plus an off-loop case-study artifact. **Now** is the home that aggregates the loop and carries the front of capture + triage; the other four are the body of the loop.
 
+> **Shipped (Round 16).** The NSM/North Star hero moved off Now to a quiet line on the **Calendar**, and Now became a single-decision-in-focus surface; the "% decided same day" leading indicator was dropped. The surface map below is preserved as design-time intent (see also the "Shipped consolidation" note under Surface 2).
+
 | # | Surface       | Route               | Owns JBTD(s)        | Purpose                                                                |
 |---|---------------|---------------------|---------------------|------------------------------------------------------------------------|
 | 1 | Now           | `/`                 | JBTD-1, JBTD-2, aggregator (1–7) | Where the PM lands. NSM hero, inline triage rows, capture (`⌘N`), `Start triage →` CTA. |

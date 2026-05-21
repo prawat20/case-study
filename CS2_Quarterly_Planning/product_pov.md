@@ -194,4 +194,4 @@ Anything outside the seven JBTDs is out of scope.
 2. **Light theme default**, optional dark. Warm earth-toned palette aligned with 2026 minimalism's "rooted earth tones" shift.
 3. **Audience renders as generated stakeholder artifacts**, not toggled filters on shared data. Each audience gets its own copy + format.
 4. **SignalShifts surfaces inside Triage**, not as front-door noise. Surfaced as "N items shifted priority overnight; re-triage first?"
-5. **NSM = median time idea-surfaced → decision-logged.** Leading indicator: "% of items decided same day they're captured."
+5. **NSM = median time idea-surfaced → decision-logged.** (A "% of items decided same day they're captured" leading indicator was considered but **not shipped** — Round 16.)

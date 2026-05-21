@@ -40,7 +40,7 @@ Six workflow stages were named (intake → cluster + dedup → enrich → score 
 
 **Per-JBTD design rubric.** Each POV declares both what to believe *and* what to reject. Example: POV-2 (Triage) believes in deck-of-cards full-screen one-at-a-time decisions; rejects multi-row tables of un-triaged items (the cognitive cost of seeing the pile is what makes triage feel infinite) and bulk-action checkboxes (encourage rubber-stamping). When a build choice gets ambiguous, the POV re-reads as the tiebreaker.
 
-**North Star.** Median time from idea-surfaced → decision-logged. Leading indicator: % of items decided same day they're captured. Rejected NSM candidates documented in [`supporting_writeup.md`](supporting_writeup.md) §1 with reasons (plans shipped per quarter is gameable; NPS is soft; DAU is vanity for a decision-orchestration tool).
+**North Star.** Median time from idea-surfaced → decision-logged. (A "% of items decided same day they're captured" leading indicator was considered but **not shipped** — Round 16.) Rejected NSM candidates documented in [`supporting_writeup.md`](supporting_writeup.md) §1 with reasons (plans shipped per quarter is gameable; NPS is soft; DAU is vanity for a decision-orchestration tool).
 
 ---
 
@@ -61,6 +61,8 @@ Six workflow stages were named (intake → cluster + dedup → enrich → score 
 ## Layer 4 — Information architecture
 
 Five destination surfaces aligned to the seven JBTDs. **Now** is the home that aggregates the loop and carries the front of capture + triage; the other four are the body.
+
+> **Shipped (Round 16):** the NSM hero moved off Now to a quiet North Star line on the **Calendar**; Now became single-decision-in-focus. The table below is design-time intent.
 
 | Surface | Owns | Mechanic |
 |---|---|---|

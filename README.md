@@ -76,7 +76,7 @@ Case Study/
 │   └── research/                          PM pain-points research
 │
 └── quarterly-planning/                    The Next.js source code for the CS2 tool
-    ├── app/                               Routes (Now · Calendar · Stakeholders · Audit · Architecture · Prioritize)
+    ├── app/                               Routes: Now · Calendar · Stakeholders · Audit · Architecture (/inbox + /initiative live under Now)
     ├── components/                        UI components (incl. Drop Planner, Cluster Chip)
     ├── data/                              Mocked initiatives + types
     └── lib/                               State stores · framework scoring · sprint-conflict engine

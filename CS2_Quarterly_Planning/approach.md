@@ -118,6 +118,8 @@ The build sequence was: lock POV → lock design system → lock IA + surface ma
 
 ### Five surfaces, one loop
 
+> **Shipped (Round 16):** the NSM hero moved off Now to a quiet North Star line on the **Calendar**, and Now became a single-decision-in-focus surface (one item at a time, with the AI's recommended action + a "Why this" disclosure). The table below is the design-time intent.
+
 | Surface | JBTD | The opinionated move |
 |---|---|---|
 | Now (`/`) | 1, 2, aggregator | NSM hero in Fraunces 48px · inline triage rows · `⌘N` capture · `Start triage →` CTA. The home is the inbox. |
